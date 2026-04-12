@@ -1,96 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 38 50% 94%;
+    --foreground: 220 40% 13%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 38 50% 94%;
+    --card-foreground: 220 40% 13%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 38 50% 94%;
+    --popover-foreground: 220 40% 13%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 216 60% 26%;
+    --primary-foreground: 38 50% 94%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 36 66% 48%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 30 30% 85%;
+    --muted-foreground: 220 10% 40%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 25 60% 31%;
+    --accent-foreground: 38 50% 94%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 30 20% 75%;
+    --input: 30 20% 75%;
+    --ring: 216 60% 26%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
+    --sand: 38 50% 94%;
+    --lapis: 216 60% 26%;
+    --ochre: 36 66% 48%;
+    --terracotta: 25 60% 31%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 216 60% 20%;
+    --sidebar-foreground: 38 50% 94%;
+    --sidebar-primary: 36 66% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 216 60% 30%;
+    --sidebar-accent-foreground: 38 50% 94%;
+    --sidebar-border: 216 40% 35%;
+    --sidebar-ring: 36 66% 48%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 220 40% 8%;
+    --foreground: 38 50% 94%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 220 35% 12%;
+    --card-foreground: 38 50% 94%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 220 35% 12%;
+    --popover-foreground: 38 50% 94%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 36 66% 48%;
+    --primary-foreground: 220 40% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 216 60% 26%;
+    --secondary-foreground: 38 50% 94%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 220 20% 18%;
+    --muted-foreground: 30 20% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 25 60% 31%;
+    --accent-foreground: 38 50% 94%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 220 20% 22%;
+    --input: 220 20% 22%;
+    --ring: 36 66% 48%;
+
+    --sidebar-background: 220 40% 6%;
+    --sidebar-foreground: 38 50% 94%;
+    --sidebar-primary: 36 66% 48%;
+    --sidebar-primary-foreground: 220 40% 8%;
+    --sidebar-accent: 220 30% 15%;
+    --sidebar-accent-foreground: 38 50% 94%;
+    --sidebar-border: 220 20% 18%;
+    --sidebar-ring: 36 66% 48%;
   }
 }
 
@@ -100,6 +97,44 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cinzel', serif;
+  }
+}
+
+@layer utilities {
+  .font-cinzel {
+    font-family: 'Cinzel', serif;
+  }
+
+  .bg-lapis {
+    background-color: hsl(var(--lapis));
+  }
+
+  .text-ochre {
+    color: hsl(var(--ochre));
+  }
+
+  .text-sand {
+    color: hsl(var(--sand));
+  }
+
+  .bg-sand {
+    background-color: hsl(var(--sand));
+  }
+
+  .border-ochre {
+    border-color: hsl(var(--ochre));
+  }
+
+  .bg-ochre {
+    background-color: hsl(var(--ochre));
+  }
+
+  .bg-terracotta {
+    background-color: hsl(var(--terracotta));
   }
 }
