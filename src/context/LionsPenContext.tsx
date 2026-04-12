@@ -23,16 +23,21 @@ export interface SessionResponses {
   character: string;
 }
 
-/** Derive week (1-4) and day (1-5) from the current date for the 4-week rotation. */
+/** Derive week (1-4) and day (1-5) from the current date.
+ *  Epoch: Sunday April 12 2026 = Week 1 Day 1.
+ *  Each week runs Sun-Thu (5 school days), cycling 1-4. */
 function getWeekAndDay(): { week: number; day: number } {
   const now = new Date();
-  const startOfYear = new Date(now.getFullYear(), 0, 1);
-  const dayOfYear = Math.floor((now.getTime() - startOfYear.getTime()) / 86400000);
-  // Map to week 1-4 and day 1-5 (Mon-Fri cycle)
-  const dayOfWeek = now.getDay(); // 0=Sun ... 6=Sat
-  const day = dayOfWeek >= 1 && dayOfWeek <= 5 ? dayOfWeek : 1; // fallback weekends to Mon
-  const weekNumber = Math.floor(dayOfYear / 7) % 4 + 1;
-  return { week: weekNumber, day };
+  // Epoch: April 12 2026 (Sunday)
+  const epoch = new Date(2026, 3, 12); // month is 0-indexed
+  const diffDays = Math.floor((now.getTime() - epoch.getTime()) / 86400000);
+  if (diffDays < 0) return { week: 1, day: 1 }; // before epoch fallback
+  // 7-day weeks, but only days 0-4 (Sun-Thu) are school days; 5-6 (Fri-Sat) map to day 5
+  const weekIndex = Math.floor(diffDays / 7);
+  const dayInWeek = diffDays % 7;
+  const day = Math.min(dayInWeek + 1, 5); // cap at 5
+  const week = (weekIndex % 4) + 1;
+  return { week, day };
 }
 
 interface LionsPenContextType {
