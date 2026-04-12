@@ -70,17 +70,18 @@ const ParentAuth = () => {
         if (error) throw error;
 
         if (data.user) {
-          const { error: studentError } = await supabase.from("students").insert({
-            parent_id: data.user.id,
-            first_name: childFirstName,
-            last_name: childLastName,
-            grade: parseInt(childGrade),
-            gender: childGender,
-            email: childEmail || null,
-            username: childUsername,
-            password_hash: childPassword,
+          const { data: result, error: rpcError } = await supabase.rpc("register_student", {
+            p_parent_id: data.user.id,
+            p_first_name: childFirstName,
+            p_last_name: childLastName,
+            p_grade: parseInt(childGrade),
+            p_gender: childGender,
+            p_email: childEmail || null,
+            p_username: childUsername,
+            p_password: childPassword,
           });
-          if (studentError) throw studentError;
+          if (rpcError) throw rpcError;
+          if (result && !(result as any).success) throw new Error((result as any).error);
         }
 
         toast({
