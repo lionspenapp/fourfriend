@@ -7,16 +7,159 @@ import { BREATHING_SOUNDS } from "@/data/mockContent";
 const TOTAL_SECONDS = 60;
 const BREATH_CYCLE = 8; // 4s in, 4s out
 
-// Free ambient sound URLs (royalty-free)
-const SOUND_URLS: Record<string, string> = {
-  "Ocean Waves": "https://cdn.freesound.org/previews/527/527888_2827503-lq.mp3",
-  "Bird Singing": "https://cdn.freesound.org/previews/531/531015_10965920-lq.mp3",
-  "Water Dropping": "https://cdn.freesound.org/previews/215/215645_2927752-lq.mp3",
-  "Harp": "https://cdn.freesound.org/previews/610/610075_5674468-lq.mp3",
-  "Flute": "https://cdn.freesound.org/previews/476/476178_6891523-lq.mp3",
-  "Wind": "https://cdn.freesound.org/previews/171/171415_2584026-lq.mp3",
-  "Bubble Popping": "https://cdn.freesound.org/previews/369/369921_6261983-lq.mp3",
-};
+// Procedural ambient sound generators using Web Audio API
+function createAmbientSound(ctx: AudioContext, type: string): { start: () => void; stop: () => void } {
+  const gain = ctx.createGain();
+  gain.gain.value = 0.15;
+  gain.connect(ctx.destination);
+
+  const nodes: AudioNode[] = [];
+
+  const makeNoise = () => {
+    const bufferSize = ctx.sampleRate * 2;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    nodes.push(source);
+    return source;
+  };
+
+  const setupChain = () => {
+    switch (type) {
+      case "Ocean Waves": {
+        const noise = makeNoise();
+        const filter = ctx.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.value = 500;
+        const lfo = ctx.createOscillator();
+        lfo.frequency.value = 0.12;
+        const lfoGain = ctx.createGain();
+        lfoGain.gain.value = 300;
+        lfo.connect(lfoGain);
+        lfoGain.connect(filter.frequency);
+        noise.connect(filter);
+        filter.connect(gain);
+        lfo.start();
+        noise.start();
+        nodes.push(lfo);
+        break;
+      }
+      case "Bird Singing": {
+        const osc = ctx.createOscillator();
+        osc.type = "sine";
+        osc.frequency.value = 2000;
+        const lfo = ctx.createOscillator();
+        lfo.frequency.value = 6;
+        const lfoGain = ctx.createGain();
+        lfoGain.gain.value = 400;
+        lfo.connect(lfoGain);
+        lfoGain.connect(osc.frequency);
+        const envGain = ctx.createGain();
+        envGain.gain.value = 0.08;
+        osc.connect(envGain);
+        envGain.connect(gain);
+        osc.start();
+        lfo.start();
+        nodes.push(osc, lfo);
+        break;
+      }
+      case "Water Dropping": {
+        const noise = makeNoise();
+        const filter = ctx.createBiquadFilter();
+        filter.type = "bandpass";
+        filter.frequency.value = 1200;
+        filter.Q.value = 5;
+        noise.connect(filter);
+        filter.connect(gain);
+        noise.start();
+        break;
+      }
+      case "Wind": {
+        const noise = makeNoise();
+        const filter = ctx.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.value = 800;
+        const lfo = ctx.createOscillator();
+        lfo.frequency.value = 0.05;
+        const lfoGain = ctx.createGain();
+        lfoGain.gain.value = 400;
+        lfo.connect(lfoGain);
+        lfoGain.connect(filter.frequency);
+        noise.connect(filter);
+        filter.connect(gain);
+        lfo.start();
+        noise.start();
+        nodes.push(lfo);
+        break;
+      }
+      case "Harp": {
+        const osc = ctx.createOscillator();
+        osc.type = "triangle";
+        osc.frequency.value = 440;
+        const lfo = ctx.createOscillator();
+        lfo.frequency.value = 0.3;
+        const lfoGain = ctx.createGain();
+        lfoGain.gain.value = 50;
+        lfo.connect(lfoGain);
+        lfoGain.connect(osc.frequency);
+        osc.connect(gain);
+        osc.start();
+        lfo.start();
+        nodes.push(osc, lfo);
+        break;
+      }
+      case "Flute": {
+        const osc = ctx.createOscillator();
+        osc.type = "sine";
+        osc.frequency.value = 700;
+        const vibrato = ctx.createOscillator();
+        vibrato.frequency.value = 5;
+        const vibratoGain = ctx.createGain();
+        vibratoGain.gain.value = 10;
+        vibrato.connect(vibratoGain);
+        vibratoGain.connect(osc.frequency);
+        osc.connect(gain);
+        osc.start();
+        vibrato.start();
+        nodes.push(osc, vibrato);
+        break;
+      }
+      case "Bubble Popping": {
+        const noise = makeNoise();
+        const filter = ctx.createBiquadFilter();
+        filter.type = "bandpass";
+        filter.frequency.value = 600;
+        filter.Q.value = 10;
+        const lfo = ctx.createOscillator();
+        lfo.frequency.value = 3;
+        const lfoGain = ctx.createGain();
+        lfoGain.gain.value = 400;
+        lfo.connect(lfoGain);
+        lfoGain.connect(filter.frequency);
+        noise.connect(filter);
+        filter.connect(gain);
+        lfo.start();
+        noise.start();
+        nodes.push(lfo);
+        break;
+      }
+      default:
+        break;
+    }
+  };
+
+  return {
+    start: () => setupChain(),
+    stop: () => {
+      nodes.forEach((n) => { try { (n as AudioScheduledSourceNode).stop(); } catch {} });
+      nodes.length = 0;
+      gain.disconnect();
+    },
+  };
+}
 
 const BreathingPage = () => {
   const { setStep } = useLionsPen();
@@ -25,30 +168,39 @@ const BreathingPage = () => {
   const [completed, setCompleted] = useState(false);
   const [selectedSound, setSelectedSound] = useState<string>("No Sound");
   const [phase, setPhase] = useState<"in" | "out">("in");
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const ambientRef = useRef<{ start: () => void; stop: () => void } | null>(null);
 
   const elapsed = TOTAL_SECONDS - secondsLeft;
 
   // Manage ambient audio
   useEffect(() => {
-    // Stop previous audio
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
+    // Stop previous
+    if (ambientRef.current) {
+      ambientRef.current.stop();
+      ambientRef.current = null;
+    }
+    if (audioCtxRef.current) {
+      audioCtxRef.current.close().catch(() => {});
+      audioCtxRef.current = null;
     }
 
-    if (isRunning && selectedSound !== "No Sound" && SOUND_URLS[selectedSound]) {
-      const audio = new Audio(SOUND_URLS[selectedSound]);
-      audio.loop = true;
-      audio.volume = 0.4;
-      audio.play().catch(() => {});
-      audioRef.current = audio;
+    if (isRunning && selectedSound !== "No Sound") {
+      const ctx = new AudioContext();
+      audioCtxRef.current = ctx;
+      const ambient = createAmbientSound(ctx, selectedSound);
+      ambientRef.current = ambient;
+      ambient.start();
     }
 
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
+      if (ambientRef.current) {
+        ambientRef.current.stop();
+        ambientRef.current = null;
+      }
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close().catch(() => {});
+        audioCtxRef.current = null;
       }
     };
   }, [isRunning, selectedSound]);
