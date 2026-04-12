@@ -1,3 +1,9 @@
+// Re-exports and backward-compatible helpers
+export { ACADEMIC_QUESTIONS, EMOTION_QUESTIONS, CHARACTER_QUESTIONS, getQuestion, getQuestionsForGrade } from "./questionDatabase";
+export type { QuestionEntry, QuestionCategory } from "./questionDatabase";
+export { CELESTIAL_MESSAGES, getCelestialMessage, getMessagesForGrade } from "./messageDatabase";
+export type { CelestialMessageEntry } from "./messageDatabase";
+
 export const BREATHING_SOUNDS = [
   "Ocean Waves",
   "Bird Singing",
@@ -21,35 +27,15 @@ export function getOathForGrade(grade: number): string {
   return OATHS["7-8"];
 }
 
+// Legacy compat — used by QuestionPage and CelestialMessage
 export const SAMPLE_QUESTIONS = {
-  academic: {
-    category: "Academic",
-    prompt:
-      "If you could teach any subject to someone younger than you, what would it be and why? What makes you feel confident about that topic?",
-    minSentences: 3,
-  },
-  emotion: {
-    category: "Emotion",
-    prompt:
-      "Describe a moment this week when you felt a strong emotion. What caused it, and how did you handle it? Looking back, would you respond differently?",
-    minSentences: 3,
-  },
-  character: {
-    category: "Character",
-    prompt:
-      "Think about someone you admire — it could be someone you know or a historical figure. What quality do they have that you would like to develop in yourself?",
-    minSentences: 3,
-  },
+  academic: { category: "Academic", prompt: "", minSentences: 3 },
+  emotion: { category: "Emotion", prompt: "", minSentences: 3 },
+  character: { category: "Character", prompt: "", minSentences: 3 },
 };
 
 export const SAMPLE_CELESTIAL_MESSAGE = {
   author: "Marcus Aurelius",
   quote: "The happiness of your life depends upon the quality of your thoughts.",
-  message: `Young Scriber, today you have shown courage by sharing your thoughts honestly. Marcus Aurelius, a Roman Emperor and philosopher, believed that we have the power to shape our own happiness through the way we think.
-
-He wrote in his private journal every day — much like you do here in the Scriptorium. He believed that by reflecting on our actions and our character, we become stronger and wiser.
-
-Remember: every time you pick up your pen and write truthfully, you are following in the footsteps of the greatest thinkers in history. Your words today are seeds that will grow into the wisdom of tomorrow.
-
-Keep writing. Keep reflecting. The Celestial Scriptorium honors your courage.`,
+  message: `Young Scriber, today you have shown courage by sharing your thoughts honestly.`,
 };
