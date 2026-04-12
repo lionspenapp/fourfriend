@@ -14,7 +14,167 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      celestial_messages: {
+        Row: {
+          author: string
+          body: string
+          created_at: string
+          day: number
+          id: string
+          quote: string
+          week: number
+        }
+        Insert: {
+          author: string
+          body: string
+          created_at?: string
+          day: number
+          id?: string
+          quote: string
+          week: number
+        }
+        Update: {
+          author?: string
+          body?: string
+          created_at?: string
+          day?: number
+          id?: string
+          quote?: string
+          week?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      questions: {
+        Row: {
+          category: string
+          created_at: string
+          day: number
+          grade_band: string
+          id: string
+          prompt: string
+          week: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          day: number
+          grade_band: string
+          id?: string
+          prompt: string
+          week: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          day?: number
+          grade_band?: string
+          id?: string
+          prompt?: string
+          week?: number
+        }
+        Relationships: []
+      }
+      students: {
+        Row: {
+          created_at: string
+          first_name: string
+          grade: number
+          id: string
+          last_name: string
+          parent_id: string
+          password_hash: string
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          first_name: string
+          grade: number
+          id?: string
+          last_name: string
+          parent_id: string
+          password_hash: string
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          first_name?: string
+          grade?: number
+          id?: string
+          last_name?: string
+          parent_id?: string
+          password_hash?: string
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      submissions: {
+        Row: {
+          academic_response: string
+          character_response: string
+          day: number
+          emotion_response: string
+          id: string
+          student_id: string
+          submitted_at: string
+          week: number
+        }
+        Insert: {
+          academic_response?: string
+          character_response?: string
+          day: number
+          emotion_response?: string
+          id?: string
+          student_id: string
+          submitted_at?: string
+          week: number
+        }
+        Update: {
+          academic_response?: string
+          character_response?: string
+          day?: number
+          emotion_response?: string
+          id?: string
+          student_id?: string
+          submitted_at?: string
+          week?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
