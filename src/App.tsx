@@ -9,6 +9,7 @@ import Index from "./pages/Index.tsx";
 import ParentAuth from "./pages/ParentAuth.tsx";
 import ParentDashboard from "./pages/ParentDashboard.tsx";
 import StudentLogin from "./pages/StudentLogin.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const AppContent = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/student" element={<Index />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           {user ? (
               <Route path="/" element={<ParentDashboard />} />
           ) : (
