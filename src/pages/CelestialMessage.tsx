@@ -37,8 +37,11 @@ const CelestialMessage = () => {
   }, [markSubmitted, resetSession]);
 
   return (
-    <div className="min-h-screen bg-lapis flex items-center justify-center p-6 relative">
-      <div className="absolute top-0 left-0 right-0 h-2 bg-ochre/60" />
+    <div className="min-h-screen bg-background flex items-center justify-center p-6 relative">
+      <div className="absolute top-0 left-0 right-0 h-2 bg-secondary" />
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-secondary" />
+      <div className="absolute left-0 top-0 bottom-0 w-2 bg-secondary" />
+      <div className="absolute right-0 top-0 bottom-0 w-2 bg-secondary" />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -46,26 +49,26 @@ const CelestialMessage = () => {
         transition={{ duration: 0.8 }}
         className="max-w-2xl w-full text-center"
       >
-        <p className="text-ochre/60 text-xs font-cinzel tracking-widest uppercase mb-4">
+        <p className="text-secondary/60 text-xs font-cinzel tracking-widest uppercase mb-4">
           A Message from the Celestial Scriptorium
         </p>
 
         <div className="text-5xl mb-6">✨</div>
 
         {/* Quote */}
-        <blockquote className="border-l-4 border-ochre/40 pl-6 mb-6 text-left">
-          <p className="text-sand text-xl font-cinzel italic leading-relaxed">
+        <blockquote className="border-l-4 border-secondary/40 pl-6 mb-6 text-left">
+          <p className="text-foreground text-xl font-cinzel italic leading-relaxed">
             &ldquo;{quote}&rdquo;
           </p>
-          <p className="text-ochre/70 font-cinzel mt-2 text-sm">
+          <p className="text-secondary/70 font-cinzel mt-2 text-sm">
             — {author}
           </p>
         </blockquote>
 
         {/* Message body */}
-        <div className="bg-sand/5 border border-ochre/15 rounded-lg p-6 mb-8 text-left">
+        <div className="bg-foreground/5 border border-secondary/15 rounded-lg p-6 mb-8 text-left">
           {message.split("\n\n").map((para, i) => (
-            <p key={i} className="text-sand/85 leading-relaxed mb-3 last:mb-0">
+            <p key={i} className="text-foreground/85 leading-relaxed mb-3 last:mb-0">
               {para}
             </p>
           ))}
@@ -75,13 +78,13 @@ const CelestialMessage = () => {
           <Button
             onClick={handleReadToMe}
             variant="outline"
-            className="border-ochre/40 text-sand font-cinzel hover:bg-ochre/10"
+            className="border-secondary/40 text-foreground font-cinzel hover:bg-secondary/10"
           >
             {isSpeaking ? "Stop Reading" : "🔊 Read to Me"}
           </Button>
           <Button
             onClick={handleClose}
-            className="bg-ochre text-primary font-cinzel tracking-wide hover:bg-ochre/90 px-8"
+            className="bg-secondary text-secondary-foreground font-cinzel tracking-wide hover:bg-secondary/90 px-8"
           >
             Close
           </Button>
