@@ -112,7 +112,7 @@ const ParentAuth = () => {
         className="w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <img src={lionsPenLogo} alt="Lion's Pen" className="w-24 h-24 mx-auto mb-4 rounded-full" />
+          <img src={lionsPenLogo} alt="Lion's Pen" className="w-40 h-40 mx-auto mb-4 rounded-full" />
           <h1 className="font-cinzel text-4xl font-bold text-primary-foreground tracking-wide">
             Lion's Pen
           </h1>
