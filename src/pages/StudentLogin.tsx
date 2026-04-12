@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useLionsPen } from "@/context/LionsPenContext";
+import lionsPenLogo from "@/assets/lions_pen.png";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
