@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useLionsPen } from "@/context/LionsPenContext";
+import celestialBg from "@/assets/celestial-bg.png";
 import { Button } from "@/components/ui/button";
 import { getCelestialMessage } from "@/data/messageDatabase";
 
@@ -37,38 +38,43 @@ const CelestialMessage = () => {
   }, [markSubmitted, resetSession]);
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6 relative">
-      <div className="absolute top-0 left-0 right-0 h-2 bg-secondary" />
-      <div className="absolute bottom-0 left-0 right-0 h-2 bg-secondary" />
-      <div className="absolute left-0 top-0 bottom-0 w-2 bg-secondary" />
-      <div className="absolute right-0 top-0 bottom-0 w-2 bg-secondary" />
+    <div
+      className="min-h-screen flex items-center justify-center p-6 relative bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: `url(${celestialBg})` }}
+    >
+      {/* Dark overlay for readability */}
+      <div className="absolute inset-0 bg-black/50" />
+      <div className="absolute top-0 left-0 right-0 h-2 bg-secondary z-10" />
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-secondary z-10" />
+      <div className="absolute left-0 top-0 bottom-0 w-2 bg-secondary z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-2 bg-secondary z-10" />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8 }}
-        className="max-w-2xl w-full text-center"
+        className="max-w-2xl w-full text-center relative z-10"
       >
-        <p className="text-secondary/60 text-xs font-cinzel tracking-widest uppercase mb-4">
+        <p className="text-amber-200/80 text-xs font-cinzel tracking-widest uppercase mb-4">
           A Message from the Celestial Scriptorium
         </p>
 
         <div className="text-5xl mb-6">✨</div>
 
         {/* Quote */}
-        <blockquote className="border-l-4 border-secondary/40 pl-6 mb-6 text-left">
-          <p className="text-foreground text-xl font-cinzel italic leading-relaxed">
+        <blockquote className="border-l-4 border-amber-400/60 pl-6 mb-6 text-left">
+          <p className="text-white text-xl font-cinzel italic leading-relaxed">
             &ldquo;{quote}&rdquo;
           </p>
-          <p className="text-secondary/70 font-cinzel mt-2 text-sm">
+          <p className="text-amber-200/80 font-cinzel mt-2 text-sm">
             — {author}
           </p>
         </blockquote>
 
         {/* Message body */}
-        <div className="bg-foreground/5 border border-secondary/15 rounded-lg p-6 mb-8 text-left">
+        <div className="bg-black/40 backdrop-blur-sm border border-amber-400/20 rounded-lg p-6 mb-8 text-left">
           {message.split("\n\n").map((para, i) => (
-            <p key={i} className="text-foreground/85 leading-relaxed mb-3 last:mb-0">
+            <p key={i} className="text-white/90 leading-relaxed mb-3 last:mb-0">
               {para}
             </p>
           ))}
