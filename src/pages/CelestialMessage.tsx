@@ -38,11 +38,16 @@ const CelestialMessage = () => {
   }, [markSubmitted, resetSession]);
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6 relative">
-      <div className="absolute top-0 left-0 right-0 h-2 bg-secondary" />
-      <div className="absolute bottom-0 left-0 right-0 h-2 bg-secondary" />
-      <div className="absolute left-0 top-0 bottom-0 w-2 bg-secondary" />
-      <div className="absolute right-0 top-0 bottom-0 w-2 bg-secondary" />
+    <div
+      className="min-h-screen flex items-center justify-center p-6 relative bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: `url(${celestialBg})` }}
+    >
+      {/* Dark overlay for readability */}
+      <div className="absolute inset-0 bg-black/50" />
+      <div className="absolute top-0 left-0 right-0 h-2 bg-secondary z-10" />
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-secondary z-10" />
+      <div className="absolute left-0 top-0 bottom-0 w-2 bg-secondary z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-2 bg-secondary z-10" />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
