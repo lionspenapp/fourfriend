@@ -17,6 +17,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const PASSWORD_RULES = [
+  { test: (p: string) => p.length >= 8, label: "At least 8 characters" },
+  { test: (p: string) => /[A-Z]/.test(p), label: "1 uppercase letter" },
+  { test: (p: string) => /[a-z]/.test(p), label: "1 lowercase letter" },
+  { test: (p: string) => /[0-9]/.test(p), label: "1 number" },
+  { test: (p: string) => /[^A-Za-z0-9]/.test(p), label: "1 special character" },
+];
+
+const isPasswordValid = (p: string) => PASSWORD_RULES.every((r) => r.test(p));
+
 const ParentAuth = () => {
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
@@ -35,6 +45,16 @@ const ParentAuth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (isSignUp && !isPasswordValid(password)) {
+      toast({
+        title: "Weak password",
+        description: "Password must be 8+ characters with uppercase, lowercase, number, and special character.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
