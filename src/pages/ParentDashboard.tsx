@@ -60,6 +60,9 @@ const ParentDashboard = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [loadingStudents, setLoadingStudents] = useState(true);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [resetStudentId, setResetStudentId] = useState<string | null>(null);
+  const [newSecretCode, setNewSecretCode] = useState("");
+  const [resettingPassword, setResettingPassword] = useState(false);
 
   // Add child form state
   const [childFirstName, setChildFirstName] = useState("");
@@ -135,6 +138,39 @@ const ParentDashboard = () => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
       setAddingChild(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !resetStudentId) return;
+
+    if (!isPasswordValid(newSecretCode)) {
+      toast({
+        title: "Weak secret code",
+        description: "Must be 8+ characters with uppercase, lowercase, number, and special character.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setResettingPassword(true);
+    try {
+      const { data: result, error } = await supabase.rpc("update_student_password", {
+        p_student_id: resetStudentId,
+        p_parent_id: user.id,
+        p_new_password: newSecretCode,
+      } as any);
+      if (error) throw error;
+      if (result && !(result as any).success) throw new Error((result as any).error);
+
+      toast({ title: "Secret code updated!", description: "Your child can now log in with the new secret code." });
+      setResetStudentId(null);
+      setNewSecretCode("");
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setResettingPassword(false);
     }
   };
 
@@ -278,6 +314,7 @@ const ParentDashboard = () => {
                         <TableHead className="font-cinzel text-secondary">Username</TableHead>
                         <TableHead className="font-cinzel text-secondary">Gender</TableHead>
                         <TableHead className="font-cinzel text-secondary">Registered</TableHead>
+                        <TableHead className="font-cinzel text-secondary">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -288,12 +325,49 @@ const ParentDashboard = () => {
                           <TableCell className="text-foreground/80 font-mono text-sm">{s.username}</TableCell>
                           <TableCell className="text-foreground/80 capitalize">{s.gender}</TableCell>
                           <TableCell className="text-foreground/60 text-sm">{new Date(s.created_at).toLocaleDateString()}</TableCell>
+                          <TableCell>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="font-cinzel text-xs border-secondary/40 text-secondary hover:bg-secondary/10"
+                              onClick={() => { setResetStudentId(s.id); setNewSecretCode(""); }}
+                            >
+                              Reset Code
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 </div>
               )}
+
+              {/* Reset Secret Code Dialog */}
+              <Dialog open={!!resetStudentId} onOpenChange={(open) => { if (!open) setResetStudentId(null); }}>
+                <DialogContent className="bg-background border-secondary/30 max-w-sm">
+                  <DialogHeader>
+                    <DialogTitle className="font-cinzel text-xl text-foreground">Reset Secret Code</DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={handleResetPassword} className="space-y-4 mt-2">
+                    <div>
+                      <label className="block text-foreground/90 text-sm font-cinzel mb-1.5">New Secret Code</label>
+                      <Input type="password" value={newSecretCode} onChange={(e) => setNewSecretCode(e.target.value)} placeholder="••••••••" required minLength={8} className={inputClass} />
+                      {newSecretCode.length > 0 && (
+                        <div className="mt-2 space-y-1">
+                          {PASSWORD_RULES.map((rule) => (
+                            <p key={rule.label} className={`text-xs font-cinzel ${rule.test(newSecretCode) ? "text-green-600" : "text-foreground/60"}`}>
+                              {rule.test(newSecretCode) ? "✓" : "○"} {rule.label}
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <Button type="submit" disabled={resettingPassword} className="w-full bg-primary text-primary-foreground font-cinzel hover:bg-primary/90 py-5">
+                      {resettingPassword ? "Updating..." : "Update Secret Code"}
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
             </TabsContent>
 
             {/* ─── Resources Tab ─── */}
