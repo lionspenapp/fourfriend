@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useLionsPen } from "@/context/LionsPenContext";
+import lionsPenLogo from "@/assets/lions_pen.png";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -42,7 +43,7 @@ const StudentLogin = () => {
       >
         {/* Lion emblem area */}
         <div className="text-center mb-8">
-          <div className="text-6xl mb-4">🦁</div>
+          <img src={lionsPenLogo} alt="Lion's Pen" className="w-24 h-24 mx-auto mb-4 rounded-full" />
           <h1 className="font-cinzel text-4xl font-bold text-sand tracking-wide">
             Lion's Pen
           </h1>
