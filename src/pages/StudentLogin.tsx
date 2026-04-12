@@ -42,7 +42,7 @@ const StudentLogin = () => {
         className="w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <img src={lionsPenLogo} alt="Lion's Pen" className="w-72 h-72 mx-auto mb-4" />
+          <img src={lionsPenLogo} alt="Lion's Pen" className="w-72 h-auto mx-auto mb-4" />
           <h1 className="font-cinzel text-4xl font-bold text-primary tracking-wide">
             Lion's Pen
           </h1>
