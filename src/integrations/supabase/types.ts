@@ -179,14 +179,62 @@ export type Database = {
             referencedRelation: "students"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "submissions_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      students_safe: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          first_name: string | null
+          gender: string | null
+          grade: number | null
+          id: string | null
+          last_name: string | null
+          parent_id: string | null
+          updated_at: string | null
+          username: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          first_name?: string | null
+          gender?: string | null
+          grade?: number | null
+          id?: string | null
+          last_name?: string | null
+          parent_id?: string | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          first_name?: string | null
+          gender?: string | null
+          grade?: number | null
+          id?: string | null
+          last_name?: string | null
+          parent_id?: string | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      verify_student_login: {
+        Args: { p_password: string; p_username: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
