@@ -1,8 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useLionsPen, type FlowStep } from "@/context/LionsPenContext";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import { getQuestion } from "@/data/questionDatabase";
 
 interface QuestionPageProps {
@@ -36,8 +37,39 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
   const showWarning = value.length > 0 && sentences < MIN_SENTENCES;
 
   const grade = student?.grade ?? 5;
-  const question = getQuestion(type, grade, week, day);
-  const prompt = question?.prompt ?? "Reflect on your day and share your thoughts.";
+  const gradeBand = grade <= 4 ? "3-4" : grade <= 6 ? "5-6" : "7-8";
+
+  // Fetch question from database, fall back to local mock
+  const [prompt, setPrompt] = useState("Reflect on your day and share your thoughts.");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchQuestion() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("questions")
+        .select("prompt")
+        .eq("category", type)
+        .eq("grade_band", gradeBand)
+        .eq("week", week)
+        .eq("day", day)
+        .maybeSingle();
+
+      if (!cancelled) {
+        if (data?.prompt) {
+          setPrompt(data.prompt);
+        } else {
+          // Fallback to local mock
+          const local = getQuestion(type, grade, week, day);
+          setPrompt(local?.prompt ?? "Reflect on your day and share your thoughts.");
+        }
+        setLoading(false);
+      }
+    }
+    fetchQuestion();
+    return () => { cancelled = true; };
+  }, [type, gradeBand, week, day, grade]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6 relative">
@@ -69,7 +101,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
           {CATEGORY_LABEL[type]} Reflection — Question {meta.num} of 3
         </p>
         <h2 className="font-cinzel text-2xl font-bold text-foreground mb-6 leading-relaxed">
-          {prompt}
+          {loading ? "Loading question…" : prompt}
         </h2>
 
         <Textarea
