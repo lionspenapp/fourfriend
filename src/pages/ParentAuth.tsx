@@ -30,6 +30,9 @@ const isPasswordValid = (p: string) => PASSWORD_RULES.every((r) => r.test(p));
 const ParentAuth = () => {
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetLoading, setResetLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -112,6 +115,25 @@ const ParentAuth = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!resetEmail) {
+      toast({ title: "Enter your email", description: "Please enter your email address to reset your password.", variant: "destructive" });
+      return;
+    }
+    setResetLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast({ title: "Check your email", description: "We sent you a password reset link." });
+      setShowForgotPassword(false);
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setResetLoading(false);
+    }
+  };
 
   const inputClass =
     "bg-foreground/5 border-secondary/40 text-foreground placeholder:text-foreground/50 focus-visible:ring-secondary";
@@ -174,6 +196,15 @@ const ParentAuth = () => {
                     </p>
                   ))}
                 </div>
+              )}
+              {!isSignUp && (
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-secondary/80 hover:text-secondary text-xs font-cinzel transition-colors"
+                >
+                  Forgot password?
+                </button>
               )}
             </div>
 
@@ -281,11 +312,43 @@ const ParentAuth = () => {
             {isSignUp ? "Sign In" : "Sign Up"}
           </button>
         </p>
+        {!isSignUp && (
+          <p className="text-center mt-2 text-foreground/50 text-xs font-cinzel">
+            Your username is the email address you signed up with.
+          </p>
+        )}
         <p className="text-center mt-3 text-foreground/60 text-sm">
           <button onClick={() => navigate("/student")} className="hover:text-foreground/80 transition-colors font-cinzel">
             Student Login →
           </button>
         </p>
+
+        {/* Forgot Password Modal */}
+        {showForgotPassword && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowForgotPassword(false)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-background border-2 border-secondary/30 rounded-lg p-6 max-w-sm w-full space-y-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="font-cinzel text-xl font-bold text-foreground">Reset Password</h2>
+              <p className="text-foreground/70 text-sm">Enter the email address you used to sign up. We'll send you a link to reset your password.</p>
+              <div>
+                <label className="block text-foreground/90 text-sm font-cinzel mb-1.5">Email</label>
+                <Input type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="parent@example.com" required className={inputClass} />
+              </div>
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={() => setShowForgotPassword(false)} className="flex-1 font-cinzel border-secondary/40">
+                  Cancel
+                </Button>
+                <Button onClick={handleForgotPassword} disabled={resetLoading} className="flex-1 bg-primary text-primary-foreground font-cinzel hover:bg-primary/90">
+                  {resetLoading ? "Sending..." : "Send Reset Link"}
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </motion.div>
     </div>
   );
