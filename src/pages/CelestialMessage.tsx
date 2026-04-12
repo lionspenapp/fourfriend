@@ -2,12 +2,18 @@ import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useLionsPen } from "@/context/LionsPenContext";
 import { Button } from "@/components/ui/button";
-import { SAMPLE_CELESTIAL_MESSAGE } from "@/data/mockContent";
+import { getCelestialMessage } from "@/data/messageDatabase";
 
 const CelestialMessage = () => {
-  const { markSubmitted, resetSession } = useLionsPen();
+  const { markSubmitted, resetSession, student, week, day } = useLionsPen();
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const msg = SAMPLE_CELESTIAL_MESSAGE;
+
+  const grade = student?.grade ?? 5;
+  const msg = getCelestialMessage(grade, week, day);
+
+  const author = msg?.author ?? "The Celestial Scriptorium";
+  const quote = msg?.quote ?? "Your words today carry the weight of your courage.";
+  const message = msg?.message ?? "Young Scriber, today you have shown courage by sharing your thoughts honestly. Keep writing. Keep reflecting. The Celestial Scriptorium honors your courage.";
 
   const handleReadToMe = useCallback(() => {
     if (isSpeaking) {
@@ -16,13 +22,13 @@ const CelestialMessage = () => {
       return;
     }
     const utterance = new SpeechSynthesisUtterance(
-      `${msg.quote}. By ${msg.author}. ${msg.message}`
+      `${quote}. By ${author}. ${message}`
     );
     utterance.rate = 0.9;
     utterance.onend = () => setIsSpeaking(false);
     setIsSpeaking(true);
     window.speechSynthesis.speak(utterance);
-  }, [isSpeaking, msg]);
+  }, [isSpeaking, quote, author, message]);
 
   const handleClose = useCallback(() => {
     window.speechSynthesis.cancel();
@@ -49,16 +55,16 @@ const CelestialMessage = () => {
         {/* Quote */}
         <blockquote className="border-l-4 border-ochre/40 pl-6 mb-6 text-left">
           <p className="text-sand text-xl font-cinzel italic leading-relaxed">
-            "{msg.quote}"
+            &ldquo;{quote}&rdquo;
           </p>
           <p className="text-ochre/70 font-cinzel mt-2 text-sm">
-            — {msg.author}
+            — {author}
           </p>
         </blockquote>
 
         {/* Message body */}
         <div className="bg-sand/5 border border-ochre/15 rounded-lg p-6 mb-8 text-left">
-          {msg.message.split("\n\n").map((para, i) => (
+          {message.split("\n\n").map((para, i) => (
             <p key={i} className="text-sand/85 leading-relaxed mb-3 last:mb-0">
               {para}
             </p>
