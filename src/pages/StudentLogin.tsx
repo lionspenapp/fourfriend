@@ -14,7 +14,6 @@ const StudentLogin = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock login — accept anything, set hardcoded student
     setStudent({
       firstName: "Young",
       lastName: "Scriber",
@@ -30,10 +29,11 @@ const StudentLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-lapis flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Decorative border pattern */}
-      <div className="absolute top-0 left-0 right-0 h-3 bg-ochre" />
-      <div className="absolute bottom-0 left-0 right-0 h-3 bg-ochre" />
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-2 bg-secondary" />
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-secondary" />
+      <div className="absolute left-0 top-0 bottom-0 w-2 bg-secondary" />
+      <div className="absolute right-0 top-0 bottom-0 w-2 bg-secondary" />
 
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -41,32 +41,31 @@ const StudentLogin = () => {
         transition={{ duration: 0.8 }}
         className="w-full max-w-md"
       >
-        {/* Lion emblem area */}
         <div className="text-center mb-8">
           <img src={lionsPenLogo} alt="Lion's Pen" className="w-40 h-40 mx-auto mb-4 rounded-full" />
-          <h1 className="font-cinzel text-4xl font-bold text-sand tracking-wide">
+          <h1 className="font-cinzel text-4xl font-bold text-primary tracking-wide">
             Lion's Pen
           </h1>
-          <p className="text-sand/70 mt-2 font-cinzel text-sm tracking-widest uppercase">
+          <p className="text-foreground/50 mt-2 font-cinzel text-sm tracking-widest uppercase">
             The Celestial Scriptorium
           </p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
-          <div className="bg-sand/10 backdrop-blur-sm border border-ochre/30 rounded-lg p-6 space-y-4">
+          <div className="bg-foreground/5 backdrop-blur-sm border-2 border-secondary/30 rounded-lg p-6 space-y-4">
             <div>
-              <label className="block text-sand/80 text-sm font-cinzel mb-1.5 tracking-wide">
+              <label className="block text-foreground/70 text-sm font-cinzel mb-1.5 tracking-wide">
                 Scriber Name
               </label>
               <Input
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your name"
-                className="bg-sand/10 border-ochre/30 text-sand placeholder:text-sand/40 focus-visible:ring-ochre"
+                className="bg-foreground/5 border-secondary/40 text-foreground placeholder:text-foreground/40 focus-visible:ring-secondary"
               />
             </div>
             <div>
-              <label className="block text-sand/80 text-sm font-cinzel mb-1.5 tracking-wide">
+              <label className="block text-foreground/70 text-sm font-cinzel mb-1.5 tracking-wide">
                 Secret Word
               </label>
               <Input
@@ -74,20 +73,20 @@ const StudentLogin = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="bg-sand/10 border-ochre/30 text-sand placeholder:text-sand/40 focus-visible:ring-ochre"
+                className="bg-foreground/5 border-secondary/40 text-foreground placeholder:text-foreground/40 focus-visible:ring-secondary"
               />
             </div>
             <Button
               type="submit"
-              className="w-full bg-ochre text-primary font-cinzel tracking-wide hover:bg-ochre/90 text-base py-5"
+              className="w-full bg-primary text-primary-foreground font-cinzel tracking-wide hover:bg-primary/90 text-base py-5"
             >
               Enter the Scriptorium
             </Button>
           </div>
         </form>
 
-        <p className="text-center mt-6 text-sand/40 text-sm">
-          <button onClick={() => navigate("/")} className="cursor-pointer hover:text-sand/60 transition-colors">
+        <p className="text-center mt-6 text-foreground/35 text-sm">
+          <button onClick={() => navigate("/")} className="cursor-pointer hover:text-foreground/50 transition-colors font-cinzel">
             Parent Login →
           </button>
         </p>
