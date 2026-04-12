@@ -60,6 +60,9 @@ const ParentDashboard = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [loadingStudents, setLoadingStudents] = useState(true);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [resetStudentId, setResetStudentId] = useState<string | null>(null);
+  const [newSecretCode, setNewSecretCode] = useState("");
+  const [resettingPassword, setResettingPassword] = useState(false);
 
   // Add child form state
   const [childFirstName, setChildFirstName] = useState("");
