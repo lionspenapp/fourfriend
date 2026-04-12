@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import lionsPenLogo from "@/assets/lions_pen.png";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -82,18 +82,6 @@ const ParentAuth = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      toast({
-        title: "Error",
-        description: result.error.message,
-        variant: "destructive",
-      });
-    }
-  };
 
   const inputClass =
     "bg-foreground/5 border-secondary/40 text-foreground placeholder:text-foreground/40 focus-visible:ring-secondary";
