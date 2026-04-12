@@ -33,6 +33,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
+const PASSWORD_RULES = [
+  { test: (p: string) => p.length >= 8, label: "At least 8 characters" },
+  { test: (p: string) => /[A-Z]/.test(p), label: "1 uppercase letter" },
+  { test: (p: string) => /[a-z]/.test(p), label: "1 lowercase letter" },
+  { test: (p: string) => /[0-9]/.test(p), label: "1 number" },
+  { test: (p: string) => /[^A-Za-z0-9]/.test(p), label: "1 special character" },
+];
+
+const isPasswordValid = (p: string) => PASSWORD_RULES.every((r) => r.test(p));
+
 interface Student {
   id: string;
   first_name: string;
@@ -85,6 +95,16 @@ const ParentDashboard = () => {
   const handleAddChild = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+
+    if (!isPasswordValid(childPassword)) {
+      toast({
+        title: "Weak secret code",
+        description: "Secret code must be 8+ characters with uppercase, lowercase, number, and special character.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setAddingChild(true);
 
     try {
@@ -221,7 +241,16 @@ const ParentDashboard = () => {
                         </div>
                         <div>
                           <label className="block text-foreground/90 text-sm font-cinzel mb-1.5">Secret Code</label>
-                          <Input type="password" value={childPassword} onChange={(e) => setChildPassword(e.target.value)} placeholder="••••••" required minLength={4} className={inputClass} />
+                          <Input type="password" value={childPassword} onChange={(e) => setChildPassword(e.target.value)} placeholder="••••••••" required minLength={8} className={inputClass} />
+                          {childPassword.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {PASSWORD_RULES.map((rule) => (
+                                <p key={rule.label} className={`text-xs font-cinzel ${rule.test(childPassword) ? "text-green-600" : "text-foreground/60"}`}>
+                                  {rule.test(childPassword) ? "✓" : "○"} {rule.label}
+                                </p>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </div>
                       <Button type="submit" disabled={addingChild} className="w-full bg-primary text-primary-foreground font-cinzel hover:bg-primary/90 py-5">
