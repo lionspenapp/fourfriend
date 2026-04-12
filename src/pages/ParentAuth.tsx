@@ -55,6 +55,15 @@ const ParentAuth = () => {
       return;
     }
 
+    if (isSignUp && !isPasswordValid(childPassword)) {
+      toast({
+        title: "Weak secret code",
+        description: "Student secret code must be 8+ characters with uppercase, lowercase, number, and special character.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -241,7 +250,16 @@ const ParentAuth = () => {
                     <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">
                       Secret Code
                     </label>
-                    <Input type="password" value={childPassword} onChange={(e) => setChildPassword(e.target.value)} placeholder="••••••" required minLength={4} className={inputClass} />
+                    <Input type="password" value={childPassword} onChange={(e) => setChildPassword(e.target.value)} placeholder="••••••••" required minLength={8} className={inputClass} />
+                    {childPassword.length > 0 && (
+                      <div className="mt-2 space-y-1">
+                        {PASSWORD_RULES.map((rule) => (
+                          <p key={rule.label} className={`text-xs font-cinzel ${rule.test(childPassword) ? "text-green-600" : "text-foreground/60"}`}>
+                            {rule.test(childPassword) ? "✓" : "○"} {rule.label}
+                          </p>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               </>

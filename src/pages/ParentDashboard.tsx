@@ -241,7 +241,16 @@ const ParentDashboard = () => {
                         </div>
                         <div>
                           <label className="block text-foreground/90 text-sm font-cinzel mb-1.5">Secret Code</label>
-                          <Input type="password" value={childPassword} onChange={(e) => setChildPassword(e.target.value)} placeholder="••••••" required minLength={4} className={inputClass} />
+                          <Input type="password" value={childPassword} onChange={(e) => setChildPassword(e.target.value)} placeholder="••••••••" required minLength={8} className={inputClass} />
+                          {childPassword.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {PASSWORD_RULES.map((rule) => (
+                                <p key={rule.label} className={`text-xs font-cinzel ${rule.test(childPassword) ? "text-green-600" : "text-foreground/60"}`}>
+                                  {rule.test(childPassword) ? "✓" : "○"} {rule.label}
+                                </p>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </div>
                       <Button type="submit" disabled={addingChild} className="w-full bg-primary text-primary-foreground font-cinzel hover:bg-primary/90 py-5">
