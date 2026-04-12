@@ -197,6 +197,15 @@ const ParentAuth = () => {
                   ))}
                 </div>
               )}
+              {!isSignUp && (
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-secondary/80 hover:text-secondary text-xs font-cinzel transition-colors"
+                >
+                  Forgot password?
+                </button>
+              )}
             </div>
 
             {isSignUp && (
