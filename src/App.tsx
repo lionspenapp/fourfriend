@@ -7,6 +7,7 @@ import { LionsPenProvider } from "@/context/LionsPenContext";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index.tsx";
 import ParentAuth from "./pages/ParentAuth.tsx";
+import ParentDashboard from "./pages/ParentDashboard.tsx";
 import StudentLogin from "./pages/StudentLogin.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -31,9 +32,7 @@ const AppContent = () => {
         <Routes>
           <Route path="/student" element={<Index />} />
           {user ? (
-            <>
-              <Route path="/" element={<Index />} />
-            </>
+              <Route path="/" element={<ParentDashboard />} />
           ) : (
             <Route path="*" element={<ParentAuth />} />
           )}
