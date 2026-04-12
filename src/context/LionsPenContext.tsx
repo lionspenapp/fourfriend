@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
 
 export type FlowStep =
   | "login"
@@ -23,6 +23,18 @@ export interface SessionResponses {
   character: string;
 }
 
+/** Derive week (1-4) and day (1-5) from the current date for the 4-week rotation. */
+function getWeekAndDay(): { week: number; day: number } {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const dayOfYear = Math.floor((now.getTime() - startOfYear.getTime()) / 86400000);
+  // Map to week 1-4 and day 1-5 (Mon-Fri cycle)
+  const dayOfWeek = now.getDay(); // 0=Sun ... 6=Sat
+  const day = dayOfWeek >= 1 && dayOfWeek <= 5 ? dayOfWeek : 1; // fallback weekends to Mon
+  const weekNumber = Math.floor(dayOfYear / 7) % 4 + 1;
+  return { week: weekNumber, day };
+}
+
 interface LionsPenContextType {
   step: FlowStep;
   setStep: (step: FlowStep) => void;
@@ -33,6 +45,8 @@ interface LionsPenContextType {
   hasSubmittedToday: () => boolean;
   markSubmitted: () => void;
   resetSession: () => void;
+  week: number;
+  day: number;
 }
 
 const LionsPenContext = createContext<LionsPenContextType | null>(null);
@@ -47,6 +61,8 @@ export const LionsPenProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     emotion: "",
     character: "",
   });
+
+  const { week, day } = useMemo(() => getWeekAndDay(), []);
 
   const setResponse = useCallback((key: keyof SessionResponses, value: string) => {
     setResponses((prev) => ({ ...prev, [key]: value }));
@@ -71,7 +87,7 @@ export const LionsPenProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   return (
     <LionsPenContext.Provider
-      value={{ step, setStep, student, setStudent, responses, setResponse, hasSubmittedToday, markSubmitted, resetSession }}
+      value={{ step, setStep, student, setStudent, responses, setResponse, hasSubmittedToday, markSubmitted, resetSession, week, day }}
     >
       {children}
     </LionsPenContext.Provider>

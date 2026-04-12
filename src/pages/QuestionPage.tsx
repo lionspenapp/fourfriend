@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useLionsPen, type FlowStep } from "@/context/LionsPenContext";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { SAMPLE_QUESTIONS } from "@/data/mockContent";
+import { getQuestion } from "@/data/questionDatabase";
 
 interface QuestionPageProps {
   type: "academic" | "emotion" | "character";
@@ -15,18 +15,29 @@ const STEP_MAP: Record<string, { num: number; next: FlowStep; btnLabel: string }
   character: { num: 3, next: "celestial", btnLabel: "Submit to the Celestial Scriptorium" },
 };
 
+const CATEGORY_LABEL: Record<string, string> = {
+  academic: "Academic",
+  emotion: "Emotion",
+  character: "Character",
+};
+
 function countSentences(text: string): number {
   if (!text.trim()) return 0;
   return text.split(/[.!?]+/).filter((s) => s.trim().length > 0).length;
 }
 
+const MIN_SENTENCES = 3;
+
 const QuestionPage = ({ type }: QuestionPageProps) => {
-  const { responses, setResponse, setStep } = useLionsPen();
-  const question = SAMPLE_QUESTIONS[type];
+  const { responses, setResponse, setStep, student, week, day } = useLionsPen();
   const meta = STEP_MAP[type];
   const value = responses[type];
   const sentences = useMemo(() => countSentences(value), [value]);
-  const showWarning = value.length > 0 && sentences < question.minSentences;
+  const showWarning = value.length > 0 && sentences < MIN_SENTENCES;
+
+  const grade = student?.grade ?? 5;
+  const question = getQuestion(type, grade, week, day);
+  const prompt = question?.prompt ?? "Reflect on your day and share your thoughts.";
 
   return (
     <div className="min-h-screen bg-lapis flex items-center justify-center p-6 relative">
@@ -52,10 +63,10 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
         className="max-w-2xl w-full"
       >
         <p className="text-ochre/70 text-xs font-cinzel tracking-widest uppercase mb-2">
-          {question.category} Reflection — Question {meta.num} of 3
+          {CATEGORY_LABEL[type]} Reflection — Question {meta.num} of 3
         </p>
         <h2 className="font-cinzel text-2xl font-bold text-sand mb-6 leading-relaxed">
-          {question.prompt}
+          {prompt}
         </h2>
 
         <Textarea
@@ -69,7 +80,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
           <div className="text-sm">
             {showWarning ? (
               <span className="text-ochre/70">
-                Try to write at least {question.minSentences} sentences ({sentences} so far)
+                Try to write at least {MIN_SENTENCES} sentences ({sentences} so far)
               </span>
             ) : value.length > 0 ? (
               <span className="text-sand/40">{sentences} sentence{sentences !== 1 ? "s" : ""}</span>
