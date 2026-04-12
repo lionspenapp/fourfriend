@@ -141,6 +141,39 @@ const ParentDashboard = () => {
     }
   };
 
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !resetStudentId) return;
+
+    if (!isPasswordValid(newSecretCode)) {
+      toast({
+        title: "Weak secret code",
+        description: "Must be 8+ characters with uppercase, lowercase, number, and special character.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setResettingPassword(true);
+    try {
+      const { data: result, error } = await supabase.rpc("update_student_password", {
+        p_student_id: resetStudentId,
+        p_parent_id: user.id,
+        p_new_password: newSecretCode,
+      } as any);
+      if (error) throw error;
+      if (result && !(result as any).success) throw new Error((result as any).error);
+
+      toast({ title: "Secret code updated!", description: "Your child can now log in with the new secret code." });
+      setResetStudentId(null);
+      setNewSecretCode("");
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setResettingPassword(false);
+    }
+  };
+
   const inputClass =
     "bg-foreground/5 border-secondary/40 text-foreground placeholder:text-foreground/50 focus-visible:ring-secondary";
 
