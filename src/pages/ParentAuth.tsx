@@ -155,7 +155,16 @@ const ParentAuth = () => {
               <label className="block text-foreground/70 text-sm font-cinzel mb-1.5 tracking-wide">
                 Password
               </label>
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required minLength={6} className={inputClass} />
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required minLength={8} className={inputClass} />
+              {isSignUp && password.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  {PASSWORD_RULES.map((rule) => (
+                    <p key={rule.label} className={`text-xs font-cinzel ${rule.test(password) ? "text-green-600" : "text-foreground/40"}`}>
+                      {rule.test(password) ? "✓" : "○"} {rule.label}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
 
             {isSignUp && (
