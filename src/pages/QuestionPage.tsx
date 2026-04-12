@@ -1,0 +1,91 @@
+import { useMemo } from "react";
+import { motion } from "framer-motion";
+import { useLionsPen, type FlowStep } from "@/context/LionsPenContext";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { SAMPLE_QUESTIONS } from "@/data/mockContent";
+
+interface QuestionPageProps {
+  type: "academic" | "emotion" | "character";
+}
+
+const STEP_MAP: Record<string, { num: number; next: FlowStep; btnLabel: string }> = {
+  academic: { num: 1, next: "emotion", btnLabel: "Next" },
+  emotion: { num: 2, next: "character", btnLabel: "Next" },
+  character: { num: 3, next: "celestial", btnLabel: "Submit to the Celestial Scriptorium" },
+};
+
+function countSentences(text: string): number {
+  if (!text.trim()) return 0;
+  return text.split(/[.!?]+/).filter((s) => s.trim().length > 0).length;
+}
+
+const QuestionPage = ({ type }: QuestionPageProps) => {
+  const { responses, setResponse, setStep } = useLionsPen();
+  const question = SAMPLE_QUESTIONS[type];
+  const meta = STEP_MAP[type];
+  const value = responses[type];
+  const sentences = useMemo(() => countSentences(value), [value]);
+  const showWarning = value.length > 0 && sentences < question.minSentences;
+
+  return (
+    <div className="min-h-screen bg-lapis flex items-center justify-center p-6 relative">
+      <div className="absolute top-0 left-0 right-0 h-2 bg-ochre/60" />
+
+      {/* Progress dots */}
+      <div className="absolute top-8 left-1/2 -translate-x-1/2 flex gap-2">
+        {[1, 2, 3].map((n) => (
+          <div
+            key={n}
+            className={`w-2.5 h-2.5 rounded-full transition-colors ${
+              n <= meta.num ? "bg-ochre" : "bg-sand/20"
+            }`}
+          />
+        ))}
+      </div>
+
+      <motion.div
+        key={type}
+        initial={{ opacity: 0, x: 40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-2xl w-full"
+      >
+        <p className="text-ochre/70 text-xs font-cinzel tracking-widest uppercase mb-2">
+          {question.category} Reflection — Question {meta.num} of 3
+        </p>
+        <h2 className="font-cinzel text-2xl font-bold text-sand mb-6 leading-relaxed">
+          {question.prompt}
+        </h2>
+
+        <Textarea
+          value={value}
+          onChange={(e) => setResponse(type, e.target.value)}
+          placeholder="Write your reflection here…"
+          className="min-h-[200px] bg-sand/5 border-ochre/20 text-sand placeholder:text-sand/30 focus-visible:ring-ochre text-base leading-relaxed resize-none"
+        />
+
+        <div className="flex items-center justify-between mt-4">
+          <div className="text-sm">
+            {showWarning ? (
+              <span className="text-ochre/70">
+                Try to write at least {question.minSentences} sentences ({sentences} so far)
+              </span>
+            ) : value.length > 0 ? (
+              <span className="text-sand/40">{sentences} sentence{sentences !== 1 ? "s" : ""}</span>
+            ) : null}
+          </div>
+
+          <Button
+            onClick={() => setStep(meta.next)}
+            className="bg-ochre text-primary font-cinzel tracking-wide hover:bg-ochre/90 px-8"
+          >
+            {meta.btnLabel}
+          </Button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+export default QuestionPage;
