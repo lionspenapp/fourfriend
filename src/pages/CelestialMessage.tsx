@@ -55,26 +55,26 @@ const CelestialMessage = () => {
         transition={{ duration: 0.8 }}
         className="max-w-2xl w-full text-center relative z-10"
       >
-        <p className="text-secondary/60 text-xs font-cinzel tracking-widest uppercase mb-4">
+        <p className="text-amber-200/80 text-xs font-cinzel tracking-widest uppercase mb-4">
           A Message from the Celestial Scriptorium
         </p>
 
         <div className="text-5xl mb-6">✨</div>
 
         {/* Quote */}
-        <blockquote className="border-l-4 border-secondary/40 pl-6 mb-6 text-left">
-          <p className="text-foreground text-xl font-cinzel italic leading-relaxed">
+        <blockquote className="border-l-4 border-amber-400/60 pl-6 mb-6 text-left">
+          <p className="text-white text-xl font-cinzel italic leading-relaxed">
             &ldquo;{quote}&rdquo;
           </p>
-          <p className="text-secondary/70 font-cinzel mt-2 text-sm">
+          <p className="text-amber-200/80 font-cinzel mt-2 text-sm">
             — {author}
           </p>
         </blockquote>
 
         {/* Message body */}
-        <div className="bg-foreground/5 border border-secondary/15 rounded-lg p-6 mb-8 text-left">
+        <div className="bg-black/40 backdrop-blur-sm border border-amber-400/20 rounded-lg p-6 mb-8 text-left">
           {message.split("\n\n").map((para, i) => (
-            <p key={i} className="text-foreground/85 leading-relaxed mb-3 last:mb-0">
+            <p key={i} className="text-white/90 leading-relaxed mb-3 last:mb-0">
               {para}
             </p>
           ))}
