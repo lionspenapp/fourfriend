@@ -312,11 +312,43 @@ const ParentAuth = () => {
             {isSignUp ? "Sign In" : "Sign Up"}
           </button>
         </p>
+        {!isSignUp && (
+          <p className="text-center mt-2 text-foreground/50 text-xs font-cinzel">
+            Your username is the email address you signed up with.
+          </p>
+        )}
         <p className="text-center mt-3 text-foreground/60 text-sm">
           <button onClick={() => navigate("/student")} className="hover:text-foreground/80 transition-colors font-cinzel">
             Student Login →
           </button>
         </p>
+
+        {/* Forgot Password Modal */}
+        {showForgotPassword && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowForgotPassword(false)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-background border-2 border-secondary/30 rounded-lg p-6 max-w-sm w-full space-y-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="font-cinzel text-xl font-bold text-foreground">Reset Password</h2>
+              <p className="text-foreground/70 text-sm">Enter the email address you used to sign up. We'll send you a link to reset your password.</p>
+              <div>
+                <label className="block text-foreground/90 text-sm font-cinzel mb-1.5">Email</label>
+                <Input type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="parent@example.com" required className={inputClass} />
+              </div>
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={() => setShowForgotPassword(false)} className="flex-1 font-cinzel border-secondary/40">
+                  Cancel
+                </Button>
+                <Button onClick={handleForgotPassword} disabled={resetLoading} className="flex-1 bg-primary text-primary-foreground font-cinzel hover:bg-primary/90">
+                  {resetLoading ? "Sending..." : "Send Reset Link"}
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </motion.div>
     </div>
   );
