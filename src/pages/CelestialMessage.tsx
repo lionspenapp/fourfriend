@@ -53,7 +53,7 @@ const CelestialMessage = () => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8 }}
-        className="max-w-2xl w-full text-center"
+        className="max-w-2xl w-full text-center relative z-10"
       >
         <p className="text-secondary/60 text-xs font-cinzel tracking-widest uppercase mb-4">
           A Message from the Celestial Scriptorium
