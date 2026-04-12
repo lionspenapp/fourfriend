@@ -5,12 +5,29 @@ import { lovable } from "@/integrations/lovable/index";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const ParentAuth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  // Student fields
+  const [childFirstName, setChildFirstName] = useState("");
+  const [childLastName, setChildLastName] = useState("");
+  const [childGrade, setChildGrade] = useState("");
+  const [childGender, setChildGender] = useState("male");
+  const [childEmail, setChildEmail] = useState("");
+  const [childUsername, setChildUsername] = useState("");
+  const [childPassword, setChildPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -20,7 +37,7 @@ const ParentAuth = () => {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -29,6 +46,22 @@ const ParentAuth = () => {
           },
         });
         if (error) throw error;
+
+        // After signup, create the student record
+        if (data.user) {
+          const { error: studentError } = await supabase.from("students").insert({
+            parent_id: data.user.id,
+            first_name: childFirstName,
+            last_name: childLastName,
+            grade: parseInt(childGrade),
+            gender: childGender,
+            email: childEmail || null,
+            username: childUsername,
+            password_hash: childPassword, // In production, hash this
+          });
+          if (studentError) throw studentError;
+        }
+
         toast({
           title: "Check your email",
           description: "We sent you a confirmation link to verify your account.",
@@ -61,6 +94,9 @@ const ParentAuth = () => {
     }
   };
 
+  const inputClass =
+    "bg-primary-foreground/10 border-secondary/30 text-primary-foreground placeholder:text-primary-foreground/40 focus-visible:ring-secondary";
+
   return (
     <div className="min-h-screen bg-primary flex items-center justify-center p-4 relative overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-3 bg-secondary" />
@@ -83,54 +119,116 @@ const ParentAuth = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="bg-primary-foreground/10 backdrop-blur-sm border border-secondary/30 rounded-lg p-6 space-y-4">
+          <div className="bg-primary-foreground/10 backdrop-blur-sm border border-secondary/30 rounded-lg p-6 space-y-4 max-h-[60vh] overflow-y-auto">
             {isSignUp && (
-              <div>
-                <label className="block text-primary-foreground/80 text-sm font-cinzel mb-1.5 tracking-wide">
-                  Full Name
-                </label>
-                <Input
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Your name"
-                  required
-                  className="bg-primary-foreground/10 border-secondary/30 text-primary-foreground placeholder:text-primary-foreground/40 focus-visible:ring-secondary"
-                />
-              </div>
+              <>
+                {/* Parent Section */}
+                <p className="text-secondary font-cinzel text-xs tracking-widest uppercase border-b border-secondary/30 pb-2">
+                  Parent Information
+                </p>
+                <div>
+                  <label className="block text-primary-foreground/80 text-sm font-cinzel mb-1.5 tracking-wide">
+                    Full Name
+                  </label>
+                  <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your name" required className={inputClass} />
+                </div>
+              </>
             )}
+
             <div>
               <label className="block text-primary-foreground/80 text-sm font-cinzel mb-1.5 tracking-wide">
                 Email
               </label>
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="parent@example.com"
-                required
-                className="bg-primary-foreground/10 border-secondary/30 text-primary-foreground placeholder:text-primary-foreground/40 focus-visible:ring-secondary"
-              />
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="parent@example.com" required className={inputClass} />
             </div>
             <div>
               <label className="block text-primary-foreground/80 text-sm font-cinzel mb-1.5 tracking-wide">
                 Password
               </label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                minLength={6}
-                className="bg-primary-foreground/10 border-secondary/30 text-primary-foreground placeholder:text-primary-foreground/40 focus-visible:ring-secondary"
-              />
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required minLength={6} className={inputClass} />
             </div>
 
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-secondary text-primary font-cinzel tracking-wide hover:bg-secondary/90 text-base py-5"
-            >
+            {isSignUp && (
+              <>
+                {/* Student Section */}
+                <p className="text-secondary font-cinzel text-xs tracking-widest uppercase border-b border-secondary/30 pb-2 mt-6">
+                  Student Information
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-primary-foreground/80 text-sm font-cinzel mb-1.5 tracking-wide">
+                      First Name
+                    </label>
+                    <Input value={childFirstName} onChange={(e) => setChildFirstName(e.target.value)} placeholder="First" required className={inputClass} />
+                  </div>
+                  <div>
+                    <label className="block text-primary-foreground/80 text-sm font-cinzel mb-1.5 tracking-wide">
+                      Last Name
+                    </label>
+                    <Input value={childLastName} onChange={(e) => setChildLastName(e.target.value)} placeholder="Last" required className={inputClass} />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-primary-foreground/80 text-sm font-cinzel mb-1.5 tracking-wide">
+                      Grade
+                    </label>
+                    <Select value={childGrade} onValueChange={setChildGrade} required>
+                      <SelectTrigger className={inputClass}>
+                        <SelectValue placeholder="Grade" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[3, 4, 5, 6, 7, 8].map((g) => (
+                          <SelectItem key={g} value={String(g)}>
+                            Grade {g}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="block text-primary-foreground/80 text-sm font-cinzel mb-1.5 tracking-wide">
+                      Gender
+                    </label>
+                    <RadioGroup value={childGender} onValueChange={setChildGender} className="flex gap-4 mt-2">
+                      <div className="flex items-center gap-1.5">
+                        <RadioGroupItem value="male" id="male" className="border-secondary/50 text-secondary" />
+                        <Label htmlFor="male" className="text-primary-foreground/70 text-sm font-cinzel">Male</Label>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <RadioGroupItem value="female" id="female" className="border-secondary/50 text-secondary" />
+                        <Label htmlFor="female" className="text-primary-foreground/70 text-sm font-cinzel">Female</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-primary-foreground/80 text-sm font-cinzel mb-1.5 tracking-wide">
+                    Student Email <span className="text-primary-foreground/40">(optional)</span>
+                  </label>
+                  <Input type="email" value={childEmail} onChange={(e) => setChildEmail(e.target.value)} placeholder="child@example.com" className={inputClass} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-primary-foreground/80 text-sm font-cinzel mb-1.5 tracking-wide">
+                      Username
+                    </label>
+                    <Input value={childUsername} onChange={(e) => setChildUsername(e.target.value)} placeholder="scriber_name" required className={inputClass} />
+                  </div>
+                  <div>
+                    <label className="block text-primary-foreground/80 text-sm font-cinzel mb-1.5 tracking-wide">
+                      Secret Code
+                    </label>
+                    <Input type="password" value={childPassword} onChange={(e) => setChildPassword(e.target.value)} placeholder="••••••" required minLength={4} className={inputClass} />
+                  </div>
+                </div>
+              </>
+            )}
+
+            <Button type="submit" disabled={loading} className="w-full bg-secondary text-primary font-cinzel tracking-wide hover:bg-secondary/90 text-base py-5">
               {loading ? "Please wait..." : isSignUp ? "Create Account" : "Sign In"}
             </Button>
 
