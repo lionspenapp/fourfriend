@@ -244,6 +244,14 @@ export type Database = {
         }
         Returns: Json
       }
+      update_student_password: {
+        Args: {
+          p_new_password: string
+          p_parent_id: string
+          p_student_id: string
+        }
+        Returns: Json
+      }
       verify_student_login: {
         Args: { p_password: string; p_username: string }
         Returns: Json
