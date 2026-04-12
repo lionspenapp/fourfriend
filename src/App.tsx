@@ -32,9 +32,7 @@ const AppContent = () => {
         <Routes>
           <Route path="/student" element={<Index />} />
           {user ? (
-            <>
-              <Route path="/" element={<Index />} />
-            </>
+              <Route path="/" element={<ParentDashboard />} />
           ) : (
             <Route path="*" element={<ParentAuth />} />
           )}
