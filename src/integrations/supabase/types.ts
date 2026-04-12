@@ -231,6 +231,19 @@ export type Database = {
       }
     }
     Functions: {
+      register_student: {
+        Args: {
+          p_email: string
+          p_first_name: string
+          p_gender: string
+          p_grade: number
+          p_last_name: string
+          p_parent_id: string
+          p_password: string
+          p_username: string
+        }
+        Returns: Json
+      }
       verify_student_login: {
         Args: { p_password: string; p_username: string }
         Returns: Json
