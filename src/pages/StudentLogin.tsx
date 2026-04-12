@@ -46,34 +46,34 @@ const StudentLogin = () => {
           <h1 className="font-cinzel text-4xl font-bold text-primary tracking-wide">
             Lion's Pen
           </h1>
-          <p className="text-foreground/50 mt-2 font-cinzel text-sm tracking-widest uppercase">
-            The Celestial Scriptorium
-          </p>
+           <p className="text-foreground/70 mt-2 font-cinzel text-sm tracking-widest uppercase">
+             The Celestial Scriptorium
+           </p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="bg-foreground/5 backdrop-blur-sm border-2 border-secondary/30 rounded-lg p-6 space-y-4">
             <div>
-              <label className="block text-foreground/70 text-sm font-cinzel mb-1.5 tracking-wide">
-                Scriber Name
+               <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">
+                 Scriber Name
               </label>
               <Input
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your name"
-                className="bg-foreground/5 border-secondary/40 text-foreground placeholder:text-foreground/40 focus-visible:ring-secondary"
+                 className="bg-foreground/5 border-secondary/40 text-foreground placeholder:text-foreground/50 focus-visible:ring-secondary"
               />
             </div>
             <div>
-              <label className="block text-foreground/70 text-sm font-cinzel mb-1.5 tracking-wide">
-                Secret Word
+               <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">
+                 Secret Word
               </label>
               <Input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="bg-foreground/5 border-secondary/40 text-foreground placeholder:text-foreground/40 focus-visible:ring-secondary"
+                className="bg-foreground/5 border-secondary/40 text-foreground placeholder:text-foreground/50 focus-visible:ring-secondary"
               />
             </div>
             <Button
@@ -85,8 +85,8 @@ const StudentLogin = () => {
           </div>
         </form>
 
-        <p className="text-center mt-6 text-foreground/35 text-sm">
-          <button onClick={() => navigate("/")} className="cursor-pointer hover:text-foreground/50 transition-colors font-cinzel">
+         <p className="text-center mt-6 text-foreground/60 text-sm">
+           <button onClick={() => navigate("/")} className="cursor-pointer hover:text-foreground/80 transition-colors font-cinzel">
             Parent Login →
           </button>
         </p>

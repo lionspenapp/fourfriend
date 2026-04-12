@@ -76,7 +76,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
           value={value}
           onChange={(e) => setResponse(type, e.target.value)}
           placeholder="Write your reflection here…"
-          className="min-h-[200px] bg-foreground/5 border-secondary/20 text-foreground placeholder:text-foreground/30 focus-visible:ring-secondary text-base leading-relaxed resize-none"
+          className="min-h-[200px] bg-foreground/5 border-secondary/20 text-foreground placeholder:text-foreground/50 focus-visible:ring-secondary text-base leading-relaxed resize-none"
         />
 
         <div className="flex items-center justify-between mt-4">
@@ -86,7 +86,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
                 Try to write at least {MIN_SENTENCES} sentences ({sentences} so far)
               </span>
             ) : value.length > 0 ? (
-              <span className="text-foreground/40">{sentences} sentence{sentences !== 1 ? "s" : ""}</span>
+              <span className="text-foreground/60">{sentences} sentence{sentences !== 1 ? "s" : ""}</span>
             ) : null}
           </div>
 
