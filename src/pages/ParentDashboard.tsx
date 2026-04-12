@@ -33,6 +33,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
+const PASSWORD_RULES = [
+  { test: (p: string) => p.length >= 8, label: "At least 8 characters" },
+  { test: (p: string) => /[A-Z]/.test(p), label: "1 uppercase letter" },
+  { test: (p: string) => /[a-z]/.test(p), label: "1 lowercase letter" },
+  { test: (p: string) => /[0-9]/.test(p), label: "1 number" },
+  { test: (p: string) => /[^A-Za-z0-9]/.test(p), label: "1 special character" },
+];
+
+const isPasswordValid = (p: string) => PASSWORD_RULES.every((r) => r.test(p));
+
 interface Student {
   id: string;
   first_name: string;
@@ -85,6 +95,16 @@ const ParentDashboard = () => {
   const handleAddChild = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+
+    if (!isPasswordValid(childPassword)) {
+      toast({
+        title: "Weak secret code",
+        description: "Secret code must be 8+ characters with uppercase, lowercase, number, and special character.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setAddingChild(true);
 
     try {
