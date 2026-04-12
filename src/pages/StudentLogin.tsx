@@ -109,9 +109,10 @@ const StudentLogin = () => {
             </div>
             <Button
               type="submit"
+              disabled={loading}
               className="w-full bg-primary text-primary-foreground font-cinzel tracking-wide hover:bg-primary/90 text-base py-5"
             >
-              Enter the Scriptorium
+              {loading ? "Verifying..." : "Enter the Scriptorium"}
             </Button>
           </div>
         </form>
