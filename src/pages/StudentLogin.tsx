@@ -2,29 +2,60 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useLionsPen } from "@/context/LionsPenContext";
+import { supabase } from "@/integrations/supabase/client";
 import lionsPenLogo from "@/assets/lions_pen.png";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const StudentLogin = () => {
   const { setStudent, setStep, hasSubmittedToday } = useLionsPen();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStudent({
-      firstName: "Young",
-      lastName: "Scriber",
-      grade: 6,
-      username: username || "student",
-    });
+    if (!username.trim() || !password.trim()) {
+      toast({ title: "Please enter both username and secret word", variant: "destructive" });
+      return;
+    }
 
-    if (hasSubmittedToday()) {
-      setStep("lock");
-    } else {
-      setStep("breathing");
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.rpc("verify_student_login", {
+        p_username: username.trim(),
+        p_password: password,
+      });
+
+      if (error) throw error;
+
+      const result = data as { success: boolean; error?: string; student?: { id: string; firstName: string; lastName: string; grade: number; username: string } };
+
+      if (!result.success) {
+        toast({ title: "Login failed", description: result.error || "Invalid credentials", variant: "destructive" });
+        return;
+      }
+
+      const s = result.student!;
+      setStudent({
+        firstName: s.firstName,
+        lastName: s.lastName,
+        grade: s.grade,
+        username: s.username,
+      });
+
+      if (hasSubmittedToday()) {
+        setStep("lock");
+      } else {
+        setStep("breathing");
+      }
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,9 +109,10 @@ const StudentLogin = () => {
             </div>
             <Button
               type="submit"
+              disabled={loading}
               className="w-full bg-primary text-primary-foreground font-cinzel tracking-wide hover:bg-primary/90 text-base py-5"
             >
-              Enter the Scriptorium
+              {loading ? "Verifying..." : "Enter the Scriptorium"}
             </Button>
           </div>
         </form>
