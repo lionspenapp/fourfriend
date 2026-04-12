@@ -29,7 +29,7 @@ const AppContent = () => {
     <LionsPenProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/student" element={<StudentLogin />} />
+          <Route path="/student" element={<Index />} />
           {user ? (
             <>
               <Route path="/" element={<Index />} />
