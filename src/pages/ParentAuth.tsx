@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 
 const ParentAuth = () => {
+  const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
