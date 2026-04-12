@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLionsPen } from "@/context/LionsPenContext";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,17 @@ import { BREATHING_SOUNDS } from "@/data/mockContent";
 const TOTAL_SECONDS = 60;
 const BREATH_CYCLE = 8; // 4s in, 4s out
 
+// Free ambient sound URLs (royalty-free)
+const SOUND_URLS: Record<string, string> = {
+  "Ocean Waves": "https://cdn.freesound.org/previews/527/527888_2827503-lq.mp3",
+  "Bird Singing": "https://cdn.freesound.org/previews/531/531015_10965920-lq.mp3",
+  "Water Dropping": "https://cdn.freesound.org/previews/215/215645_2927752-lq.mp3",
+  "Harp": "https://cdn.freesound.org/previews/610/610075_5674468-lq.mp3",
+  "Flute": "https://cdn.freesound.org/previews/476/476178_6891523-lq.mp3",
+  "Wind": "https://cdn.freesound.org/previews/171/171415_2584026-lq.mp3",
+  "Bubble Popping": "https://cdn.freesound.org/previews/369/369921_6261983-lq.mp3",
+};
+
 const BreathingPage = () => {
   const { setStep } = useLionsPen();
   const [isRunning, setIsRunning] = useState(false);
@@ -14,8 +25,33 @@ const BreathingPage = () => {
   const [completed, setCompleted] = useState(false);
   const [selectedSound, setSelectedSound] = useState<string>("No Sound");
   const [phase, setPhase] = useState<"in" | "out">("in");
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const elapsed = TOTAL_SECONDS - secondsLeft;
+
+  // Manage ambient audio
+  useEffect(() => {
+    // Stop previous audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+
+    if (isRunning && selectedSound !== "No Sound" && SOUND_URLS[selectedSound]) {
+      const audio = new Audio(SOUND_URLS[selectedSound]);
+      audio.loop = true;
+      audio.volume = 0.4;
+      audio.play().catch(() => {});
+      audioRef.current = audio;
+    }
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, [isRunning, selectedSound]);
 
   useEffect(() => {
     if (!isRunning || secondsLeft <= 0) return;
