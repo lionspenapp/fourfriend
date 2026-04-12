@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/select";
 
 const ParentAuth = () => {
+  const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -265,6 +267,11 @@ const ParentAuth = () => {
             className="text-secondary hover:text-secondary/80 transition-colors font-cinzel"
           >
             {isSignUp ? "Sign In" : "Sign Up"}
+          </button>
+        </p>
+        <p className="text-center mt-3 text-primary-foreground/40 text-sm">
+          <button onClick={() => navigate("/student")} className="hover:text-primary-foreground/60 transition-colors font-cinzel">
+            Student Login →
           </button>
         </p>
       </motion.div>

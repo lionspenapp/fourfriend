@@ -7,6 +7,7 @@ import { LionsPenProvider } from "@/context/LionsPenContext";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index.tsx";
 import ParentAuth from "./pages/ParentAuth.tsx";
+import StudentLogin from "./pages/StudentLogin.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -24,15 +25,18 @@ const AppContent = () => {
     );
   }
 
-  if (!user) {
-    return <ParentAuth />;
-  }
-
   return (
     <LionsPenProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/student" element={<StudentLogin />} />
+          {user ? (
+            <>
+              <Route path="/" element={<Index />} />
+            </>
+          ) : (
+            <Route path="*" element={<ParentAuth />} />
+          )}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
