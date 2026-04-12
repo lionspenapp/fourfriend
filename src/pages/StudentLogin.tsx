@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { useLionsPen } from "@/context/LionsPenContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 const StudentLogin = () => {
   const { setStudent, setStep, hasSubmittedToday } = useLionsPen();
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -84,9 +86,9 @@ const StudentLogin = () => {
         </form>
 
         <p className="text-center mt-6 text-sand/40 text-sm">
-          <span className="cursor-pointer hover:text-sand/60 transition-colors">
+          <button onClick={() => navigate("/")} className="cursor-pointer hover:text-sand/60 transition-colors">
             Parent Login →
-          </span>
+          </button>
         </p>
       </motion.div>
     </div>
