@@ -159,7 +159,7 @@ const ParentAuth = () => {
               {isSignUp && password.length > 0 && (
                 <div className="mt-2 space-y-1">
                   {PASSWORD_RULES.map((rule) => (
-                    <p key={rule.label} className={`text-xs font-cinzel ${rule.test(password) ? "text-green-600" : "text-foreground/40"}`}>
+                    <p key={rule.label} className={`text-xs font-cinzel ${rule.test(password) ? "text-green-600" : "text-foreground/60"}`}>
                       {rule.test(password) ? "✓" : "○"} {rule.label}
                     </p>
                   ))}

@@ -51,13 +51,13 @@ const ScriberOath = () => {
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             placeholder="First Name"
-            className="bg-foreground/5 border-secondary/30 text-foreground placeholder:text-foreground/30 focus-visible:ring-secondary"
+            className="bg-foreground/5 border-secondary/30 text-foreground placeholder:text-foreground/50 focus-visible:ring-secondary"
           />
           <Input
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             placeholder="Last Name"
-            className="bg-foreground/5 border-secondary/30 text-foreground placeholder:text-foreground/30 focus-visible:ring-secondary"
+            className="bg-foreground/5 border-secondary/30 text-foreground placeholder:text-foreground/50 focus-visible:ring-secondary"
           />
         </div>
 
