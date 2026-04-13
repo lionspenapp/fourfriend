@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getQuestion } from "@/data/questionDatabase";
 import { useToast } from "@/hooks/use-toast";
+import scrollBg from "@/assets/scroll-bg.png";
 
 interface QuestionPageProps {
   type: "academic" | "emotion" | "character";
@@ -100,19 +101,34 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
         transition={{ duration: 0.5 }}
         className="max-w-2xl w-full"
       >
-        <p className="text-secondary text-xs font-cinzel tracking-widest uppercase mb-2">
-          {CATEGORY_LABEL[type]} Reflection — Question {meta.num} of 3
-        </p>
-        <h2 className="font-cinzel text-2xl font-bold text-primary mb-6 leading-relaxed">
-          {loading ? "Loading question…" : prompt}
-        </h2>
+        {/* Scroll background container */}
+        <div
+          className="relative w-full"
+          style={{
+            backgroundImage: `url(${scrollBg})`,
+            backgroundSize: "contain",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            aspectRatio: "2 / 1.1",
+          }}
+        >
+          {/* Content positioned over the parchment area */}
+          <div className="absolute inset-0 flex flex-col justify-center" style={{ padding: "12% 15%" }}>
+            <p className="text-secondary text-xs font-cinzel tracking-widest uppercase mb-2">
+              {CATEGORY_LABEL[type]} Reflection — Question {meta.num} of 3
+            </p>
+            <h2 className="font-cinzel text-xl font-bold text-primary mb-4 leading-relaxed">
+              {loading ? "Loading question…" : prompt}
+            </h2>
 
-        <Textarea
-          value={value}
-          onChange={(e) => setResponse(type, e.target.value)}
-          placeholder="Write your reflection here…"
-          className="min-h-[200px] bg-foreground/5 border-secondary/20 text-foreground placeholder:text-foreground/50 focus-visible:ring-secondary text-base leading-relaxed resize-none"
-        />
+            <Textarea
+              value={value}
+              onChange={(e) => setResponse(type, e.target.value)}
+              placeholder="Write your reflection here…"
+              className="min-h-[120px] flex-1 bg-transparent border-secondary/20 text-foreground placeholder:text-foreground/40 focus-visible:ring-secondary text-base leading-relaxed resize-none"
+            />
+          </div>
+        </div>
 
         <div className="flex items-center justify-between mt-4">
           <div className="text-sm">
