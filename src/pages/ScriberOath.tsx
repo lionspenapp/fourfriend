@@ -27,10 +27,10 @@ const ScriberOath = () => {
         transition={{ duration: 0.6 }}
         className="max-w-xl w-full text-center"
       >
-        <h1 className="font-cinzel text-3xl font-bold text-secondary mb-2">
+        <h1 className="font-cinzel text-3xl font-bold text-primary mb-2">
           The Scriber's Oath
         </h1>
-        <p className="text-foreground/50 text-sm mb-8 font-cinzel tracking-wider">
+        <p className="text-secondary text-sm mb-8 font-cinzel tracking-wider">
           Grades {grade <= 4 ? "3–4" : grade <= 6 ? "5–6" : "7–8"}
         </p>
 
@@ -42,7 +42,7 @@ const ScriberOath = () => {
           ))}
         </div>
 
-        <p className="text-foreground/60 text-sm mb-4 font-cinzel tracking-wide">
+        <p className="text-secondary text-sm mb-4 font-cinzel tracking-wide">
           Sign Your Name to Take the Oath
         </p>
 

@@ -254,10 +254,10 @@ const BreathingPage = () => {
         animate={{ opacity: 1 }}
         className="text-center max-w-lg w-full"
       >
-        <h1 className="font-cinzel text-2xl font-bold text-foreground mb-2">
+        <h1 className="font-cinzel text-2xl font-bold text-primary mb-2">
           Prepare Your Mind
         </h1>
-        <p className="text-foreground/60 text-sm mb-8">
+        <p className="text-secondary text-sm mb-8">
           Breathe deeply before entering the Scriptorium
         </p>
 
@@ -305,7 +305,7 @@ const BreathingPage = () => {
 
         {/* Sound selector */}
         <div className="mb-8">
-          <p className="text-foreground/50 text-xs font-cinzel mb-2 tracking-wider uppercase">
+          <p className="text-secondary text-xs font-cinzel mb-2 tracking-wider uppercase">
             Ambient Sound
           </p>
           <div className="flex flex-wrap justify-center gap-2">

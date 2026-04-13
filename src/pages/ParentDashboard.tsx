@@ -211,7 +211,7 @@ const ParentDashboard = () => {
           <img src={lionsPenLogo} alt="Lion's Pen" className="w-12 h-auto" />
           <div>
             <h1 className="font-cinzel text-xl font-bold text-primary">Lion's Pen</h1>
-            <p className="text-foreground/60 text-xs font-cinzel tracking-widest uppercase">Parent Portal</p>
+            <p className="text-secondary text-xs font-cinzel tracking-widest uppercase">Parent Portal</p>
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -237,7 +237,7 @@ const ParentDashboard = () => {
             {/* ─── Children Tab ─── */}
             <TabsContent value="children" className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="font-cinzel text-2xl font-bold text-foreground">Registered Students</h2>
+                <h2 className="font-cinzel text-2xl font-bold text-primary">Registered Students</h2>
                 <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
                   <DialogTrigger asChild>
                     <Button className="bg-primary text-primary-foreground font-cinzel hover:bg-primary/90">

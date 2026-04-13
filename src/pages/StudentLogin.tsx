@@ -78,7 +78,7 @@ const StudentLogin = () => {
           <h1 className="font-cinzel text-4xl font-bold text-primary tracking-wide">
             Lion's Pen
           </h1>
-           <p className="text-foreground/70 mt-2 font-cinzel text-sm tracking-widest uppercase">
+           <p className="text-secondary mt-2 font-cinzel text-sm tracking-widest uppercase">
              The Celestial Scriptorium
            </p>
         </div>
@@ -86,7 +86,7 @@ const StudentLogin = () => {
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="bg-foreground/5 backdrop-blur-sm border-2 border-secondary/30 rounded-lg p-6 space-y-4">
             <div>
-               <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">
+               <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
                  Scriber Name
               </label>
               <Input
@@ -97,7 +97,7 @@ const StudentLogin = () => {
               />
             </div>
             <div>
-               <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">
+               <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
                  Secret Word
               </label>
               <Input
@@ -118,8 +118,8 @@ const StudentLogin = () => {
           </div>
         </form>
 
-         <p className="text-center mt-6 text-foreground/60 text-sm">
-           <button onClick={() => navigate("/")} className="cursor-pointer hover:text-foreground/80 transition-colors font-cinzel">
+         <p className="text-center mt-6 text-secondary/80 text-sm">
+           <button onClick={() => navigate("/")} className="cursor-pointer hover:text-secondary transition-colors font-cinzel">
             Parent Login →
           </button>
         </p>
