@@ -1,44 +1,13 @@
 
 
-## Plan: Apply Lapis + Ochre Text Colors Across the App
+## Plan: Replace Celestial Message Background Image
 
-Update text colors site-wide to match the Babylonian palette from the logo banner.
+Replace the current `celestial-bg.png` with the uploaded celestial city image for the Celestial Message page.
 
-### Changes
+### Steps
 
-**1. Global heading color** (`src/index.css`)
-- Set all h1-h6 to use `text-primary` (Lapis) by default in the base layer
+1. **Copy the uploaded image** to `src/assets/celestial-bg.png` (overwrite the existing file)
+2. No code changes needed — `CelestialMessage.tsx` already imports from `@/assets/celestial-bg.png`
 
-**2. Student Login** (`src/pages/StudentLogin.tsx`)
-- Title "Lion's Pen" → Lapis (already `text-primary`, good)
-- Subtitle "The Celestial Scriptorium" → Ochre gold
-- Labels "Scriber Name", "Secret Word" → Ochre gold
-- "Parent Login →" link → Ochre gold
-
-**3. Scriber Oath** (`src/pages/ScriberOath.tsx`)
-- "The Scriber's Oath" heading → Lapis (change from `text-secondary`)
-- Grade subtitle → Ochre
-- Oath text → keep readable foreground
-- Button → keep as-is (already secondary/ochre)
-
-**4. Breathing Page** (`src/pages/BreathingPage.tsx`)
-- Heading text → Lapis
-- Instruction text → Ochre accent
-
-**5. Question Page** (`src/pages/QuestionPage.tsx`)
-- Step headers → Lapis
-- Category labels → Ochre
-
-**6. Celestial Message** (`src/pages/CelestialMessage.tsx`)
-- Title → Lapis
-- Decorative text → Ochre
-
-**7. Parent Auth & Dashboard** (`src/pages/ParentAuth.tsx`, `src/pages/ParentDashboard.tsx`)
-- Headings → Lapis
-- Action links and highlights → Ochre
-
-### Scope
-- Text color changes only — no layout or structural changes
-- Body text stays as `foreground` for readability
-- Buttons retain current styling
+The dark overlay (`bg-black/50`) already in the component will ensure text remains readable over the new, more detailed background.
 
