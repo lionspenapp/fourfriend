@@ -92,6 +92,7 @@ const ParentDashboard = () => {
       console.error("Error fetching students:", error);
     } else {
       setStudents(data || []);
+      fetchSubmissions(data || []);
     }
     setLoadingStudents(false);
   };
@@ -332,6 +333,7 @@ const ParentDashboard = () => {
                         <TableHead className="font-cinzel text-secondary">Name</TableHead>
                         <TableHead className="font-cinzel text-secondary">Grade</TableHead>
                         <TableHead className="font-cinzel text-secondary">Username</TableHead>
+                        <TableHead className="font-cinzel text-secondary">Today</TableHead>
                         <TableHead className="font-cinzel text-secondary">Gender</TableHead>
                         <TableHead className="font-cinzel text-secondary">Registered</TableHead>
                         <TableHead className="font-cinzel text-secondary">Actions</TableHead>
@@ -343,6 +345,7 @@ const ParentDashboard = () => {
                           <TableCell className="font-cinzel text-foreground">{s.first_name} {s.last_name}</TableCell>
                           <TableCell className="text-foreground/80">Grade {s.grade}</TableCell>
                           <TableCell className="text-foreground/80 font-mono text-sm">{s.username}</TableCell>
+                          <TableCell className="text-center text-lg">{todayStatus[s.id] ? "✅" : "—"}</TableCell>
                           <TableCell className="text-foreground/80 capitalize">{s.gender}</TableCell>
                           <TableCell className="text-foreground/60 text-sm">{new Date(s.created_at).toLocaleDateString()}</TableCell>
                           <TableCell>
