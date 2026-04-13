@@ -96,6 +96,21 @@ const ParentDashboard = () => {
     setLoadingStudents(false);
   };
 
+  const fetchSubmissions = async (studentList: Student[]) => {
+    if (!user || studentList.length === 0) return;
+    const today = new Date().toISOString().split("T")[0];
+    const { data } = await supabase
+      .from("submissions")
+      .select("student_id, submitted_at")
+      .in("student_id", studentList.map((s) => s.id))
+      .gte("submitted_at", today + "T00:00:00Z")
+      .lte("submitted_at", today + "T23:59:59Z");
+
+    const status: SubmissionStatus = {};
+    (data || []).forEach((row) => { status[row.student_id] = true; });
+    setTodayStatus(status);
+  };
+
   useEffect(() => {
     fetchStudents();
   }, [user]);
