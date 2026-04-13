@@ -1,24 +1,23 @@
 
 
-## Plan: Display Questions on a Scroll Background
+## Plan: Fix Scroll Size + Add Babylon Background for Academic Page
 
-Use the uploaded scroll image as a decorative background behind the question text area on all three reflection pages (Academic, Emotion, Character).
+### Changes to `src/pages/QuestionPage.tsx`
+
+**1. Make scroll larger** — Change the aspect ratio from `2 / 1.1` to something taller like `2 / 1.8` so the scroll image stretches to fully contain both the question prompt and the textarea. Reduce internal padding slightly to maximize usable space.
+
+**2. Add Babylon city background for academic page only** — Copy the uploaded image to `src/assets/babylon-bg.jpg`. On the academic question page, set this as the full-page background image (similar to how `CelestialMessage.tsx` uses `celestial-bg.png`) with a dark overlay for readability. Emotion and Character pages keep the current plain `bg-background`.
 
 ### Steps
 
-1. **Add scroll asset** — Copy `scroll.png` to `src/assets/scroll-bg.png`
+1. **Copy asset** — Save uploaded image as `src/assets/babylon-bg.jpg`
+2. **Update QuestionPage.tsx**:
+   - Import `babylonBg` from `@/assets/babylon-bg.jpg`
+   - For `type === "academic"`: apply `backgroundImage: url(babylonBg)` with `bg-cover bg-center` on the outer div, plus a `bg-black/40` overlay for readability
+   - Change scroll container aspect ratio to `2 / 1.8` and adjust padding to `8% 15%` so content fits within the scroll
+   - Emotion and Character pages remain unchanged (no city background)
 
-2. **Update QuestionPage.tsx** — Wrap the question prompt and textarea inside a container that uses the scroll image as a background:
-   - The scroll image sits behind the content area using `background-image` with `contain` sizing
-   - Question text and textarea are positioned over the parchment area of the scroll
-   - Textarea gets a transparent/semi-transparent background so the scroll texture shows through
-   - Internal padding adjusted so text stays within the scroll's parchment bounds (avoiding the rolled edges)
-
-3. **Responsive sizing** — The scroll container scales proportionally, keeping the aspect ratio of the scroll image consistent across screen sizes
-
-### Technical notes
-- The scroll image has a roughly 2:1 aspect ratio with rolled edges on left/right and torn edges top/bottom
-- Content padding needs ~15% horizontal and ~20% vertical inset to stay within the parchment area
-- Textarea background becomes `bg-transparent` or very subtle `bg-black/5` so scroll texture is visible
-- The outer page background and border trim remain unchanged
+### Result
+- All three pages: scroll is large enough to contain question + textarea
+- Academic page only: Babylon city panorama behind everything, with scroll floating over it
 
