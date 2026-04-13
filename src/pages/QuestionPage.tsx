@@ -105,7 +105,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
         initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-2xl w-full"
+        className="max-w-2xl w-full relative z-10"
       >
         {/* Scroll background container */}
         <div
@@ -115,11 +115,11 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
-            aspectRatio: "2 / 1.1",
+            aspectRatio: "2 / 1.8",
           }}
         >
           {/* Content positioned over the parchment area */}
-          <div className="absolute inset-0 flex flex-col justify-center" style={{ padding: "12% 15%" }}>
+          <div className="absolute inset-0 flex flex-col justify-center" style={{ padding: "8% 15%" }}>
             <p className="text-secondary text-xs font-cinzel tracking-widest uppercase mb-2">
               {CATEGORY_LABEL[type]} Reflection — Question {meta.num} of 3
             </p>
