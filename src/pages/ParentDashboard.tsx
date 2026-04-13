@@ -54,6 +54,10 @@ interface Student {
   created_at: string;
 }
 
+interface SubmissionStatus {
+  [studentId: string]: boolean; // true = submitted today
+}
+
 const ParentDashboard = () => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
@@ -63,6 +67,7 @@ const ParentDashboard = () => {
   const [resetStudentId, setResetStudentId] = useState<string | null>(null);
   const [newSecretCode, setNewSecretCode] = useState("");
   const [resettingPassword, setResettingPassword] = useState(false);
+  const [todayStatus, setTodayStatus] = useState<SubmissionStatus>({});
 
   // Add child form state
   const [childFirstName, setChildFirstName] = useState("");
