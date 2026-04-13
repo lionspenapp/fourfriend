@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getQuestion } from "@/data/questionDatabase";
 import { useToast } from "@/hooks/use-toast";
 import scrollBg from "@/assets/scroll-bg.png";
+import babylonBg from "@/assets/babylon-bg.jpg";
 
 interface QuestionPageProps {
   type: "academic" | "emotion" | "character";
