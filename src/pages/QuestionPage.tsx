@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getQuestion } from "@/data/questionDatabase";
 import { useToast } from "@/hooks/use-toast";
 import scrollBg from "@/assets/scroll-bg.png";
+import babylonBg from "@/assets/babylon-bg.jpg";
 
 interface QuestionPageProps {
   type: "academic" | "emotion" | "character";
@@ -76,11 +77,16 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
   }, [type, gradeBand, week, day, grade]);
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6 relative">
-      <div className="absolute top-0 left-0 right-0 h-2 bg-secondary" />
-      <div className="absolute bottom-0 left-0 right-0 h-2 bg-secondary" />
-      <div className="absolute left-0 top-0 bottom-0 w-2 bg-secondary" />
-      <div className="absolute right-0 top-0 bottom-0 w-2 bg-secondary" />
+    <div
+      className="min-h-screen flex items-center justify-center p-6 relative bg-cover bg-center bg-no-repeat"
+      style={type === "academic" ? { backgroundImage: `url(${babylonBg})` } : undefined}
+    >
+      {type === "academic" && <div className="absolute inset-0 bg-black/40" />}
+      {type !== "academic" && <div className="absolute inset-0 bg-background" />}
+      <div className="absolute top-0 left-0 right-0 h-2 bg-secondary z-10" />
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-secondary z-10" />
+      <div className="absolute left-0 top-0 bottom-0 w-2 bg-secondary z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-2 bg-secondary z-10" />
 
       {/* Progress dots */}
       <div className="absolute top-8 left-1/2 -translate-x-1/2 flex gap-2">
@@ -99,7 +105,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
         initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-2xl w-full"
+        className="max-w-2xl w-full relative z-10"
       >
         {/* Scroll background container */}
         <div
@@ -109,11 +115,11 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
-            aspectRatio: "2 / 1.1",
+            aspectRatio: "2 / 1.8",
           }}
         >
           {/* Content positioned over the parchment area */}
-          <div className="absolute inset-0 flex flex-col justify-center" style={{ padding: "12% 15%" }}>
+          <div className="absolute inset-0 flex flex-col justify-center" style={{ padding: "8% 15%" }}>
             <p className="text-secondary text-xs font-cinzel tracking-widest uppercase mb-2">
               {CATEGORY_LABEL[type]} Reflection — Question {meta.num} of 3
             </p>
