@@ -11,6 +11,7 @@ export type FlowStep =
   | "celestial";
 
 export interface StudentProfile {
+  id: string;
   firstName: string;
   lastName: string;
   grade: number; // 3-8
