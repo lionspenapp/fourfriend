@@ -1,59 +1,35 @@
 
 
-# Lion's Pen — Student Flow (UI Only)
+## Plan: Save Student Submissions and Show Progress in Parent Dashboard
 
-Build the complete student daily ritual as a linear, step-by-step experience with the immersive Babylonian theme described in the PRD. All data will use hardcoded mock content for now — no backend required.
+Currently, student responses are **not saved to the database** — they only exist in memory during the session and are lost when the student closes the page. The `submissions` table exists but nothing writes to it. This means you can't see whether your children completed their reflections.
 
-## Design System
-- **Color palette**: Lapis Lazuli Blue (#1B3A6B), Golden Ochre (#C8962E), Terracotta (#8B4513), Sand/Cream (#F5E6C8), White (#FFFFFF)
-- **Typography**: Serif headings (Cinzel or similar ancient feel), clean body text
-- **Visual motifs**: Cuneiform texture overlays, ziggurat-stepped shapes, Ishtar Gate–inspired decorative borders, lion silhouette accents
-- **Animations**: Framer Motion page transitions with stepped/reveal effects
+### What will change
 
-## Pages & Flow (strictly linear)
+**1. Save responses to the database when a student finishes all 3 reflections**
+- When a student clicks "Submit to the Celestial Scriptorium" on the character question (the last one), their three responses will be inserted into the `submissions` table.
+- The submission is tied to the student's ID, plus the current week and day.
+- File: `src/pages/QuestionPage.tsx` — add a database insert on the final "character" step before advancing to celestial.
 
-### 1. Student Login Page
-- Username + password fields on a Babylonian-themed background
-- Mock login accepts any credentials and sets a hardcoded student profile (name, grade level)
-- "Parent Login" link visible but non-functional for now
+**2. Track student ID in session context**
+- Currently `StudentProfile` doesn't include `id`. We need the student's database ID to save submissions.
+- File: `src/context/LionsPenContext.tsx` — add `id` to `StudentProfile`.
+- File: `src/pages/StudentLogin.tsx` — pass the student `id` from the login response into context.
 
-### 2. One-Per-Day Lock Screen (conditional)
-- If student already submitted today (mocked via localStorage), show the lock screen
-- Lapis Blue background, Golden Ochre text: *"The Scriptorium doors are closed for today..."*
-- No way to bypass — session ends here
+**3. Show submission history in the Parent Dashboard**
+- Add a new section or expand the children table to show each child's recent submissions (date, whether completed).
+- Parents can see at a glance who completed today's reflection and who didn't.
+- File: `src/pages/ParentDashboard.tsx` — fetch from `submissions` table joined with students, display completion status.
 
-### 3. Breathing Page
-- 60-second countdown timer with animated breathing circle (expand/contract)
-- Voice cues: "Breathing in..." / "Breathing out..." text displayed on screen
-- Sound selector with 8 options (Ocean Waves, Bird Singing, Water Dropping, Harp, Flute, Wind, Bubble Popping, No Sound) — UI only, placeholder audio
-- Controls: [Start], [Repeat], [Enter the Scriptorium] (enabled after timer completes)
+**4. Add an RLS policy for anonymous student submissions**
+- Students are not authenticated users (no Supabase Auth session). The `submissions` INSERT policy currently requires the parent to be authenticated.
+- Create a new database migration: add an INSERT policy allowing the `anon` role to insert into `submissions`, or use a `SECURITY DEFINER` function (like `register_student`) to safely insert submissions without exposing the table.
+- Recommended: create an `submit_student_response` RPC function that validates the student ID and inserts the submission securely.
 
-### 4. Scriber's Oath
-- Grade-appropriate oath text displayed (hardcoded for all 3 grade bands, selected based on mock student grade)
-- Two signature fields: First Name + Last Name
-- [Enter the Scriptorium] button disabled until both fields are filled
+### Technical details
 
-### 5. Academic Question (Step 4)
-- Displays a hardcoded sample prompt from the PRD
-- Large text area for student response
-- Soft sentence count warning (advisory, not blocking)
-- [Next] button always enabled
-
-### 6. Emotion Question (Step 5)
-- Same layout as Academic, different sample prompt
-- [Next] button
-
-### 7. Character Question (Step 6)
-- Same layout, different sample prompt
-- [Submit to the Celestial Scriptorium] button
-
-### 8. Celestial Message (Step 7)
-- Displays author name, pull-quote, and full message body (hardcoded sample)
-- [Read to Me] button using Web Speech API (browser TTS)
-- [Close] button returns to login page and sets localStorage flag for one-per-day lock
-
-## State Management
-- React context to hold current step, student profile, and responses
-- Linear step progression enforced — no skipping or back navigation
-- localStorage tracks daily submission for the lock screen demo
+- New DB function `submit_student_response(p_student_id, p_academic, p_emotion, p_character, p_week, p_day)` as `SECURITY DEFINER`
+- `StudentProfile` gains an `id: string` field
+- `hasSubmittedToday` will check the DB instead of just localStorage (keyed per student)
+- Parent Dashboard children table gets a "Today" status column (checkmark or dash)
 
