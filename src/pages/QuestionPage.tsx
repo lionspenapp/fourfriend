@@ -100,10 +100,10 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
         transition={{ duration: 0.5 }}
         className="max-w-2xl w-full"
       >
-        <p className="text-secondary/70 text-xs font-cinzel tracking-widest uppercase mb-2">
+        <p className="text-secondary text-xs font-cinzel tracking-widest uppercase mb-2">
           {CATEGORY_LABEL[type]} Reflection — Question {meta.num} of 3
         </p>
-        <h2 className="font-cinzel text-2xl font-bold text-foreground mb-6 leading-relaxed">
+        <h2 className="font-cinzel text-2xl font-bold text-primary mb-6 leading-relaxed">
           {loading ? "Loading question…" : prompt}
         </h2>
 

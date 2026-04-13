@@ -156,7 +156,7 @@ const ParentAuth = () => {
           <h1 className="font-cinzel text-4xl font-bold text-primary tracking-wide">
             Lion's Pen
           </h1>
-          <p className="text-foreground/70 mt-2 font-cinzel text-sm tracking-widest uppercase">
+          <p className="text-secondary mt-2 font-cinzel text-sm tracking-widest uppercase">
             Parent Portal
           </p>
         </div>
@@ -169,7 +169,7 @@ const ParentAuth = () => {
                   Parent Information
                 </p>
                 <div>
-                  <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">
+                    <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
                     Full Name
                   </label>
                   <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your name" required className={inputClass} />
@@ -178,13 +178,13 @@ const ParentAuth = () => {
             )}
 
             <div>
-              <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">
+              <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
                 Email
               </label>
               <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="parent@example.com" required className={inputClass} />
             </div>
             <div>
-              <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">
+              <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
                 Password
               </label>
               <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required minLength={8} className={inputClass} style={{color: 'hsl(var(--foreground))'}} />
@@ -215,13 +215,13 @@ const ParentAuth = () => {
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">
+                    <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
                       First Name
                     </label>
                     <Input value={childFirstName} onChange={(e) => setChildFirstName(e.target.value)} placeholder="First" required className={inputClass} />
                   </div>
                   <div>
-                    <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">
+                    <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
                       Last Name
                     </label>
                     <Input value={childLastName} onChange={(e) => setChildLastName(e.target.value)} placeholder="Last" required className={inputClass} />
@@ -230,7 +230,7 @@ const ParentAuth = () => {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">
+                    <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
                       Grade
                     </label>
                     <Select value={childGrade} onValueChange={setChildGrade} required>
@@ -247,7 +247,7 @@ const ParentAuth = () => {
                     </Select>
                   </div>
                   <div>
-                    <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">
+                    <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
                       Gender
                     </label>
                     <RadioGroup value={childGender} onValueChange={setChildGender} className="flex gap-4 mt-2">
@@ -264,7 +264,7 @@ const ParentAuth = () => {
                 </div>
 
                 <div>
-                    <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">
+                    <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
                     Student Email <span className="text-foreground/60">(optional)</span>
                   </label>
                   <Input type="email" value={childEmail} onChange={(e) => setChildEmail(e.target.value)} placeholder="child@example.com" className={inputClass} />
@@ -272,13 +272,13 @@ const ParentAuth = () => {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">
+                    <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
                       Username
                     </label>
                     <Input value={childUsername} onChange={(e) => setChildUsername(e.target.value)} placeholder="scriber_name" required className={inputClass} />
                   </div>
                   <div>
-                    <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">
+                    <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
                       Secret Code
                     </label>
                     <Input type="password" value={childPassword} onChange={(e) => setChildPassword(e.target.value)} placeholder="••••••••" required minLength={8} className={inputClass} />
@@ -303,7 +303,7 @@ const ParentAuth = () => {
           </div>
         </form>
 
-        <p className="text-center mt-6 text-foreground/70 text-sm">
+        <p className="text-center mt-6 text-secondary/80 text-sm">
           {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
           <button
             onClick={() => setIsSignUp(!isSignUp)}
@@ -317,8 +317,8 @@ const ParentAuth = () => {
             Your username is the email address you signed up with.
           </p>
         )}
-        <p className="text-center mt-3 text-foreground/60 text-sm">
-          <button onClick={() => navigate("/student")} className="hover:text-foreground/80 transition-colors font-cinzel">
+        <p className="text-center mt-3 text-secondary/80 text-sm">
+          <button onClick={() => navigate("/student")} className="hover:text-secondary transition-colors font-cinzel">
             Student Login →
           </button>
         </p>

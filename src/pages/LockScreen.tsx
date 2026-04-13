@@ -15,7 +15,7 @@ const LockScreen = () => {
         className="text-center max-w-lg"
       >
         <div className="text-7xl mb-8">🔒</div>
-        <h1 className="font-cinzel text-3xl font-bold text-secondary mb-6 leading-relaxed">
+        <h1 className="font-cinzel text-3xl font-bold text-primary mb-6 leading-relaxed">
           The Scriptorium Doors Are Closed for Today
         </h1>
         <p className="text-foreground/70 text-lg leading-relaxed">
@@ -23,7 +23,7 @@ const LockScreen = () => {
           Return tomorrow when the doors open once more.
         </p>
         <div className="mt-10 w-24 h-0.5 bg-secondary/40 mx-auto" />
-        <p className="mt-4 text-foreground/60 font-cinzel text-sm tracking-widest">
+        <p className="mt-4 text-secondary font-cinzel text-sm tracking-widest">
           Until the next dawn…
         </p>
       </motion.div>

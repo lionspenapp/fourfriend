@@ -55,7 +55,7 @@ const CelestialMessage = () => {
         transition={{ duration: 0.8 }}
         className="max-w-2xl w-full text-center relative z-10"
       >
-        <p className="text-amber-200/80 text-xs font-cinzel tracking-widest uppercase mb-4">
+        <p className="text-secondary text-xs font-cinzel tracking-widest uppercase mb-4">
           A Message from the Celestial Scriptorium
         </p>
 
@@ -66,7 +66,7 @@ const CelestialMessage = () => {
           <p className="text-white text-xl font-cinzel italic leading-relaxed">
             &ldquo;{quote}&rdquo;
           </p>
-          <p className="text-amber-200/80 font-cinzel mt-2 text-sm">
+          <p className="text-secondary font-cinzel mt-2 text-sm">
             — {author}
           </p>
         </blockquote>
