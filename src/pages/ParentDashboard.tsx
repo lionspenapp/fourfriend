@@ -54,6 +54,10 @@ interface Student {
   created_at: string;
 }
 
+interface SubmissionStatus {
+  [studentId: string]: boolean; // true = submitted today
+}
+
 const ParentDashboard = () => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
@@ -63,6 +67,7 @@ const ParentDashboard = () => {
   const [resetStudentId, setResetStudentId] = useState<string | null>(null);
   const [newSecretCode, setNewSecretCode] = useState("");
   const [resettingPassword, setResettingPassword] = useState(false);
+  const [todayStatus, setTodayStatus] = useState<SubmissionStatus>({});
 
   // Add child form state
   const [childFirstName, setChildFirstName] = useState("");
@@ -87,8 +92,24 @@ const ParentDashboard = () => {
       console.error("Error fetching students:", error);
     } else {
       setStudents(data || []);
+      fetchSubmissions(data || []);
     }
     setLoadingStudents(false);
+  };
+
+  const fetchSubmissions = async (studentList: Student[]) => {
+    if (!user || studentList.length === 0) return;
+    const today = new Date().toISOString().split("T")[0];
+    const { data } = await supabase
+      .from("submissions")
+      .select("student_id, submitted_at")
+      .in("student_id", studentList.map((s) => s.id))
+      .gte("submitted_at", today + "T00:00:00Z")
+      .lte("submitted_at", today + "T23:59:59Z");
+
+    const status: SubmissionStatus = {};
+    (data || []).forEach((row) => { status[row.student_id] = true; });
+    setTodayStatus(status);
   };
 
   useEffect(() => {
@@ -312,6 +333,7 @@ const ParentDashboard = () => {
                         <TableHead className="font-cinzel text-secondary">Name</TableHead>
                         <TableHead className="font-cinzel text-secondary">Grade</TableHead>
                         <TableHead className="font-cinzel text-secondary">Username</TableHead>
+                        <TableHead className="font-cinzel text-secondary">Today</TableHead>
                         <TableHead className="font-cinzel text-secondary">Gender</TableHead>
                         <TableHead className="font-cinzel text-secondary">Registered</TableHead>
                         <TableHead className="font-cinzel text-secondary">Actions</TableHead>
@@ -323,6 +345,7 @@ const ParentDashboard = () => {
                           <TableCell className="font-cinzel text-foreground">{s.first_name} {s.last_name}</TableCell>
                           <TableCell className="text-foreground/80">Grade {s.grade}</TableCell>
                           <TableCell className="text-foreground/80 font-mono text-sm">{s.username}</TableCell>
+                          <TableCell className="text-center text-lg">{todayStatus[s.id] ? "✅" : "—"}</TableCell>
                           <TableCell className="text-foreground/80 capitalize">{s.gender}</TableCell>
                           <TableCell className="text-foreground/60 text-sm">{new Date(s.created_at).toLocaleDateString()}</TableCell>
                           <TableCell>

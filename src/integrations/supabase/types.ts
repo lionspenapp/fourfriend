@@ -244,6 +244,17 @@ export type Database = {
         }
         Returns: Json
       }
+      submit_student_response: {
+        Args: {
+          p_academic: string
+          p_character: string
+          p_day: number
+          p_emotion: string
+          p_student_id: string
+          p_week: number
+        }
+        Returns: Json
+      }
       update_student_password: {
         Args: {
           p_new_password: string

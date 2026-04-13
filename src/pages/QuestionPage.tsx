@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getQuestion } from "@/data/questionDatabase";
+import { useToast } from "@/hooks/use-toast";
 
 interface QuestionPageProps {
   type: "academic" | "emotion" | "character";
@@ -30,11 +31,13 @@ function countSentences(text: string): number {
 const MIN_SENTENCES = 3;
 
 const QuestionPage = ({ type }: QuestionPageProps) => {
-  const { responses, setResponse, setStep, student, week, day } = useLionsPen();
+  const { responses, setResponse, setStep, student, week, day, markSubmitted } = useLionsPen();
+  const { toast } = useToast();
   const meta = STEP_MAP[type];
   const value = responses[type];
   const sentences = useMemo(() => countSentences(value), [value]);
   const showWarning = value.length > 0 && sentences < MIN_SENTENCES;
+  const [submitting, setSubmitting] = useState(false);
 
   const grade = student?.grade ?? 5;
   const gradeBand = grade <= 4 ? "3-4" : grade <= 6 ? "5-6" : "7-8";
@@ -123,10 +126,39 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
           </div>
 
           <Button
-            onClick={() => setStep(meta.next)}
+            disabled={submitting}
+            onClick={async () => {
+              if (type === "character" && student?.id) {
+                setSubmitting(true);
+                try {
+                  const { data, error } = await supabase.rpc("submit_student_response", {
+                    p_student_id: student.id,
+                    p_academic: responses.academic,
+                    p_emotion: responses.emotion,
+                    p_character: responses.character,
+                    p_week: week,
+                    p_day: day,
+                  });
+                  if (error) throw error;
+                  const result = data as any;
+                  if (!result.success) {
+                    toast({ title: "Submission failed", description: result.error, variant: "destructive" });
+                    setSubmitting(false);
+                    return;
+                  }
+                  markSubmitted();
+                } catch (err: any) {
+                  toast({ title: "Error saving", description: err.message, variant: "destructive" });
+                  setSubmitting(false);
+                  return;
+                }
+                setSubmitting(false);
+              }
+              setStep(meta.next);
+            }}
             className="bg-secondary text-secondary-foreground font-cinzel tracking-wide hover:bg-secondary/90 px-8"
           >
-            {meta.btnLabel}
+            {submitting ? "Saving..." : meta.btnLabel}
           </Button>
         </div>
       </motion.div>

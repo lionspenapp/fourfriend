@@ -41,6 +41,7 @@ const StudentLogin = () => {
 
       const s = result.student!;
       setStudent({
+        id: s.id,
         firstName: s.firstName,
         lastName: s.lastName,
         grade: s.grade,
