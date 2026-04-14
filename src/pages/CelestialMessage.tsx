@@ -35,7 +35,7 @@ const CelestialMessage = () => {
     window.speechSynthesis.cancel();
     if (student) markSubmitted(student.id);
     resetSession();
-  }, [markSubmitted, resetSession]);
+  }, [markSubmitted, resetSession, student]);
 
   return (
     <div
