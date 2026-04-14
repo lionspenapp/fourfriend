@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import lionsPenLogo from "@/assets/lions_pen.png";
 import { supabase } from "@/integrations/supabase/client";
+import { Eye, EyeOff } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,8 @@ const ParentAuth = () => {
   const [childUsername, setChildUsername] = useState("");
   const [childPassword, setChildPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showChildPassword, setShowChildPassword] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -187,7 +190,12 @@ const ParentAuth = () => {
               <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
                 Password
               </label>
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required minLength={8} className={inputClass} style={{color: 'hsl(var(--foreground))'}} />
+              <div className="relative">
+                <Input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required minLength={8} className={`${inputClass} pr-10`} style={{color: 'hsl(var(--foreground))'}} />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/50 hover:text-foreground/80 transition-colors">
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
               {isSignUp && password.length > 0 && (
                 <div className="mt-2 space-y-1">
                   {PASSWORD_RULES.map((rule) => (
@@ -281,7 +289,12 @@ const ParentAuth = () => {
                     <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
                       Secret Code
                     </label>
-                    <Input type="password" value={childPassword} onChange={(e) => setChildPassword(e.target.value)} placeholder="••••••••" required minLength={8} className={inputClass} />
+                    <div className="relative">
+                      <Input type={showChildPassword ? "text" : "password"} value={childPassword} onChange={(e) => setChildPassword(e.target.value)} placeholder="••••••••" required minLength={8} className={`${inputClass} pr-10`} />
+                      <button type="button" onClick={() => setShowChildPassword(!showChildPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/50 hover:text-foreground/80 transition-colors">
+                        {showChildPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
                     {childPassword.length > 0 && (
                       <div className="mt-2 space-y-1">
                         {PASSWORD_RULES.map((rule) => (

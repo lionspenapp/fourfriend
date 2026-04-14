@@ -8,6 +8,8 @@ import { getQuestion } from "@/data/questionDatabase";
 import { useToast } from "@/hooks/use-toast";
 import scrollBg from "@/assets/scroll-bg.png";
 import babylonBg from "@/assets/babylon-bg.jpg";
+import hangingGardenBg from "@/assets/hanging-garden-bg.jpg";
+import danielBg from "@/assets/daniel-bg.jpg";
 
 interface QuestionPageProps {
   type: "academic" | "emotion" | "character";
@@ -79,10 +81,12 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
   return (
     <div
       className="min-h-screen flex items-center justify-center p-6 relative bg-cover bg-center bg-no-repeat"
-      style={type === "academic" ? { backgroundImage: `url(${babylonBg})` } : undefined}
+      style={{
+        backgroundImage: type === "academic" ? `url(${babylonBg})` : type === "emotion" ? `url(${hangingGardenBg})` : type === "character" ? `url(${danielBg})` : undefined,
+      }}
     >
-      {type === "academic" && <div className="absolute inset-0 bg-black/40" />}
-      {type !== "academic" && <div className="absolute inset-0 bg-background" />}
+      {type !== "academic" && type !== "emotion" && type !== "character" && <div className="absolute inset-0 bg-background" />}
+      {(type === "academic" || type === "emotion" || type === "character") && <div className="absolute inset-0 bg-black/40" />}
       <div className="absolute top-0 left-0 right-0 h-2 bg-secondary z-10" />
       <div className="absolute bottom-0 left-0 right-0 h-2 bg-secondary z-10" />
       <div className="absolute left-0 top-0 bottom-0 w-2 bg-secondary z-10" />
