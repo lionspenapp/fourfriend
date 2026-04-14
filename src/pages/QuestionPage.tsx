@@ -172,7 +172,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
                     setSubmitting(false);
                     return;
                   }
-                  markSubmitted();
+                  markSubmitted(student.id);
                 } catch (err: any) {
                   toast({ title: "Error saving", description: err.message, variant: "destructive" });
                   setSubmitting(false);

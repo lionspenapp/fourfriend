@@ -48,8 +48,8 @@ interface LionsPenContextType {
   setStudent: (s: StudentProfile) => void;
   responses: SessionResponses;
   setResponse: (key: keyof SessionResponses, value: string) => void;
-  hasSubmittedToday: () => boolean;
-  markSubmitted: () => void;
+  hasSubmittedToday: (studentId: string) => boolean;
+  markSubmitted: (studentId: string) => void;
   resetSession: () => void;
   week: number;
   day: number;
@@ -74,15 +74,15 @@ export const LionsPenProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setResponses((prev) => ({ ...prev, [key]: value }));
   }, []);
 
-  const hasSubmittedToday = useCallback(() => {
-    const last = localStorage.getItem(STORAGE_KEY);
+  const hasSubmittedToday = useCallback((studentId: string) => {
+    const last = localStorage.getItem(`${STORAGE_KEY}_${studentId}`);
     if (!last) return false;
     const today = new Date().toDateString();
     return last === today;
   }, []);
 
-  const markSubmitted = useCallback(() => {
-    localStorage.setItem(STORAGE_KEY, new Date().toDateString());
+  const markSubmitted = useCallback((studentId: string) => {
+    localStorage.setItem(`${STORAGE_KEY}_${studentId}`, new Date().toDateString());
   }, []);
 
   const resetSession = useCallback(() => {
