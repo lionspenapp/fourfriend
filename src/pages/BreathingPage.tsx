@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLionsPen } from "@/context/LionsPenContext";
 import { Button } from "@/components/ui/button";
 import { BREATHING_SOUNDS } from "@/data/mockContent";
+import riverBg from "@/assets/river-bg.jpg";
 
 const TOTAL_SECONDS = 60;
 const BREATH_CYCLE = 8; // 4s in, 4s out
@@ -243,16 +244,20 @@ const BreathingPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative">
-      <div className="absolute top-0 left-0 right-0 h-2 bg-secondary" />
-      <div className="absolute bottom-0 left-0 right-0 h-2 bg-secondary" />
-      <div className="absolute left-0 top-0 bottom-0 w-2 bg-secondary" />
-      <div className="absolute right-0 top-0 bottom-0 w-2 bg-secondary" />
+    <div
+      className="min-h-screen flex flex-col items-center justify-center p-6 relative bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: `url(${riverBg})` }}
+    >
+      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute top-0 left-0 right-0 h-2 bg-secondary z-10" />
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-secondary z-10" />
+      <div className="absolute left-0 top-0 bottom-0 w-2 bg-secondary z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-2 bg-secondary z-10" />
 
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="text-center max-w-lg w-full"
+        className="text-center max-w-lg w-full relative z-10"
       >
         <h1 className="font-cinzel text-2xl font-bold text-primary mb-2">
           Prepare Your Mind

@@ -4,6 +4,7 @@ import { useLionsPen } from "@/context/LionsPenContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getOathForGrade } from "@/data/mockContent";
+import palaceSchoolBg from "@/assets/palace-school-bg.jpg";
 
 const ScriberOath = () => {
   const { student, setStep } = useLionsPen();
@@ -15,17 +16,21 @@ const ScriberOath = () => {
   const canProceed = firstName.trim().length > 0 && lastName.trim().length > 0;
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6 relative">
-      <div className="absolute top-0 left-0 right-0 h-2 bg-secondary" />
-      <div className="absolute bottom-0 left-0 right-0 h-2 bg-secondary" />
-      <div className="absolute left-0 top-0 bottom-0 w-2 bg-secondary" />
-      <div className="absolute right-0 top-0 bottom-0 w-2 bg-secondary" />
+    <div
+      className="min-h-screen flex items-center justify-center p-6 relative bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: `url(${palaceSchoolBg})` }}
+    >
+      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute top-0 left-0 right-0 h-2 bg-secondary z-10" />
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-secondary z-10" />
+      <div className="absolute left-0 top-0 bottom-0 w-2 bg-secondary z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-2 bg-secondary z-10" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="max-w-xl w-full text-center"
+        className="max-w-xl w-full text-center relative z-10"
       >
         <h1 className="font-cinzel text-3xl font-bold text-primary mb-2">
           The Scriber's Oath
@@ -34,7 +39,7 @@ const ScriberOath = () => {
           Grades {grade <= 4 ? "3–4" : grade <= 6 ? "5–6" : "7–8"}
         </p>
 
-        <div className="bg-foreground/5 border border-secondary/20 rounded-lg p-8 mb-8">
+        <div className="bg-foreground/5 backdrop-blur-sm border border-secondary/20 rounded-lg p-8 mb-8">
           {oath.split("\n").map((line, i) => (
             <p key={i} className="text-foreground/90 text-lg leading-relaxed font-cinzel mb-1">
               {line}
