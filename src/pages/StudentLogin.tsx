@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
 
 const StudentLogin = () => {
-  const { setStudent, setStep, hasSubmittedToday } = useLionsPen();
+  const { setStudent, setStep, week, day } = useLionsPen();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -50,7 +50,16 @@ const StudentLogin = () => {
         username: s.username,
       });
 
-      if (hasSubmittedToday()) {
+      // Check DB for this specific student's submission today
+      const { data: existing } = await supabase
+        .from("submissions")
+        .select("id")
+        .eq("student_id", s.id)
+        .eq("week", week)
+        .eq("day", day)
+        .maybeSingle();
+
+      if (existing) {
         setStep("lock");
       } else {
         setStep("breathing");
