@@ -33,7 +33,7 @@ const CelestialMessage = () => {
 
   const handleClose = useCallback(() => {
     window.speechSynthesis.cancel();
-    markSubmitted();
+    if (student) markSubmitted(student.id);
     resetSession();
   }, [markSubmitted, resetSession]);
 
