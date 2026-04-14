@@ -1,23 +1,49 @@
 
 
-## Plan: Fix Scroll Size + Add Babylon Background for Academic Page
+## Plan: Password Visibility Toggle + Unique Backgrounds for Each Page
 
-### Changes to `src/pages/QuestionPage.tsx`
+### 1. Password visibility toggle (eye icon)
 
-**1. Make scroll larger** — Change the aspect ratio from `2 / 1.1` to something taller like `2 / 1.8` so the scroll image stretches to fully contain both the question prompt and the textarea. Reduce internal padding slightly to maximize usable space.
+Add a show/hide password toggle to all password fields:
 
-**2. Add Babylon city background for academic page only** — Copy the uploaded image to `src/assets/babylon-bg.jpg`. On the academic question page, set this as the full-page background image (similar to how `CelestialMessage.tsx` uses `celestial-bg.png`) with a dark overlay for readability. Emotion and Character pages keep the current plain `bg-background`.
+**Files:** `src/pages/StudentLogin.tsx`, `src/pages/ParentAuth.tsx`
 
-### Steps
+- Import `Eye` and `EyeOff` icons from `lucide-react`
+- Add `showPassword` state for each password field
+- Wrap each password `<Input>` in a `relative` div, add an eye icon button at the right side
+- Toggle `type` between `"password"` and `"text"`
+- StudentLogin: 1 password field (Secret Word)
+- ParentAuth: 3 password fields (parent password, child secret code) -- add toggle to each
 
-1. **Copy asset** — Save uploaded image as `src/assets/babylon-bg.jpg`
-2. **Update QuestionPage.tsx**:
-   - Import `babylonBg` from `@/assets/babylon-bg.jpg`
-   - For `type === "academic"`: apply `backgroundImage: url(babylonBg)` with `bg-cover bg-center` on the outer div, plus a `bg-black/40` overlay for readability
-   - Change scroll container aspect ratio to `2 / 1.8` and adjust padding to `8% 15%` so content fits within the scroll
-   - Emotion and Character pages remain unchanged (no city background)
+### 2. Hanging Garden background for Emotion page
 
-### Result
-- All three pages: scroll is large enough to contain question + textarea
-- Academic page only: Babylon city panorama behind everything, with scroll floating over it
+- Copy `user-uploads://hanging_garden.jpg` to `src/assets/hanging-garden-bg.jpg`
+- In `QuestionPage.tsx`, import it and conditionally apply as full-page background when `type === "emotion"` (same pattern as academic/babylon)
+- Add `bg-black/40` overlay for readability
+
+### 3. Daniel background for Character page
+
+- Copy `user-uploads://Daniel.jpg` to `src/assets/daniel-bg.jpg`
+- In `QuestionPage.tsx`, import and apply when `type === "character"`
+- Add `bg-black/40` overlay
+
+### 4. Palace School background for Oath/Pledge page
+
+- Copy `user-uploads://palace_school.jpg` to `src/assets/palace-school-bg.jpg`
+- In `ScriberOath.tsx`, import and set as full-page `bg-cover bg-center` background
+- Add `bg-black/40` overlay, ensure content has `z-10`
+
+### 5. River background for Breathing page
+
+- Copy `user-uploads://River.jpg` to `src/assets/river-bg.jpg`
+- In `BreathingPage.tsx`, import and set as full-page background
+- Add `bg-black/40` overlay, ensure content has `z-10`
+
+### Summary of changes
+- **QuestionPage.tsx**: Each question type now gets its own unique background (Babylon for academic, Hanging Garden for emotion, Daniel for character)
+- **ScriberOath.tsx**: Palace School background
+- **BreathingPage.tsx**: River background
+- **StudentLogin.tsx**: Eye toggle on password field
+- **ParentAuth.tsx**: Eye toggle on all password fields
+- 4 new image assets added
 
