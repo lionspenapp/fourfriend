@@ -80,7 +80,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-6 relative bg-cover bg-center bg-no-repeat"
+      className="min-h-screen flex items-start justify-center p-6 pt-16 relative bg-cover bg-center bg-no-repeat"
       style={{
         backgroundImage: type === "academic" ? `url(${babylonBg})` : type === "emotion" ? `url(${hangingGardenBg})` : type === "character" ? `url(${danielBg})` : undefined,
       }}
@@ -119,15 +119,15 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
-            aspectRatio: "2 / 1.8",
+            aspectRatio: "2 / 2.2",
           }}
         >
           {/* Content positioned over the parchment area */}
-          <div className="absolute inset-0 flex flex-col justify-center" style={{ padding: "8% 15%" }}>
-            <p className="text-secondary text-xs font-cinzel tracking-widest uppercase mb-2">
+          <div className="absolute inset-0 flex flex-col justify-center" style={{ padding: "6% 14%" }}>
+            <p className="text-white drop-shadow-md text-xs font-cinzel tracking-widest uppercase mb-2">
               {CATEGORY_LABEL[type]} Reflection — Question {meta.num} of 3
             </p>
-            <h2 className="font-cinzel text-xl font-bold text-primary mb-4 leading-relaxed">
+            <h2 className="font-cinzel text-xl font-bold text-white drop-shadow-lg mb-4 leading-relaxed">
               {loading ? "Loading question…" : prompt}
             </h2>
 
@@ -143,11 +143,11 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
         <div className="flex items-center justify-between mt-4">
           <div className="text-sm">
             {showWarning ? (
-              <span className="text-secondary/70">
+              <span className="text-white drop-shadow-md">
                 Try to write at least {MIN_SENTENCES} sentences ({sentences} so far)
               </span>
             ) : value.length > 0 ? (
-              <span className="text-foreground/60">{sentences} sentence{sentences !== 1 ? "s" : ""}</span>
+              <span className="text-white/80 drop-shadow-md">{sentences} sentence{sentences !== 1 ? "s" : ""}</span>
             ) : null}
           </div>
 
