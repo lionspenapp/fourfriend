@@ -1,26 +1,20 @@
 
 
-## Plan: Per-Student Submission Lock
+## Plan: Clay Tablet Oath Image + Combined Name Input
 
-### Problem
-The app uses a single `localStorage` key (`lions_pen_last_submission`) shared across all students. When one student submits, every student on that device gets locked.
+### Changes to `src/pages/ScriberOath.tsx`
 
-### Fix
+**1. Add clay tablet image as main content**
+- Copy `user-uploads://Oath.png` to `src/assets/oath-tablet.png`
+- Import and display the clay tablet image as the central visual element, replacing the current text-based oath display (the `bg-foreground/5` div with oath text lines)
+- The image will be centered, with `max-w-md` and rounded styling, with a subtle shadow
 
-**1. `src/context/LionsPenContext.tsx`**
-- Change `hasSubmittedToday()` to accept a student ID and use key `lions_pen_last_submission_{studentId}`
-- Change `markSubmitted()` to accept a student ID and write to the student-specific key
+**2. Combine two name inputs into one**
+- Replace the two separate `firstName` / `lastName` inputs with a single input
+- Placeholder: `"First, Last Name"`
+- Update `canProceed` to check that the single input contains a comma (or just non-empty text)
+- Remove the `lastName` state; rename `firstName` to `fullName`
 
-**2. `src/pages/StudentLogin.tsx`**
-- After successful login, query the database to check if THIS specific student has already submitted today:
-  ```sql
-  SELECT id FROM submissions WHERE student_id = ? AND week = ? AND day = ?
-  ```
-- Only lock if a submission exists for THIS student, not others
-
-**3. `src/pages/QuestionPage.tsx`**
-- Pass `student.id` to `markSubmitted()` so only that student's key is set
-
-### Result
-Each student has their own submission lock. A newly registered student will never be blocked by a sibling's submission.
+**3. Keep everything else intact**
+- Palace school background, overlay, border trim, title, grade subtitle, "Sign Your Name" prompt, and "Enter the Scriptorium" button all remain unchanged
 
