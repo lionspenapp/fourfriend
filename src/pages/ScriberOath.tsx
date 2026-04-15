@@ -30,10 +30,10 @@ const ScriberOath = () => {
         transition={{ duration: 0.6 }}
         className="max-w-xl w-full text-center relative z-10"
       >
-        <h1 className="font-cinzel text-3xl font-bold text-primary mb-2">
+        <h1 className="font-cinzel text-3xl font-bold text-white drop-shadow-lg mb-2">
           The Scriber's Oath
         </h1>
-        <p className="text-secondary text-sm mb-8 font-cinzel tracking-wider">
+        <p className="text-white/80 drop-shadow-md text-sm mb-8 font-cinzel tracking-wider">
           Grades {grade <= 4 ? "3–4" : grade <= 6 ? "5–6" : "7–8"}
         </p>
 
@@ -43,16 +43,17 @@ const ScriberOath = () => {
           className="max-w-md w-full mx-auto rounded-lg shadow-2xl mb-8"
         />
 
-        <p className="text-secondary text-sm mb-4 font-cinzel tracking-wide">
+        <p className="text-white drop-shadow-md text-sm mb-4 font-cinzel tracking-wide">
           Sign Your Name to Take the Oath
         </p>
 
         <div className="max-w-sm mx-auto mb-6">
           <Input
+            type="text"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="First, Last Name"
-            className="bg-foreground/5 border-secondary/30 text-foreground placeholder:text-foreground/50 focus-visible:ring-secondary text-center"
+            className="bg-foreground/5 border-secondary/30 text-white placeholder:text-white/50 focus-visible:ring-secondary text-center"
           />
         </div>
 
