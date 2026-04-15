@@ -3,17 +3,15 @@ import { motion } from "framer-motion";
 import { useLionsPen } from "@/context/LionsPenContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { getOathForGrade } from "@/data/mockContent";
 import palaceSchoolBg from "@/assets/palace-school-bg.jpg";
+import oathTablet from "@/assets/oath-tablet.png";
 
 const ScriberOath = () => {
   const { student, setStep } = useLionsPen();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [fullName, setFullName] = useState("");
 
   const grade = student?.grade ?? 6;
-  const oath = getOathForGrade(grade);
-  const canProceed = firstName.trim().length > 0 && lastName.trim().length > 0;
+  const canProceed = fullName.trim().length > 0;
 
   return (
     <div
@@ -39,30 +37,22 @@ const ScriberOath = () => {
           Grades {grade <= 4 ? "3–4" : grade <= 6 ? "5–6" : "7–8"}
         </p>
 
-        <div className="bg-foreground/5 backdrop-blur-sm border border-secondary/20 rounded-lg p-8 mb-8">
-          {oath.split("\n").map((line, i) => (
-            <p key={i} className="text-foreground/90 text-lg leading-relaxed font-cinzel mb-1">
-              {line}
-            </p>
-          ))}
-        </div>
+        <img
+          src={oathTablet}
+          alt="The Scriber's Oath on a clay tablet"
+          className="max-w-md w-full mx-auto rounded-lg shadow-2xl mb-8"
+        />
 
         <p className="text-secondary text-sm mb-4 font-cinzel tracking-wide">
           Sign Your Name to Take the Oath
         </p>
 
-        <div className="flex gap-3 max-w-sm mx-auto mb-6">
+        <div className="max-w-sm mx-auto mb-6">
           <Input
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            placeholder="First Name"
-            className="bg-foreground/5 border-secondary/30 text-foreground placeholder:text-foreground/50 focus-visible:ring-secondary"
-          />
-          <Input
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            placeholder="Last Name"
-            className="bg-foreground/5 border-secondary/30 text-foreground placeholder:text-foreground/50 focus-visible:ring-secondary"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            placeholder="First, Last Name"
+            className="bg-foreground/5 border-secondary/30 text-foreground placeholder:text-foreground/50 focus-visible:ring-secondary text-center"
           />
         </div>
 
