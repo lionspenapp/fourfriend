@@ -54,8 +54,21 @@ interface Student {
   created_at: string;
 }
 
-interface SubmissionStatus {
-  [studentId: string]: boolean; // true = submitted today
+interface WeekStatus {
+  [studentId: string]: number; // count of submissions this week (0-5)
+}
+
+/** Get the start (Sunday) of the current epoch week */
+function getCurrentWeekRange(): { start: Date; end: Date } {
+  const now = new Date();
+  const epoch = new Date(2026, 3, 12); // April 12 2026 (Sunday)
+  const diffDays = Math.floor((now.getTime() - epoch.getTime()) / 86400000);
+  const weekIndex = diffDays >= 0 ? Math.floor(diffDays / 7) : 0;
+  const weekStart = new Date(epoch.getTime() + weekIndex * 7 * 86400000);
+  weekStart.setHours(0, 0, 0, 0);
+  const weekEnd = new Date(weekStart.getTime() + 4 * 86400000); // Thursday
+  weekEnd.setHours(23, 59, 59, 999);
+  return { start: weekStart, end: weekEnd };
 }
 
 const ParentDashboard = () => {
@@ -67,7 +80,7 @@ const ParentDashboard = () => {
   const [resetStudentId, setResetStudentId] = useState<string | null>(null);
   const [newSecretCode, setNewSecretCode] = useState("");
   const [resettingPassword, setResettingPassword] = useState(false);
-  const [todayStatus, setTodayStatus] = useState<SubmissionStatus>({});
+  const [weekStatus, setWeekStatus] = useState<WeekStatus>({});
 
   // Add child form state
   const [childFirstName, setChildFirstName] = useState("");
@@ -99,17 +112,19 @@ const ParentDashboard = () => {
 
   const fetchSubmissions = async (studentList: Student[]) => {
     if (!user || studentList.length === 0) return;
-    const today = new Date().toISOString().split("T")[0];
+    const { start, end } = getCurrentWeekRange();
     const { data } = await supabase
       .from("submissions")
-      .select("student_id, submitted_at")
+      .select("student_id")
       .in("student_id", studentList.map((s) => s.id))
-      .gte("submitted_at", today + "T00:00:00Z")
-      .lte("submitted_at", today + "T23:59:59Z");
+      .gte("submitted_at", start.toISOString())
+      .lte("submitted_at", end.toISOString());
 
-    const status: SubmissionStatus = {};
-    (data || []).forEach((row) => { status[row.student_id] = true; });
-    setTodayStatus(status);
+    const counts: WeekStatus = {};
+    (data || []).forEach((row) => {
+      counts[row.student_id] = (counts[row.student_id] || 0) + 1;
+    });
+    setWeekStatus(counts);
   };
 
   useEffect(() => {
@@ -333,8 +348,7 @@ const ParentDashboard = () => {
                         <TableHead className="font-cinzel text-secondary">Name</TableHead>
                         <TableHead className="font-cinzel text-secondary">Grade</TableHead>
                         <TableHead className="font-cinzel text-secondary">Username</TableHead>
-                        <TableHead className="font-cinzel text-secondary">Today</TableHead>
-                        <TableHead className="font-cinzel text-secondary">Gender</TableHead>
+                          <TableHead className="font-cinzel text-secondary">This Week</TableHead>
                         <TableHead className="font-cinzel text-secondary">Registered</TableHead>
                         <TableHead className="font-cinzel text-secondary">Actions</TableHead>
                       </TableRow>
@@ -345,8 +359,20 @@ const ParentDashboard = () => {
                           <TableCell className="font-cinzel text-foreground">{s.first_name} {s.last_name}</TableCell>
                           <TableCell className="text-foreground/80">Grade {s.grade}</TableCell>
                           <TableCell className="text-foreground/80 font-mono text-sm">{s.username}</TableCell>
-                          <TableCell className="text-center text-lg">{todayStatus[s.id] ? "✅" : "—"}</TableCell>
-                          <TableCell className="text-foreground/80 capitalize">{s.gender}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-1.5">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <span
+                                  key={i}
+                                  className={`inline-block w-4 h-4 rounded-full border ${
+                                    i < (weekStatus[s.id] || 0)
+                                      ? "bg-secondary border-secondary"
+                                      : "border-foreground/20 bg-transparent"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          </TableCell>
                           <TableCell className="text-foreground/60 text-sm">{new Date(s.created_at).toLocaleDateString()}</TableCell>
                           <TableCell>
                             <Button
