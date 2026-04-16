@@ -54,8 +54,21 @@ interface Student {
   created_at: string;
 }
 
-interface SubmissionStatus {
-  [studentId: string]: boolean; // true = submitted today
+interface WeekStatus {
+  [studentId: string]: number; // count of submissions this week (0-5)
+}
+
+/** Get the start (Sunday) of the current epoch week */
+function getCurrentWeekRange(): { start: Date; end: Date } {
+  const now = new Date();
+  const epoch = new Date(2026, 3, 12); // April 12 2026 (Sunday)
+  const diffDays = Math.floor((now.getTime() - epoch.getTime()) / 86400000);
+  const weekIndex = diffDays >= 0 ? Math.floor(diffDays / 7) : 0;
+  const weekStart = new Date(epoch.getTime() + weekIndex * 7 * 86400000);
+  weekStart.setHours(0, 0, 0, 0);
+  const weekEnd = new Date(weekStart.getTime() + 4 * 86400000); // Thursday
+  weekEnd.setHours(23, 59, 59, 999);
+  return { start: weekStart, end: weekEnd };
 }
 
 const ParentDashboard = () => {
