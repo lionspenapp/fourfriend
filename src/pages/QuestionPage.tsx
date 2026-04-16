@@ -80,7 +80,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
 
   return (
     <div
-      className="min-h-screen flex items-start justify-center p-6 pt-16 relative bg-cover bg-center bg-no-repeat"
+      className="min-h-screen flex items-start justify-center p-6 pt-6 relative bg-cover bg-center bg-no-repeat"
       style={{
         backgroundImage: type === "academic" ? `url(${babylonBg})` : type === "emotion" ? `url(${hangingGardenBg})` : type === "character" ? `url(${danielBg})` : undefined,
       }}
@@ -93,7 +93,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
       <div className="absolute right-0 top-0 bottom-0 w-2 bg-secondary z-10" />
 
       {/* Progress dots */}
-      <div className="absolute top-8 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
         {[1, 2, 3].map((n) => (
           <div
             key={n}
@@ -109,9 +109,9 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
         initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-2xl w-full relative z-10"
+        className="max-w-2xl w-full relative z-10 mt-6"
       >
-        {/* Scroll background container */}
+        {/* Scroll — question only */}
         <div
           className="relative w-full"
           style={{
@@ -119,25 +119,30 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
-            aspectRatio: "2 / 2.2",
+            aspectRatio: "2 / 1.4",
           }}
         >
-          {/* Content positioned over the parchment area */}
           <div className="absolute inset-0 flex flex-col justify-center" style={{ padding: "6% 14%" }}>
             <p className="text-white drop-shadow-md text-xs font-cinzel tracking-widest uppercase mb-2">
               {CATEGORY_LABEL[type]} Reflection — Question {meta.num} of 3
             </p>
-            <h2 className="font-cinzel text-xl font-bold text-white drop-shadow-lg mb-4 leading-relaxed">
+            <h2 className="font-cinzel text-xl font-bold text-white drop-shadow-lg leading-relaxed">
               {loading ? "Loading question…" : prompt}
             </h2>
-
-            <Textarea
-              value={value}
-              onChange={(e) => setResponse(type, e.target.value)}
-              placeholder="Write your reflection here…"
-              className="min-h-[120px] flex-1 bg-transparent border-secondary/20 text-foreground placeholder:text-foreground/40 focus-visible:ring-secondary text-base leading-relaxed resize-none"
-            />
           </div>
+        </div>
+
+        {/* Papyrus response area */}
+        <div
+          className="w-full rounded-lg border border-[#C8A882] shadow-md p-4 mt-2"
+          style={{ backgroundColor: "#E8D5B7" }}
+        >
+          <Textarea
+            value={value}
+            onChange={(e) => setResponse(type, e.target.value)}
+            placeholder="Write your reflection here…"
+            className="min-h-[100px] w-full bg-transparent border-none text-[#3B2F1E] placeholder:text-[#3B2F1E]/40 focus-visible:ring-0 focus-visible:ring-offset-0 text-base leading-relaxed resize-none"
+          />
         </div>
 
         <div className="flex items-center justify-between mt-4">
