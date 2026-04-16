@@ -359,8 +359,20 @@ const ParentDashboard = () => {
                           <TableCell className="font-cinzel text-foreground">{s.first_name} {s.last_name}</TableCell>
                           <TableCell className="text-foreground/80">Grade {s.grade}</TableCell>
                           <TableCell className="text-foreground/80 font-mono text-sm">{s.username}</TableCell>
-                          <TableCell className="text-center text-lg">{todayStatus[s.id] ? "✅" : "—"}</TableCell>
-                          <TableCell className="text-foreground/80 capitalize">{s.gender}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-1.5">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <span
+                                  key={i}
+                                  className={`inline-block w-4 h-4 rounded-full border ${
+                                    i < (weekStatus[s.id] || 0)
+                                      ? "bg-secondary border-secondary"
+                                      : "border-foreground/20 bg-transparent"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          </TableCell>
                           <TableCell className="text-foreground/60 text-sm">{new Date(s.created_at).toLocaleDateString()}</TableCell>
                           <TableCell>
                             <Button
