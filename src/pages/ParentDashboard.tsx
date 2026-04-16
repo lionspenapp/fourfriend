@@ -348,8 +348,7 @@ const ParentDashboard = () => {
                         <TableHead className="font-cinzel text-secondary">Name</TableHead>
                         <TableHead className="font-cinzel text-secondary">Grade</TableHead>
                         <TableHead className="font-cinzel text-secondary">Username</TableHead>
-                        <TableHead className="font-cinzel text-secondary">Today</TableHead>
-                        <TableHead className="font-cinzel text-secondary">Gender</TableHead>
+                          <TableHead className="font-cinzel text-secondary">This Week</TableHead>
                         <TableHead className="font-cinzel text-secondary">Registered</TableHead>
                         <TableHead className="font-cinzel text-secondary">Actions</TableHead>
                       </TableRow>
