@@ -1,29 +1,39 @@
 
 
-## Plan: Bigger Scroll, Better Readability, Visible Name Input
+## Plan: Separate Scroll (Question) + Papyrus (Response) — No Custom Image Yet
 
-### 1. Scroll: make bigger and move up (`src/pages/QuestionPage.tsx`)
+Since the papyrus image hasn't been uploaded yet, I'll use a **CSS-styled parchment** as a placeholder that can be swapped for the real image later.
 
-- Change the outer container from `items-center` to `items-start pt-16` so the scroll sits higher on the page
-- Increase scroll aspect ratio from `2 / 1.8` to `2 / 2.2` to make it taller and fit the full question + textarea inside
-- Adjust inner padding from `8% 15%` to `6% 14%` to maximize content area
+### Changes to `src/pages/QuestionPage.tsx`
 
-### 2. Improve text readability on question pages (`src/pages/QuestionPage.tsx`)
+**1. Scroll — question only, moved higher**
+- Reduce outer padding to `pt-6`
+- Scroll keeps the `scrollBg` image but with a smaller aspect ratio (`2 / 1.4`) since it only holds the category label and question prompt
+- Remove the `Textarea` from inside the scroll
 
-- Change the subtitle text (`text-secondary`) to `text-white` with a subtle text shadow
-- Change the question heading (`text-primary`) to `text-white` with text shadow for contrast against background
-- Add text shadow to the sentence counter and warning text below the scroll: `text-white drop-shadow-md`
-- Button label text remains as-is (already has solid background)
+**2. Papyrus response area — below the scroll**
+- New `div` styled as parchment: `bg-[#E8D5B7]` background, `border border-[#C8A882]`, rounded corners, subtle shadow
+- Compact `Textarea` inside: `min-h-[100px]` (fits ~6-7 sentences), transparent background, dark brown text (`text-[#3B2F1E]`), placeholder in muted brown
+- When you upload the real papyrus image later, I'll swap the CSS background for the image
 
-### 3. Oath page: show typed name visibly (`src/pages/ScriberOath.tsx`)
+**3. Footer unchanged**
+- Sentence counter and Next/Submit button remain below
 
-- The Input already uses `type` defaulting to "text" (not password), so letters should be visible
-- Ensure the input explicitly has `type="text"` for clarity
-- Make the title and "Sign Your Name" text white with text shadow for readability against the palace school background
-- Change `text-primary` on the h1 to `text-white drop-shadow-lg` and `text-secondary` labels to `text-white drop-shadow-md`
+### Visual layout
+```text
+┌─────────────────────────────┐
+│  [background image + overlay]│
+│  ┌── Scroll ──────────────┐ │
+│  │  Category label         │ │
+│  │  Question prompt        │ │
+│  └────────────────────────┘ │
+│  ┌── Papyrus ─────────────┐ │
+│  │  [compact textarea]     │ │
+│  └────────────────────────┘ │
+│  sentence count    [Button]  │
+└─────────────────────────────┘
+```
 
-### Summary
-- Scroll is taller and positioned higher so content stays inside the parchment
-- All text over background images becomes white with drop shadow for readability
-- Oath name input explicitly shows typed characters (text, not password)
+### File changed
+- `src/pages/QuestionPage.tsx`
 
