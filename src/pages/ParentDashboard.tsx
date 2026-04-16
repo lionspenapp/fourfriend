@@ -110,7 +110,7 @@ const ParentDashboard = () => {
     setLoadingStudents(false);
   };
 
-  const fetchSubmissions = async (studentList: Student[]) => {
+  const fetchSubmissions = async (studentList: Student[]): Promise<void> => {
     if (!user || studentList.length === 0) return;
     const { start, end } = getCurrentWeekRange();
     const { data } = await supabase
