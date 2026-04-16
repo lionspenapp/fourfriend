@@ -80,7 +80,7 @@ const ParentDashboard = () => {
   const [resetStudentId, setResetStudentId] = useState<string | null>(null);
   const [newSecretCode, setNewSecretCode] = useState("");
   const [resettingPassword, setResettingPassword] = useState(false);
-  const [todayStatus, setTodayStatus] = useState<SubmissionStatus>({});
+  const [weekStatus, setWeekStatus] = useState<WeekStatus>({});
 
   // Add child form state
   const [childFirstName, setChildFirstName] = useState("");
