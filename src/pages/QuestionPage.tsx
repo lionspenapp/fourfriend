@@ -109,7 +109,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
         initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-2xl w-full relative z-10 mt-6"
+        className="max-w-3xl w-full relative z-10 mt-6"
       >
         {/* Scroll — question only */}
         <div
@@ -119,14 +119,14 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
-            aspectRatio: "2 / 1.4",
+            aspectRatio: "2 / 1.6",
           }}
         >
           <div className="absolute inset-0 flex flex-col justify-center" style={{ padding: "6% 14%" }}>
             <p className="text-white drop-shadow-md text-xs font-cinzel tracking-widest uppercase mb-2">
               {CATEGORY_LABEL[type]} Reflection — Question {meta.num} of 3
             </p>
-            <h2 className="font-cinzel text-xl font-bold text-white drop-shadow-lg leading-relaxed">
+            <h2 className="font-cinzel text-lg font-bold text-white drop-shadow-lg leading-relaxed">
               {loading ? "Loading question…" : prompt}
             </h2>
           </div>
