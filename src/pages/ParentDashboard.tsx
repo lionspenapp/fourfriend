@@ -112,17 +112,19 @@ const ParentDashboard = () => {
 
   const fetchSubmissions = async (studentList: Student[]) => {
     if (!user || studentList.length === 0) return;
-    const today = new Date().toISOString().split("T")[0];
+    const { start, end } = getCurrentWeekRange();
     const { data } = await supabase
       .from("submissions")
-      .select("student_id, submitted_at")
+      .select("student_id")
       .in("student_id", studentList.map((s) => s.id))
-      .gte("submitted_at", today + "T00:00:00Z")
-      .lte("submitted_at", today + "T23:59:59Z");
+      .gte("submitted_at", start.toISOString())
+      .lte("submitted_at", end.toISOString());
 
-    const status: SubmissionStatus = {};
-    (data || []).forEach((row) => { status[row.student_id] = true; });
-    setTodayStatus(status);
+    const counts: WeekStatus = {};
+    (data || []).forEach((row) => {
+      counts[row.student_id] = (counts[row.student_id] || 0) + 1;
+    });
+    setWeekStatus(counts);
   };
 
   useEffect(() => {
