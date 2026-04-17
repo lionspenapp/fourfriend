@@ -53,7 +53,7 @@ const ScriberOath = () => {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="First, Last Name"
-            className="bg-foreground/5 border-secondary/30 text-white placeholder:text-white/50 placeholder:font-sans placeholder:text-base focus-visible:ring-secondary text-center font-signature text-3xl h-14"
+            className="bg-foreground/5 border-secondary/30 text-white placeholder:text-white/50 placeholder:font-sans placeholder:text-base focus-visible:ring-secondary text-center font-signature text-5xl h-20 leading-none py-2"
           />
         </div>
 
