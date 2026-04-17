@@ -11,6 +11,7 @@ import scrollBg from "@/assets/scroll-bg.png";
 import babylonBg from "@/assets/babylon-bg.jpg";
 import hangingGardenBg from "@/assets/hanging-garden-bg.jpg";
 import danielBg from "@/assets/daniel-bg.jpg";
+import papyrusBg from "@/assets/papyrus-bg.jpg";
 
 interface QuestionPageProps {
   type: "academic" | "emotion" | "character";
