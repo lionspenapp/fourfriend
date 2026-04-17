@@ -1,6 +1,5 @@
 import { useMemo, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { PenLine } from "lucide-react";
 import { useLionsPen, type FlowStep } from "@/context/LionsPenContext";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -82,7 +81,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
 
   return (
     <div
-      className="min-h-screen flex items-start justify-center p-6 pt-6 relative bg-cover bg-center bg-no-repeat"
+      className="min-h-screen flex items-start justify-center p-6 pt-2 relative bg-cover bg-center bg-no-repeat"
       style={{
         backgroundImage: type === "academic" ? `url(${babylonBg})` : type === "emotion" ? `url(${hangingGardenBg})` : type === "character" ? `url(${danielBg})` : undefined,
       }}
@@ -111,7 +110,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
         initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-3xl w-full relative z-10 mt-6"
+        className="max-w-3xl w-full relative z-10 mt-2"
       >
         {/* Scroll — question only */}
         <div
@@ -121,7 +120,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
-            aspectRatio: "2 / 1.6",
+            aspectRatio: "2 / 1.3",
           }}
         >
           <div className="absolute inset-0 flex flex-col justify-center" style={{ padding: "6% 14%" }}>
@@ -134,33 +133,53 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
           </div>
         </div>
 
-        {/* Decorative divider */}
-        <div className="flex items-center gap-3 my-3 px-4">
+        {/* Decorative divider — horizontal pen */}
+        <div className="flex items-center gap-2 my-2 px-4">
           <div className="flex-1 h-px bg-secondary/60" />
-          <PenLine className="text-secondary rotate-90" size={20} />
+          <svg
+            viewBox="0 0 140 16"
+            className="w-32 h-4 text-secondary"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            {/* Nib (left) */}
+            <polygon points="0,8 12,4 12,12" fill="currentColor" />
+            <line x1="12" y1="8" x2="20" y2="8" stroke="currentColor" strokeWidth="1.5" />
+            {/* Shaft */}
+            <rect x="20" y="6" width="60" height="4" fill="currentColor" rx="1" />
+            {/* Feather barbs (right) */}
+            <path
+              d="M80 8 Q 95 2, 110 6 Q 120 1, 135 5 L 140 8 L 135 11 Q 120 15, 110 10 Q 95 14, 80 8 Z"
+              fill="currentColor"
+              opacity="0.85"
+            />
+            <path d="M88 6 L 92 4 M96 7 L 100 4 M104 7 L 108 4 M112 8 L 116 5 M120 9 L 124 6"
+              stroke="hsl(var(--background))" strokeWidth="0.6" />
+          </svg>
           <div className="flex-1 h-px bg-secondary/60" />
         </div>
 
         {/* Papyrus response area */}
         <div
-          className="w-full rounded-lg border border-[#C8A882] shadow-md p-6"
+          className="w-full rounded-lg border border-[#C8A882] shadow-md p-3"
           style={{
             backgroundImage: `url(${papyrusBg})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         >
-          <div className="rounded-md bg-[#F5E6C8]/85 p-3">
+          <div className="rounded-md bg-[#F5E6C8]/85 p-2">
             <Textarea
               value={value}
               onChange={(e) => setResponse(type, e.target.value)}
               placeholder="Write your reflection here…"
-              className="min-h-[100px] w-full bg-transparent border-none text-[#2a1810] font-medium placeholder:text-[#2a1810]/50 focus-visible:ring-0 focus-visible:ring-offset-0 text-base leading-relaxed resize-none"
+              className="min-h-[80px] w-full bg-transparent border-none text-[#2a1810] font-medium placeholder:text-[#2a1810]/50 focus-visible:ring-0 focus-visible:ring-offset-0 text-base leading-relaxed resize-none"
             />
           </div>
         </div>
 
-        <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center justify-between mt-2">
           <div className="text-sm">
             {showWarning ? (
               <span className="text-white drop-shadow-md">
