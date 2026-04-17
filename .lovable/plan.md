@@ -1,29 +1,18 @@
 
+Plan: Add divider + use uploaded papyrus image as response background.
 
-## Plan: 5-Slot Weekly Completion Tracker (No Day Labels)
+1. Save image: copy `user-uploads://red_papayrus.jpg` → `src/assets/papyrus-bg.jpg` and import in `QuestionPage.tsx`.
 
-### Changes to `src/pages/ParentDashboard.tsx`
+2. Decorative divider between scroll and papyrus (in `src/pages/QuestionPage.tsx`, between the scroll div and papyrus div):
+   - A horizontal flex row, centered, ~`my-3`
+   - Left + right thin gold lines (`flex-1 h-px bg-secondary/60`) with a centered ornament (a small pen icon rotated horizontal, using `lucide-react` `Feather` or `PenLine` icon in gold `text-secondary`)
+   - Looks like: `———— ✒ ————`
 
-**1. Update `fetchSubmissions`**
-- Query submissions for the current week (Sunday–Thursday date range) using the same epoch logic from `LionsPenContext`
-- Count how many submissions each student has this week (max 5)
-- Store as `weekStatus: { [studentId: string]: number }` — a count of completed sessions
+3. Replace papyrus styling on the response container:
+   - Remove the inline `backgroundColor: "#E8D5B7"` 
+   - Add `backgroundImage: url(papyrusBg)`, `backgroundSize: cover`, `backgroundPosition: center`
+   - Keep border/shadow; bump padding slightly (`p-6`) for breathing room over the texture
+   - Textarea text color: change to a darker readable tone over the red/brown texture — use `text-[#2a1810]` with stronger weight, and a subtle white/cream tint placeholder; add `bg-white/10` or leave transparent — will use transparent so texture shows through
+   - To keep text legible over the busy hieroglyph texture, wrap textarea in a subtle `bg-[#F5E6C8]/85` (semi-transparent sand overlay) inner panel with rounded corners — preserves papyrus feel at edges while giving a clean writing surface in the middle
 
-**2. Replace "Today" column with "This Week"**
-- Header: "This Week" — no day labels
-- Each cell: 5 small circles in a row — filled (✅ or solid gold circle) for each completed session, empty (○) for remaining
-- Example: a student who completed 3 of 5 → `● ● ● ○ ○`
-
-**3. No day association**
-- Slots fill left-to-right based on count only — no mapping to specific days
-
-### Visual example
-```text
-| Name  | Grade | This Week     | Gender | ...
-| Teddy | 5     | ● ● ● ○ ○    | male   | ...
-| Yena  | 8     | ● ● ○ ○ ○    | female | ...
-```
-
-### File changed
-- `src/pages/ParentDashboard.tsx`
-
+File changed: `src/pages/QuestionPage.tsx` (+ new asset `src/assets/papyrus-bg.jpg`)
