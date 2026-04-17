@@ -1,5 +1,6 @@
 import { useMemo, useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { PenLine } from "lucide-react";
 import { useLionsPen, type FlowStep } from "@/context/LionsPenContext";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import scrollBg from "@/assets/scroll-bg.png";
 import babylonBg from "@/assets/babylon-bg.jpg";
 import hangingGardenBg from "@/assets/hanging-garden-bg.jpg";
 import danielBg from "@/assets/daniel-bg.jpg";
+import papyrusBg from "@/assets/papyrus-bg.jpg";
 
 interface QuestionPageProps {
   type: "academic" | "emotion" | "character";
@@ -132,17 +134,30 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
           </div>
         </div>
 
+        {/* Decorative divider */}
+        <div className="flex items-center gap-3 my-3 px-4">
+          <div className="flex-1 h-px bg-secondary/60" />
+          <PenLine className="text-secondary rotate-90" size={20} />
+          <div className="flex-1 h-px bg-secondary/60" />
+        </div>
+
         {/* Papyrus response area */}
         <div
-          className="w-full rounded-lg border border-[#C8A882] shadow-md p-4 mt-2"
-          style={{ backgroundColor: "#E8D5B7" }}
+          className="w-full rounded-lg border border-[#C8A882] shadow-md p-6"
+          style={{
+            backgroundImage: `url(${papyrusBg})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
         >
-          <Textarea
-            value={value}
-            onChange={(e) => setResponse(type, e.target.value)}
-            placeholder="Write your reflection here…"
-            className="min-h-[100px] w-full bg-transparent border-none text-[#3B2F1E] placeholder:text-[#3B2F1E]/40 focus-visible:ring-0 focus-visible:ring-offset-0 text-base leading-relaxed resize-none"
-          />
+          <div className="rounded-md bg-[#F5E6C8]/85 p-3">
+            <Textarea
+              value={value}
+              onChange={(e) => setResponse(type, e.target.value)}
+              placeholder="Write your reflection here…"
+              className="min-h-[100px] w-full bg-transparent border-none text-[#2a1810] font-medium placeholder:text-[#2a1810]/50 focus-visible:ring-0 focus-visible:ring-offset-0 text-base leading-relaxed resize-none"
+            />
+          </div>
         </div>
 
         <div className="flex items-center justify-between mt-4">
