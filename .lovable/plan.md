@@ -1,18 +1,27 @@
 
-Plan: Add divider + use uploaded papyrus image as response background.
+Plan: Tighten layout + signature font + horizontal pen divider.
 
-1. Save image: copy `user-uploads://red_papayrus.jpg` → `src/assets/papyrus-bg.jpg` and import in `QuestionPage.tsx`.
+### 1. `src/pages/QuestionPage.tsx` — fit everything on one screen
+- Reduce top padding: `pt-6` → `pt-2`, and `mt-6` on motion div → `mt-2`
+- Shrink scroll: change `aspectRatio: "2 / 1.6"` → `"2 / 1.3"` (less tall)
+- Shrink papyrus padding: `p-6` → `p-3`, inner overlay `p-3` → `p-2`
+- Reduce textarea `min-h-[100px]` → `min-h-[80px]`
+- Tighten divider margin: `my-3` → `my-2`
+- Reduce button section margin: `mt-4` → `mt-2`
 
-2. Decorative divider between scroll and papyrus (in `src/pages/QuestionPage.tsx`, between the scroll div and papyrus div):
-   - A horizontal flex row, centered, ~`my-3`
-   - Left + right thin gold lines (`flex-1 h-px bg-secondary/60`) with a centered ornament (a small pen icon rotated horizontal, using `lucide-react` `Feather` or `PenLine` icon in gold `text-secondary`)
-   - Looks like: `———— ✒ ————`
+### 2. Divider — replace `PenLine` icon with a long horizontal pen graphic
+- Use lucide `Feather` rotated 90° OR build a custom inline SVG of a horizontal quill/pen that spans wider (~`w-32 h-4`)
+- Approach: inline SVG of a stylized quill pen lying flat (gold/secondary stroke) — nib on left, feather barbs on right
+- Side gold lines stay (`flex-1 h-px bg-secondary/60`) but pen sits in the middle as a real, recognizable horizontal pen
 
-3. Replace papyrus styling on the response container:
-   - Remove the inline `backgroundColor: "#E8D5B7"` 
-   - Add `backgroundImage: url(papyrusBg)`, `backgroundSize: cover`, `backgroundPosition: center`
-   - Keep border/shadow; bump padding slightly (`p-6`) for breathing room over the texture
-   - Textarea text color: change to a darker readable tone over the red/brown texture — use `text-[#2a1810]` with stronger weight, and a subtle white/cream tint placeholder; add `bg-white/10` or leave transparent — will use transparent so texture shows through
-   - To keep text legible over the busy hieroglyph texture, wrap textarea in a subtle `bg-[#F5E6C8]/85` (semi-transparent sand overlay) inner panel with rounded corners — preserves papyrus feel at edges while giving a clean writing surface in the middle
+### 3. `src/pages/ScriberOath.tsx` — handwritten signature font
+- Add Google Font import to `src/index.css`: add `Allura` (similar to Alex Brush / Monte Carlo — elegant English script) and `Great Vibes` to the existing `<link>` import
+- Add Tailwind utility class `font-signature` in `tailwind.config.ts`: `signature: ["Allura", "cursive"]`
+- Apply to the name `Input` on oath page: add `font-signature text-3xl` so as user types, it renders in flowing handwritten script
+- Also inflate input height (`h-14`) so the larger script fits
 
-File changed: `src/pages/QuestionPage.tsx` (+ new asset `src/assets/papyrus-bg.jpg`)
+### Files changed
+- `src/pages/QuestionPage.tsx`
+- `src/pages/ScriberOath.tsx`
+- `src/index.css` (add font import)
+- `tailwind.config.ts` (add `font-signature`)
