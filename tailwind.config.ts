@@ -16,7 +16,7 @@ export default {
       fontFamily: {
         cinzel: ["Cinzel", "serif"],
         sans: ["Inter", "sans-serif"],
-        signature: ["Allura", "Great Vibes", "cursive"],
+        signature: ["Great Vibes", "Allura", "cursive"],
       },
       colors: {
         border: "hsl(var(--border))",
