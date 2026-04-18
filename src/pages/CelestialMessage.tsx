@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useLionsPen } from "@/context/LionsPenContext";
+import { supabase } from "@/integrations/supabase/client";
 import celestialBg from "@/assets/celestial-bg.png";
 import { Button } from "@/components/ui/button";
 import { getCelestialMessage } from "@/data/messageDatabase";
