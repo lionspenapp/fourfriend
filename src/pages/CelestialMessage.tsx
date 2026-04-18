@@ -32,11 +32,18 @@ const CelestialMessage = () => {
     window.speechSynthesis.speak(utterance);
   }, [isSpeaking, quote, author, message]);
 
-  const handleClose = useCallback(() => {
+  const handleClose = useCallback(async () => {
     window.speechSynthesis.cancel();
-    if (student) markSubmitted(student.id);
+    if (student) {
+      await supabase.rpc("mark_submission_complete", {
+        p_student_id: student.id,
+        p_week: week,
+        p_day: day,
+      });
+      markSubmitted(student.id);
+    }
     resetSession();
-  }, [markSubmitted, resetSession, student]);
+  }, [markSubmitted, resetSession, student, week, day]);
 
   return (
     <div
