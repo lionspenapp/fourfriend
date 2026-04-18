@@ -1,12 +1,28 @@
 
-Increase signature font visual size to fill more of the input height.
+Make the signature text visibly larger on the oath page by fixing both the font choice and the field sizing.
 
-### Change in `src/pages/ScriberOath.tsx`
-- On the signature `Input`: change `text-7xl` → `text-8xl` or `text-9xl`
-- Tighten vertical spacing: `py-1` → `py-0` or `py-px`
-- Add `leading-[0.6]` to compress line-height so script ascenders/descenders fill the box
-- Keep `h-24` height
+### What I’ll change
 
-This makes the handwritten script visually occupy ~60-80% of the input rectangle.
+1. `src/pages/ScriberOath.tsx`
+- Increase the signature input’s visual scale beyond the current setup
+- Make the input box taller so the script has room to breathe
+- Use a larger explicit font size than the current Tailwind preset if needed
+- Keep very tight vertical padding and compressed line-height so typed letters occupy much more of the rectangle
+- Preserve the smaller sans-serif placeholder styling so only the typed name becomes large
 
-Only file touched: `src/pages/ScriberOath.tsx`.
+2. `tailwind.config.ts`
+- Change the `font-signature` stack so a taller, more visually substantial script font is used first
+- Right now the text is already technically large, but the current script font has a small visual height, which is why names still look tiny
+
+### Expected result
+- When the student types first and last name, the signature should feel at least as visually prominent as the “The Scriber’s Oath” title
+- The typed name should occupy at least about half of the signature box height, instead of looking thin and undersized
+
+### Technical details
+- Likely update from the current `text-8xl h-24 leading-[0.6] py-0`
+- Move to a bigger/taller combination such as:
+  - larger custom font size
+  - taller input height
+  - tighter line-height
+  - improved script font priority
+- Only the oath page styling and the signature font config need to be touched
