@@ -118,7 +118,8 @@ const ParentDashboard = () => {
       .select("student_id")
       .in("student_id", studentList.map((s) => s.id))
       .gte("submitted_at", start.toISOString())
-      .lte("submitted_at", end.toISOString());
+      .lte("submitted_at", end.toISOString())
+      .not("completed_at", "is", null);
 
     const counts: WeekStatus = {};
     (data || []).forEach((row) => {
