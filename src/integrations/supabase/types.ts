@@ -144,6 +144,7 @@ export type Database = {
         Row: {
           academic_response: string
           character_response: string
+          completed_at: string | null
           day: number
           emotion_response: string
           id: string
@@ -154,6 +155,7 @@ export type Database = {
         Insert: {
           academic_response?: string
           character_response?: string
+          completed_at?: string | null
           day: number
           emotion_response?: string
           id?: string
@@ -164,6 +166,7 @@ export type Database = {
         Update: {
           academic_response?: string
           character_response?: string
+          completed_at?: string | null
           day?: number
           emotion_response?: string
           id?: string
@@ -231,6 +234,10 @@ export type Database = {
       }
     }
     Functions: {
+      mark_submission_complete: {
+        Args: { p_day: number; p_student_id: string; p_week: number }
+        Returns: Json
+      }
       register_student: {
         Args: {
           p_email: string

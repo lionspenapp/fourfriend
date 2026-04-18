@@ -50,16 +50,16 @@ const StudentLogin = () => {
         username: s.username,
       });
 
-      // Check DB for this specific student's submission today
+      // Only lock if the student fully completed today's ritual (closed the celestial message)
       const { data: existing } = await supabase
         .from("submissions")
-        .select("id")
+        .select("id, completed_at")
         .eq("student_id", s.id)
         .eq("week", week)
         .eq("day", day)
         .maybeSingle();
 
-      if (existing) {
+      if (existing && existing.completed_at) {
         setStep("lock");
       } else {
         setStep("breathing");

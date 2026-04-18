@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useLionsPen } from "@/context/LionsPenContext";
+import { supabase } from "@/integrations/supabase/client";
 import celestialBg from "@/assets/celestial-bg.png";
 import { Button } from "@/components/ui/button";
 import { getCelestialMessage } from "@/data/messageDatabase";
@@ -31,11 +32,18 @@ const CelestialMessage = () => {
     window.speechSynthesis.speak(utterance);
   }, [isSpeaking, quote, author, message]);
 
-  const handleClose = useCallback(() => {
+  const handleClose = useCallback(async () => {
     window.speechSynthesis.cancel();
-    if (student) markSubmitted(student.id);
+    if (student) {
+      await supabase.rpc("mark_submission_complete", {
+        p_student_id: student.id,
+        p_week: week,
+        p_day: day,
+      });
+      markSubmitted(student.id);
+    }
     resetSession();
-  }, [markSubmitted, resetSession, student]);
+  }, [markSubmitted, resetSession, student, week, day]);
 
   return (
     <div
