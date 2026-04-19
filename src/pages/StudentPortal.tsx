@@ -13,6 +13,7 @@ import { ChevronDown, BookOpen, Compass, MessageCircle, LogOut } from "lucide-re
 interface WeekSubmission {
   id: string;
   day: number;
+  entry_date: string;
   academic_response: string;
   emotion_response: string;
   character_response: string;
@@ -21,11 +22,12 @@ interface WeekSubmission {
 }
 
 const StudentPortal = () => {
-  const { student, week, day, setStep, resetSession } = useLionsPen();
+  const { student, week, setStep, resetSession } = useLionsPen();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [submissions, setSubmissions] = useState<WeekSubmission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [todayDone, setTodayDone] = useState(false);
 
   useEffect(() => {
     if (!student) {
@@ -33,21 +35,22 @@ const StudentPortal = () => {
       return;
     }
     (async () => {
-      const { data, error } = await supabase.rpc("get_student_week_submissions", {
-        p_student_id: student.id,
-        p_week: week,
-      });
-      if (error) {
-        toast({ title: "Could not load entries", description: error.message, variant: "destructive" });
+      const [subsRes, statusRes] = await Promise.all([
+        supabase.rpc("get_student_week_submissions", { p_student_id: student.id, p_week: week }),
+        supabase.rpc("get_student_week_status", { p_student_id: student.id, p_week: week }),
+      ]);
+      if (subsRes.error) {
+        toast({ title: "Could not load entries", description: subsRes.error.message, variant: "destructive" });
       } else {
-        setSubmissions((data as WeekSubmission[]) ?? []);
+        setSubmissions((subsRes.data as WeekSubmission[]) ?? []);
       }
+      const status = statusRes.data as { today_done: boolean } | null;
+      setTodayDone(!!status?.today_done);
       setLoading(false);
     })();
   }, [student, week, navigate, toast]);
 
   const completedDays = new Set(submissions.map((s) => s.day));
-  const todayDone = completedDays.has(day);
   const weekFull = submissions.length >= 5;
   const canEnter = !todayDone && !weekFull;
 
@@ -144,7 +147,7 @@ const StudentPortal = () => {
                       <div className="flex items-center gap-3">
                         <span className="font-cinzel text-secondary">Day {s.day}</span>
                         <span className="text-foreground/60 text-sm">
-                          {new Date(s.completed_at).toLocaleDateString(undefined, {
+                          {new Date(s.entry_date + "T00:00:00").toLocaleDateString(undefined, {
                             weekday: "short",
                             month: "short",
                             day: "numeric",
