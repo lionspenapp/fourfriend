@@ -50,17 +50,20 @@ const StudentLogin = () => {
         username: s.username,
       });
 
-      // Only lock if the student fully completed today's ritual (closed the celestial message)
-      const { data: existing } = await supabase
-        .from("submissions")
-        .select("id, completed_at")
-        .eq("student_id", s.id)
-        .eq("week", week)
-        .eq("day", day)
-        .maybeSingle();
+      // Fetch this week's completed submissions to decide where to route
+      const { data: weekSubs } = await supabase.rpc("get_student_week_submissions", {
+        p_student_id: s.id,
+        p_week: week,
+      });
+      const subs = (weekSubs as Array<{ day: number }>) ?? [];
+      const todayDone = subs.some((r) => r.day === day);
+      const weekFull = subs.length >= 5;
 
-      if (existing && existing.completed_at) {
-        setStep("lock");
+      if (weekFull) {
+        toast({ title: "You've finished all 5 weekly sessions", description: "Visit your portal to review your week." });
+        navigate("/student/portal");
+      } else if (todayDone) {
+        navigate("/student/portal");
       } else {
         setStep("breathing");
       }
