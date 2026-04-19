@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useLionsPen } from "@/context/LionsPenContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { getCelestialMessage } from "@/data/messageDatabase";
 
 const CelestialMessage = () => {
-  const { markSubmitted, resetSession, student, week, day } = useLionsPen();
+  const { markSubmitted, student, week, day, setStep } = useLionsPen();
+  const navigate = useNavigate();
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   const grade = student?.grade ?? 5;
@@ -42,8 +44,9 @@ const CelestialMessage = () => {
       });
       markSubmitted(student.id);
     }
-    resetSession();
-  }, [markSubmitted, resetSession, student, week, day]);
+    setStep("login");
+    navigate("/student/portal");
+  }, [markSubmitted, student, week, day, setStep, navigate]);
 
   return (
     <div

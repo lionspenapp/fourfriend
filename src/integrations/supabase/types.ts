@@ -234,6 +234,18 @@ export type Database = {
       }
     }
     Functions: {
+      get_student_week_submissions: {
+        Args: { p_student_id: string; p_week: number }
+        Returns: {
+          academic_response: string
+          character_response: string
+          completed_at: string
+          day: number
+          emotion_response: string
+          id: string
+          submitted_at: string
+        }[]
+      }
       mark_submission_complete: {
         Args: { p_day: number; p_student_id: string; p_week: number }
         Returns: Json
