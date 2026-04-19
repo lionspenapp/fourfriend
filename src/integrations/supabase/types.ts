@@ -147,6 +147,7 @@ export type Database = {
           completed_at: string | null
           day: number
           emotion_response: string
+          entry_date: string
           id: string
           student_id: string
           submitted_at: string
@@ -158,6 +159,7 @@ export type Database = {
           completed_at?: string | null
           day: number
           emotion_response?: string
+          entry_date?: string
           id?: string
           student_id: string
           submitted_at?: string
@@ -169,6 +171,7 @@ export type Database = {
           completed_at?: string | null
           day?: number
           emotion_response?: string
+          entry_date?: string
           id?: string
           student_id?: string
           submitted_at?: string
@@ -234,6 +237,10 @@ export type Database = {
       }
     }
     Functions: {
+      get_student_week_status: {
+        Args: { p_student_id: string; p_week: number }
+        Returns: Json
+      }
       get_student_week_submissions: {
         Args: { p_student_id: string; p_week: number }
         Returns: {
@@ -242,12 +249,13 @@ export type Database = {
           completed_at: string
           day: number
           emotion_response: string
+          entry_date: string
           id: string
           submitted_at: string
         }[]
       }
       mark_submission_complete: {
-        Args: { p_day: number; p_student_id: string; p_week: number }
+        Args: { p_student_id: string; p_week: number }
         Returns: Json
       }
       register_student: {
@@ -267,7 +275,6 @@ export type Database = {
         Args: {
           p_academic: string
           p_character: string
-          p_day: number
           p_emotion: string
           p_student_id: string
           p_week: number

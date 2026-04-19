@@ -8,12 +8,13 @@ import { Button } from "@/components/ui/button";
 import { getCelestialMessage } from "@/data/messageDatabase";
 
 const CelestialMessage = () => {
-  const { markSubmitted, student, week, day, setStep } = useLionsPen();
+  const { markSubmitted, student, week, setStep } = useLionsPen();
   const navigate = useNavigate();
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   const grade = student?.grade ?? 5;
-  const msg = getCelestialMessage(grade, week, day);
+  // Day 1 is a reasonable default for the celestial message lookup; sequence-based.
+  const msg = getCelestialMessage(grade, week, 1);
 
   const author = msg?.author ?? "The Celestial Scriptorium";
   const quote = msg?.quote ?? "Your words today carry the weight of your courage.";
@@ -40,13 +41,12 @@ const CelestialMessage = () => {
       await supabase.rpc("mark_submission_complete", {
         p_student_id: student.id,
         p_week: week,
-        p_day: day,
       });
       markSubmitted(student.id);
     }
     setStep("login");
     navigate("/student/portal");
-  }, [markSubmitted, student, week, day, setStep, navigate]);
+  }, [markSubmitted, student, week, setStep, navigate]);
 
   return (
     <div

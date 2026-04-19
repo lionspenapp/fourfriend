@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
 
 const StudentLogin = () => {
-  const { setStudent, setStep, week, day } = useLionsPen();
+  const { setStudent, setStep, week } = useLionsPen();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -50,19 +50,18 @@ const StudentLogin = () => {
         username: s.username,
       });
 
-      // Fetch this week's completed submissions to decide where to route
-      const { data: weekSubs } = await supabase.rpc("get_student_week_submissions", {
+      // Check this week's status to decide where to route
+      const { data: statusData } = await supabase.rpc("get_student_week_status", {
         p_student_id: s.id,
         p_week: week,
       });
-      const subs = (weekSubs as Array<{ day: number }>) ?? [];
-      const todayDone = subs.some((r) => r.day === day);
-      const weekFull = subs.length >= 5;
+      const status = (statusData as { today_done: boolean; week_full: boolean }) ?? { today_done: false, week_full: false };
 
-      if (weekFull) {
+      if (status.week_full) {
         toast({ title: "You've finished all 5 weekly sessions", description: "Visit your portal to review your week." });
         navigate("/student/portal");
-      } else if (todayDone) {
+      } else if (status.today_done) {
+        toast({ title: "You've already reflected today", description: "Come back tomorrow, Scriber." });
         navigate("/student/portal");
       } else {
         setStep("breathing");

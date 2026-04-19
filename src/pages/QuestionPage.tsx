@@ -36,7 +36,7 @@ function countSentences(text: string): number {
 const MIN_SENTENCES = 3;
 
 const QuestionPage = ({ type }: QuestionPageProps) => {
-  const { responses, setResponse, setStep, student, week, day, markSubmitted } = useLionsPen();
+  const { responses, setResponse, setStep, student, week, markSubmitted } = useLionsPen();
   const { toast } = useToast();
   const meta = STEP_MAP[type];
   const value = responses[type];
@@ -51,25 +51,42 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
   const [prompt, setPrompt] = useState("Reflect on your day and share your thoughts.");
   const [loading, setLoading] = useState(true);
 
+  // Resolve which "day" prompt to show based on completed submissions this week.
+  const [resolvedDay, setResolvedDay] = useState<number>(1);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function resolveDay() {
+      if (!student?.id) return;
+      const { data } = await supabase.rpc("get_student_week_status", {
+        p_student_id: student.id,
+        p_week: week,
+      });
+      const status = data as { next_day: number } | null;
+      if (!cancelled && status?.next_day) setResolvedDay(status.next_day);
+    }
+    resolveDay();
+    return () => { cancelled = true; };
+  }, [student?.id, week]);
+
   useEffect(() => {
     let cancelled = false;
     async function fetchQuestion() {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("questions")
         .select("prompt")
         .eq("category", type)
         .eq("grade_band", gradeBand)
         .eq("week", week)
-        .eq("day", day)
+        .eq("day", resolvedDay)
         .maybeSingle();
 
       if (!cancelled) {
         if (data?.prompt) {
           setPrompt(data.prompt);
         } else {
-          // Fallback to local mock
-          const local = getQuestion(type, grade, week, day);
+          const local = getQuestion(type, grade, week, resolvedDay);
           setPrompt(local?.prompt ?? "Reflect on your day and share your thoughts.");
         }
         setLoading(false);
@@ -77,7 +94,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
     }
     fetchQuestion();
     return () => { cancelled = true; };
-  }, [type, gradeBand, week, day, grade]);
+  }, [type, gradeBand, week, resolvedDay, grade]);
 
   return (
     <div
@@ -202,7 +219,6 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
                     p_emotion: responses.emotion,
                     p_character: responses.character,
                     p_week: week,
-                    p_day: day,
                   });
                   if (error) throw error;
                   const result = data as any;

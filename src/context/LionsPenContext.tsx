@@ -24,21 +24,15 @@ export interface SessionResponses {
   character: string;
 }
 
-/** Derive week (1-4) and day (1-5) from the current date.
- *  Epoch: Sunday April 12 2026 = Week 1 Day 1.
- *  Each week runs Sun-Thu (5 school days), cycling 1-4. */
-function getWeekAndDay(): { week: number; day: number } {
+/** Derive the current week (1-4) from a 4-week cycle anchored to Sunday April 12 2026.
+ *  Day numbering is now sequence-based (1st entry of week = Day 1, etc.) and assigned by the server. */
+function getCurrentWeek(): number {
   const now = new Date();
-  // Epoch: April 12 2026 (Sunday)
-  const epoch = new Date(2026, 3, 12); // month is 0-indexed
+  const epoch = new Date(2026, 3, 12); // April 12 2026 (Sunday)
   const diffDays = Math.floor((now.getTime() - epoch.getTime()) / 86400000);
-  if (diffDays < 0) return { week: 1, day: 1 }; // before epoch fallback
-  // 7-day weeks, but only days 0-4 (Sun-Thu) are school days; 5-6 (Fri-Sat) map to day 5
+  if (diffDays < 0) return 1;
   const weekIndex = Math.floor(diffDays / 7);
-  const dayInWeek = diffDays % 7;
-  const day = Math.min(dayInWeek + 1, 5); // cap at 5
-  const week = (weekIndex % 4) + 1;
-  return { week, day };
+  return (weekIndex % 4) + 1;
 }
 
 interface LionsPenContextType {
@@ -52,7 +46,6 @@ interface LionsPenContextType {
   markSubmitted: (studentId: string) => void;
   resetSession: () => void;
   week: number;
-  day: number;
 }
 
 const LionsPenContext = createContext<LionsPenContextType | null>(null);
@@ -68,7 +61,7 @@ export const LionsPenProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     character: "",
   });
 
-  const { week, day } = useMemo(() => getWeekAndDay(), []);
+  const week = useMemo(() => getCurrentWeek(), []);
 
   const setResponse = useCallback((key: keyof SessionResponses, value: string) => {
     setResponses((prev) => ({ ...prev, [key]: value }));
@@ -93,7 +86,7 @@ export const LionsPenProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   return (
     <LionsPenContext.Provider
-      value={{ step, setStep, student, setStudent, responses, setResponse, hasSubmittedToday, markSubmitted, resetSession, week, day }}
+      value={{ step, setStep, student, setStudent, responses, setResponse, hasSubmittedToday, markSubmitted, resetSession, week }}
     >
       {children}
     </LionsPenContext.Provider>
