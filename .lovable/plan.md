@@ -1,54 +1,39 @@
 
 
-## Plan: Connect mylionspen.com for branded auth emails
+## Fix: Question text overflowing the scroll artifact on mobile
 
-### Step 1 — Set up the email sender domain
+### The problem
 
-Open the email setup dialog and enter `mylionspen.com`. Lovable will provision the subdomain `notify.mylionspen.com` and give you a small set of DNS records (NS records) to add at Hostinger:
+On `QuestionPage.tsx`, the question prompt sits inside a fixed-aspect-ratio div (2 / 1.3) that uses `scroll-bg.png` as a background image. The text is rendered with `font-cinzel text-lg` and absolute padding of `6% 14%`. On phone widths (~360–414 px), the scroll image scales down but the text doesn't — long prompts overflow the scroll edges, sometimes spilling out the bottom or sides.
 
-1. Log in to Hostinger → **Domains** → `mylionspen.com` → **DNS / Nameservers**.
-2. Under **DNS Zone**, add the NS records Lovable shows you (typically two records pointing `notify` to `ns3.lovable.cloud` and `ns4.lovable.cloud`).
-3. Save. DNS usually verifies within 10–30 minutes, occasionally longer.
+Root cause: the scroll is a **bitmap with a fixed shape**, but the text inside it is laid out independently. There is no link between "how tall the scroll is on screen" and "how big the text and padding are."
 
-Your apex domain (`mylionspen.com`) keeps working normally — only the `notify.` subdomain is delegated.
+### Fix strategy
 
-### Step 2 — Scaffold and brand the auth email templates
+Make the text scale and wrap to fit the scroll at every viewport, and give it a safe overflow path on the rare prompt that's still too long.
 
-Once the domain is registered with Lovable (does **not** need to be DNS-verified yet), I will:
+1. **Responsive text size**: replace `text-lg` with a clamped, viewport-aware size that's small on phones and grows on larger screens. Same for the category label above it.
+2. **Responsive aspect ratio**: keep the current `2 / 1.3` on desktop, but loosen to roughly `2 / 1.6` on phones so the scroll is taller (more vertical room for wrapped text) without distorting the image — `backgroundSize: contain` already letterboxes cleanly.
+3. **Tighter padding on mobile**: drop the inner padding from `6% 14%` to about `8% 10%` on phones so the usable text area is wider relative to the scroll.
+4. **Safe overflow path**: add `overflow-y-auto` and a small max-height tied to the scroll's inner area, so an unusually long prompt scrolls *inside* the scroll graphic instead of spilling out. Hide the scrollbar visually for cleanliness.
+5. **Line clamp safety**: use `break-words` and `hyphens-auto` so long words can't punch through the right edge.
 
-- Scaffold the 6 auth email templates (recovery, signup, magic link, invite, email change, reauthentication).
-- Brand them in Lion's Pen style:
-  - White email body (required by email clients) with Lapis `#1B3A6B` primary button, Ochre `#C8962E` accent.
-  - Cinzel-style serif headings, clean body copy, ceremonial "Scriber" tone.
-  - Lion's Pen logo at the top of each email.
-- Deploy the `auth-email-hook` edge function so Supabase routes auth emails through these templates.
+No changes to the response textarea, buttons, backgrounds, or any other page — only the scroll prompt block on `QuestionPage.tsx`.
 
-### Step 3 — Verify end-to-end
+### Files touched
 
-After DNS verifies (you can monitor in **Cloud → Emails**):
-- Trigger a password reset from the Parent login page.
-- The email arrives from `noreply@notify.mylionspen.com`, branded in Lion's Pen colors.
-- Clicking the button lands on **your** `/reset-password` page (not Lovable's login).
-- Set a new password and confirm sign-in works.
+- `src/pages/QuestionPage.tsx` — only the scroll/prompt block (the `div` with `backgroundImage: url(${scrollBg})` and its inner content)
 
-### What changes vs. what stays the same
+### Technical details
 
-| Component | Change |
-|---|---|
-| `ParentAuth.tsx` | No change — already correct |
-| `ResetPassword.tsx` | No change — already correct |
-| `supabase/functions/auth-email-hook/` | **New** — handles auth email rendering |
-| `supabase/functions/_shared/email-templates/*.tsx` | **New** — 6 branded templates |
-| `supabase/config.toml` | Updated to register the hook |
-| Hostinger DNS | You add NS records for `notify` subdomain |
+- Use Tailwind responsive prefixes (`sm:`, `md:`) rather than JS media queries — keeps it simple and consistent with the rest of the codebase.
+- New text sizing: `text-[11px] sm:text-xs` for the category label, `text-sm sm:text-base md:text-lg` for the prompt heading.
+- New aspect ratio: apply `2 / 1.6` by default, override to `2 / 1.3` at `sm` and up via inline style swap or by moving the aspect ratio to a Tailwind class with responsive variants.
+- Inner content wrapper: `overflow-y-auto max-h-full` plus `scrollbar-width: none` / `::-webkit-scrollbar { display: none }` (added inline via a small style attribute or via existing Tailwind utilities).
+- Padding: `px-[10%] py-[8%] sm:px-[14%] sm:py-[6%]`.
+- Add `break-words hyphens-auto` to the `<h2>`.
 
-### Notes
+### Verification
 
-- DNS verification time depends on Hostinger; usually fast (under an hour). Worst case is 72 hours but rare.
-- Until DNS verifies, parents will continue to receive the default Lovable reset email. The moment DNS goes green, branded emails take over automatically — no further action from you.
-- Default Lovable emails will keep working in the meantime, so no parent gets locked out during setup.
-
-<lov-actions>
-<lov-open-email-setup>Set up mylionspen.com</lov-open-email-setup>
-</lov-actions>
+After the change, on a 375 px viewport (iPhone SE / 12 mini class), every prompt currently in `questions` table renders fully inside the scroll image with no edge spillover; on desktop (≥768 px), the scroll looks identical to today. If a single prompt is still too long, it scrolls vertically inside the scroll graphic invisibly (no visible scrollbar).
 
