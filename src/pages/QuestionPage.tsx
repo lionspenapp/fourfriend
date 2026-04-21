@@ -131,20 +131,22 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
       >
         {/* Scroll — question only */}
         <div
-          className="relative w-full"
+          className="relative w-full aspect-[2/1.6] sm:aspect-[2/1.3]"
           style={{
             backgroundImage: `url(${scrollBg})`,
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
-            aspectRatio: "2 / 1.3",
           }}
         >
-          <div className="absolute inset-0 flex flex-col justify-center" style={{ padding: "6% 14%" }}>
-            <p className="text-white drop-shadow-md text-xs font-cinzel tracking-widest uppercase mb-2">
+          <div
+            className="absolute inset-0 flex flex-col justify-center overflow-y-auto px-[10%] py-[8%] sm:px-[14%] sm:py-[6%] [&::-webkit-scrollbar]:hidden"
+            style={{ scrollbarWidth: "none" }}
+          >
+            <p className="text-white drop-shadow-md text-[11px] sm:text-xs font-cinzel tracking-widest uppercase mb-2">
               {CATEGORY_LABEL[type]} Reflection — Question {meta.num} of 3
             </p>
-            <h2 className="font-cinzel text-lg font-bold text-white drop-shadow-lg leading-relaxed">
+            <h2 className="font-cinzel text-sm sm:text-base md:text-lg font-bold text-white drop-shadow-lg leading-relaxed break-words hyphens-auto">
               {loading ? "Loading question…" : prompt}
             </h2>
           </div>
