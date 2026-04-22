@@ -92,7 +92,10 @@ const StudentLogin = () => {
             Lion's Pen
           </h1>
            <p className="text-secondary mt-2 font-cinzel text-sm tracking-widest uppercase">
-             The Celestial Scriptorium
+             The Inner Scriptorium
+           </p>
+           <p className="text-secondary/80 mt-1 font-cinzel italic text-xs tracking-wide">
+             where you become who you were meant to be
            </p>
         </div>
 
