@@ -1,31 +1,62 @@
 
 
-## Change tagline under "Lion's Pen" title
+## Plan: Set up branded password-reset emails from `mycaptainslog.com`
 
-Replace the subtitle on the Student Login screen from "The Celestial Scriptorium" to a new two-line tagline that better reflects the inward, personal nature of the practice.
+You bought a fresh domain — `mycaptainslog.com` — so we can start clean (no Hostinger NS-record troubles like before). Here's the full path from "domain bought" to "parents receive a Lion's Pen-branded password reset email."
 
-### Change
+### Step 1 — Open the email setup dialog and register the domain
 
-**File:** `src/pages/StudentLogin.tsx` (line 95)
+I'll surface the email setup dialog. In it, you'll:
 
-Replace:
-> The Celestial Scriptorium
+1. Enter `mycaptainslog.com` as your domain.
+2. Lovable will provision the subdomain `notify.mycaptainslog.com` and show you **two NS records** to add at your domain registrar (where you bought `mycaptainslog.com`).
 
-With:
-> **THE INNER SCRIPTORIUM**
-> *where you become who you were meant to be*
+### Step 2 — Add the two NS records at your registrar
 
-### Layout
+At whichever registrar you bought `mycaptainslog.com` from, go to the DNS / DNS Zone / DNS Records section and add **two NS records**:
 
-- Line 1 — "THE INNER SCRIPTORIUM": keep the existing gold/secondary color, Cinzel font, uppercase, wide tracking — same visual weight as today.
-- Line 2 — "where you become who you were meant to be": smaller, lighter (e.g. `text-secondary/80`), normal case, italic, tighter tracking. Sits directly below line 1 with a small gap.
+| Type | Name / Host | Value (Points to) | TTL |
+|---|---|---|---|
+| NS | `notify` | `ns3.lovable.cloud` (exact value shown in dialog) | default |
+| NS | `notify` | `ns4.lovable.cloud` (exact value shown in dialog) | default |
 
-### Scope
+Both records use the same Name (`notify`), different Values. The dialog will show the exact nameserver values to use — copy those, not the examples above.
 
-Only the Student Login subtitle changes. Out of scope (left untouched):
-- Oath text in `src/data/mockContent.ts` ("Scriber of the Celestial Scriptorium") — this is ceremonial/historical lore, distinct from the personal entry tagline.
-- "Submit to the Celestial Scriptorium" button on `QuestionPage.tsx` — refers to the act of sending the reflection upward, which still fits the celestial framing.
-- "A Message from the Celestial Scriptorium" header on `CelestialMessage.tsx` — the reply genuinely comes from above, so the celestial framing is correct here.
+### Step 3 — I scaffold and brand the auth email templates
 
-If you'd like any of those three other surfaces also rephrased to "Inner Scriptorium," say the word and I'll fold them in.
+As soon as the domain is registered (you do NOT have to wait for DNS to verify), I will:
+
+1. Scaffold the 6 standard auth email templates: signup confirmation, password recovery, magic link, invite, email change, reauthentication.
+2. Apply Lion's Pen brand styling to each:
+   - White email body background (required for email clients)
+   - Lapis blue (`#1B3A6B`) primary button
+   - Ochre (`#C8962E`) accents and dividers
+   - Cinzel font for headings, Inter/Arial fallback for body
+   - Ceremonial Scriber tone in the copy ("Step into your Inner Scriptorium…")
+3. Deploy the `auth-email-hook` edge function so password-reset requests route through these templates.
+
+### Step 4 — Verify the password reset flow end-to-end
+
+Your existing code is already correct:
+- `ParentAuth.tsx` — "Forgot password?" modal calls `supabase.auth.resetPasswordForEmail` with redirect to `/reset-password` ✓
+- `ResetPassword.tsx` — handles the `type=recovery` token and updates the password ✓
+
+So no code changes are needed in those files. Once DNS verifies (usually under an hour at a fresh registrar), parents who request a password reset will receive the branded Lion's Pen email from `notify@mycaptainslog.com`.
+
+### Timeline expectations
+
+- **Step 1 (dialog + domain entry)**: ~1 minute
+- **Step 2 (add NS records at registrar)**: ~3 minutes
+- **Step 3 (I scaffold + deploy)**: ~30 seconds, runs immediately after Step 1
+- **Step 4 (DNS verification)**: typically under 1 hour on a fresh domain; up to 72h worst case
+- **In the meantime**: parents still receive default Lovable reset emails, so no one is locked out
+
+### What I need from you
+
+Just approve this plan. After approval I'll open the email setup dialog. Once you've entered the domain in the dialog, I'll immediately scaffold and brand the templates and deploy the hook — you can add the two NS records at your registrar in parallel.
+
+### Out of scope (intentionally)
+
+- Custom domain for the **app itself** (i.e., serving the Lion's Pen site at `mycaptainslog.com` instead of `pen-guard-vault.lovable.app`) — that's a separate setup using A records, not NS records. Happy to plan that next if you want.
+- Transactional emails (e.g., notifying parents when their child completes a reflection) — also separate; can layer on after auth emails are live.
 
