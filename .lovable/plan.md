@@ -1,62 +1,29 @@
 
 
-## Plan: Set up branded password-reset emails from `mycaptainslog.com`
+## Generate new Lion's Pen logo (new composition, original palette)
 
-You bought a fresh domain — `mycaptainslog.com` — so we can start clean (no Hostinger NS-record troubles like before). Here's the full path from "domain bought" to "parents receive a Lion's Pen-branded password reset email."
+Generate a fresh logo combining the uploaded image's composition with the current logo's Babylonian palette, then swap it into the Student Login screen.
 
-### Step 1 — Open the email setup dialog and register the domain
+### Generation prompt
 
-I'll surface the email setup dialog. In it, you'll:
+Use Nano Banana Pro (`google/gemini-3-pro-image-preview`) for a square 1024×1024 PNG with **transparent background**:
 
-1. Enter `mycaptainslog.com` as your domain.
-2. Lovable will provision the subdomain `notify.mycaptainslog.com` and show you **two NS records** to add at your domain registrar (where you bought `mycaptainslog.com`).
+> Heraldic emblem logo, transparent background. Circular medallion in deep Lapis blue (#1B3A6B) with an Ochre gold (#C8962E) double-ring border. Inside the medallion: a majestic golden lion (seated, calm, regal, facing forward) holding a quill pen, with an unfurled cream Sand-colored (#F5E6C8) scroll behind it. Above the lion, an eight-point Ochre gold star with radiating rays. Below the medallion, a bold Lapis blue banner with Ochre gold borders containing the words "THE LION'S PEN" in Cinzel-style serif capitals in Ochre gold. Rich, hand-painted illuminated-manuscript feel. Palette strictly limited to Lapis #1B3A6B, Ochre #C8962E, Sand #F5E6C8. Crisp lines, high contrast, no gradients outside the palette, no extra text.
 
-### Step 2 — Add the two NS records at your registrar
+### Steps
 
-At whichever registrar you bought `mycaptainslog.com` from, go to the DNS / DNS Zone / DNS Records section and add **two NS records**:
+1. Generate the image via the Lovable AI gateway (Nano Banana Pro).
+2. QA: view the output. If the lion is malformed, the banner text is misspelled, palette drifts, or the background isn't transparent → regenerate (up to 2 retries) tightening the prompt.
+3. Save as `src/assets/lions_pen_v2.png`.
+4. In `src/pages/StudentLogin.tsx`, change the import from `lions_pen.png` → `lions_pen_v2.png`. Keep the old file in place so revert is one line.
 
-| Type | Name / Host | Value (Points to) | TTL |
-|---|---|---|---|
-| NS | `notify` | `ns3.lovable.cloud` (exact value shown in dialog) | default |
-| NS | `notify` | `ns4.lovable.cloud` (exact value shown in dialog) | default |
+### Scope
 
-Both records use the same Name (`notify`), different Values. The dialog will show the exact nameserver values to use — copy those, not the examples above.
+- Only the Student Login logo image changes.
+- No layout, copy, sizing, or other pages touched.
+- `src/assets/lions_pen.png` stays in the repo as instant fallback.
 
-### Step 3 — I scaffold and brand the auth email templates
+### If you don't love the result
 
-As soon as the domain is registered (you do NOT have to wait for DNS to verify), I will:
-
-1. Scaffold the 6 standard auth email templates: signup confirmation, password recovery, magic link, invite, email change, reauthentication.
-2. Apply Lion's Pen brand styling to each:
-   - White email body background (required for email clients)
-   - Lapis blue (`#1B3A6B`) primary button
-   - Ochre (`#C8962E`) accents and dividers
-   - Cinzel font for headings, Inter/Arial fallback for body
-   - Ceremonial Scriber tone in the copy ("Step into your Inner Scriptorium…")
-3. Deploy the `auth-email-hook` edge function so password-reset requests route through these templates.
-
-### Step 4 — Verify the password reset flow end-to-end
-
-Your existing code is already correct:
-- `ParentAuth.tsx` — "Forgot password?" modal calls `supabase.auth.resetPasswordForEmail` with redirect to `/reset-password` ✓
-- `ResetPassword.tsx` — handles the `type=recovery` token and updates the password ✓
-
-So no code changes are needed in those files. Once DNS verifies (usually under an hour at a fresh registrar), parents who request a password reset will receive the branded Lion's Pen email from `notify@mycaptainslog.com`.
-
-### Timeline expectations
-
-- **Step 1 (dialog + domain entry)**: ~1 minute
-- **Step 2 (add NS records at registrar)**: ~3 minutes
-- **Step 3 (I scaffold + deploy)**: ~30 seconds, runs immediately after Step 1
-- **Step 4 (DNS verification)**: typically under 1 hour on a fresh domain; up to 72h worst case
-- **In the meantime**: parents still receive default Lovable reset emails, so no one is locked out
-
-### What I need from you
-
-Just approve this plan. After approval I'll open the email setup dialog. Once you've entered the domain in the dialog, I'll immediately scaffold and brand the templates and deploy the hook — you can add the two NS records at your registrar in parallel.
-
-### Out of scope (intentionally)
-
-- Custom domain for the **app itself** (i.e., serving the Lion's Pen site at `mycaptainslog.com` instead of `pen-guard-vault.lovable.app`) — that's a separate setup using A records, not NS records. Happy to plan that next if you want.
-- Transactional emails (e.g., notifying parents when their child completes a reflection) — also separate; can layer on after auth emails are live.
+Tell me what to adjust ("lion bigger", "rampant pose", "drop the rays", "swap banner to THE INNER SCRIPTORIUM") and I regenerate — cheap and fast.
 
