@@ -21,38 +21,30 @@ interface SignupEmailProps {
   confirmationUrl: string
 }
 
-export const SignupEmail = ({
-  siteName,
-  siteUrl,
-  recipient,
-  confirmationUrl,
-}: SignupEmailProps) => (
+export const SignupEmail = ({ siteUrl, recipient, confirmationUrl }: SignupEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirm your email for {siteName}</Preview>
+    <Preview>Confirm your email for Lion's Pen</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>Confirm your email</Heading>
+        <Heading style={brand}>LION'S PEN</Heading>
+        <Text style={tagline}>The Inner Scriptorium</Text>
+        <div style={divider} />
+        <Heading style={h1}>Welcome, Scriber</Heading>
         <Text style={text}>
-          Thanks for signing up for{' '}
-          <Link href={siteUrl} style={link}>
-            <strong>{siteName}</strong>
-          </Link>
-          !
+          You stand at the threshold of <Link href={siteUrl} style={link}>Lion's Pen</Link> —
+          a place where you become who you were meant to be.
         </Text>
         <Text style={text}>
-          Please confirm your email address (
-          <Link href={`mailto:${recipient}`} style={link}>
-            {recipient}
-          </Link>
-          ) by clicking the button below:
+          Please confirm your email address ({recipient}) to enter:
         </Text>
-        <Button style={button} href={confirmationUrl}>
-          Verify Email
-        </Button>
+        <div style={buttonWrap}>
+          <Button style={button} href={confirmationUrl}>Confirm Email</Button>
+        </div>
         <Text style={footer}>
-          If you didn't create an account, you can safely ignore this email.
+          If you didn't create an account, you may safely ignore this message.
         </Text>
+        <Text style={signature}>— The Celestial Scriptorium</Text>
       </Container>
     </Body>
   </Html>
@@ -60,27 +52,15 @@ export const SignupEmail = ({
 
 export default SignupEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
-const h1 = {
-  fontSize: '22px',
-  fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 20px',
-}
-const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '0 0 25px',
-}
-const link = { color: 'inherit', textDecoration: 'underline' }
-const button = {
-  backgroundColor: '#000000',
-  color: '#ffffff',
-  fontSize: '14px',
-  borderRadius: '8px',
-  padding: '12px 20px',
-  textDecoration: 'none',
-}
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const main = { backgroundColor: '#ffffff', fontFamily: 'Georgia, "Times New Roman", serif' }
+const container = { padding: '40px 32px', maxWidth: '560px' }
+const brand = { fontSize: '28px', fontWeight: 'bold' as const, color: '#1B3A6B', letterSpacing: '0.2em', textAlign: 'center' as const, margin: '0 0 4px' }
+const tagline = { fontSize: '12px', color: '#C8962E', letterSpacing: '0.3em', textTransform: 'uppercase' as const, textAlign: 'center' as const, margin: '0 0 24px' }
+const divider = { height: '2px', backgroundColor: '#C8962E', margin: '0 0 32px' }
+const h1 = { fontSize: '22px', fontWeight: 'bold' as const, color: '#1B3A6B', margin: '0 0 20px', letterSpacing: '0.05em' }
+const text = { fontSize: '15px', color: '#3a3a3a', lineHeight: '1.6', margin: '0 0 18px' }
+const link = { color: '#1B3A6B', textDecoration: 'underline', fontWeight: 'bold' as const }
+const buttonWrap = { textAlign: 'center' as const, margin: '32px 0' }
+const button = { backgroundColor: '#1B3A6B', color: '#ffffff', fontSize: '14px', fontWeight: 'bold' as const, borderRadius: '6px', padding: '14px 32px', textDecoration: 'none', letterSpacing: '0.1em', textTransform: 'uppercase' as const }
+const footer = { fontSize: '13px', color: '#888888', lineHeight: '1.5', margin: '24px 0 0', fontStyle: 'italic' as const }
+const signature = { fontSize: '13px', color: '#C8962E', margin: '24px 0 0', textAlign: 'center' as const, letterSpacing: '0.1em' }
