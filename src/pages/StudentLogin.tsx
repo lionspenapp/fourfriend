@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useLionsPen } from "@/context/LionsPenContext";
 import { supabase } from "@/integrations/supabase/client";
-import lionsPenLogo from "@/assets/lions_pen.png";
+import lionsPenLogo from "@/assets/lions_pen_v2.png";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
