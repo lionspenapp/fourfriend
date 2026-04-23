@@ -1,49 +1,57 @@
 
 
-## Domain mismatch: `.app` vs `.com` — yes, this needs correcting
+## Why Day 2 is empty for Ken Gross this week
 
-Short answer: **yes, you have to fix this.** Right now nothing will work end-to-end, because the project is configured for `notify.mycaptainslog.com` but you actually own `mycaptainslog.app`. Two different domains, two different registrars, two different DNS zones.
+### What actually happened in the data
 
-### What's currently wrong
+Ken's submissions for **Week 2** (the current 4-week-cycle week) in the database:
 
-1. **Project email domain is `notify.mycaptainslog.com`** — a domain you do not own. DNS verification for it will never succeed because nobody can add NS records on a domain they don't control.
-2. **NS records were added at GoDaddy on a `.site` zone** — wrong registrar AND wrong TLD. Those records are sitting in a DNS zone that has no relationship to either `.com` or `.app`, so they have zero effect.
-3. **Net result:** branded password-reset emails will not send. The system will fall back to default Lovable emails from a generic sender until the domain mismatch is resolved.
+| Day stored | entry_date | completed_at | Notes |
+|---|---|---|---|
+| Day 1 | 2026-04-19 (Sun) | ✅ completed | Full entry |
+| Day 2 | 2026-04-21 (Tue) | ❌ **NULL** | Started, never finished — academic only, no emotion/character |
+| Day 3 | 2026-04-23 (Thu) | ✅ completed | Today's entry |
 
-### The fix — two clean steps
+So Day 2 exists, but `completed_at IS NULL`. The portal's tracker only counts rows where `completed_at IS NOT NULL` (see `get_student_week_submissions`), so Day 2 renders as an empty circle. Meanwhile `submit_student_response` numbers new days as `MAX(day) + 1`, so today's finished entry got labeled **Day 3** even though Day 2 was never completed.
 
-**Step 1: Remove the wrong email domain from the project**
-- Delete `notify.mycaptainslog.com` from Cloud → Emails → Manage Domains. It's a dead-end record we don't want lingering.
-- Also clean up the misplaced NS records at GoDaddy on the `.site` zone (they're harmless but confusing).
+In short: **Ken opened a session on Tue Apr 21, wrote an academic answer, then abandoned the flow before submitting the final character question.** That left an orphan Day-2 row with no `completed_at`, and today's session correctly got assigned Day 3.
 
-**Step 2: Add the correct email domain `notify.mycaptainslog.app`**
-- Open the email setup dialog and enter `mycaptainslog.app` as the root.
-- Lovable will give you two NS records to add at the registrar where you actually bought `mycaptainslog.app` (not GoDaddy unless that's where it's registered):
+### Root cause in the code
 
-  | Type | Name | Value |
-  |---|---|---|
-  | NS | `notify` | `ns3.lovable.cloud` |
-  | NS | `notify` | `ns4.lovable.cloud` |
+`submit_student_response` writes the row at the **end of the academic question** (see `QuestionPage.tsx` — wait, actually it writes at the **end of the character question**). Let me re-check: the RPC is called from `QuestionPage` only when `type === "character"`. So the row is inserted on the character step, then `mark_submission_complete` is called separately from `CelestialMessage` to set `completed_at`.
 
-- Add them at the correct registrar, on the correct zone (`mycaptainslog.app`).
-- Wait for DNS propagation (usually under 1 hour on a fresh domain, up to 72h worst case).
+If the student closes the tab between submitting character and reaching the celestial screen (or the celestial RPC fails), you get exactly this state: row exists, `completed_at` NULL, day number "burned."
 
-### What I will do once you confirm
+### The fix — two parts
 
-1. Remove the stale `notify.mycaptainslog.com` domain from the project config.
-2. Update the `auth-email-hook` edge function's hardcoded constants:
-   - `SENDER_DOMAIN`: `notify.mycaptainslog.com` → `notify.mycaptainslog.app`
-   - `ROOT_DOMAIN`: `mycaptainslog.com` → `mycaptainslog.app`
-   - `FROM_DOMAIN`: `notify.mycaptainslog.com` → `notify.mycaptainslog.app`
-3. Open the email setup dialog so you can register `notify.mycaptainslog.app` and get the correct NS records to paste at your real registrar.
-4. Redeploy `auth-email-hook` so it sends from the right domain.
+**1. Backfill Ken's stuck Day 2 (one-time data fix)**
 
-### Two questions before I proceed
+Decide between:
+- **(A) Delete the orphan row.** Day 2 becomes available again. Today's entry gets renumbered to Day 2 on next read… except it's already stored as Day 3. So we'd also need to renumber today's row from 3 → 2. Cleanest narrative ("Ken did Day 1 and Day 2"), but rewrites history.
+- **(B) Mark the orphan complete with what he wrote.** Day 2 circle fills, but the entry will show only an academic response (emotion/character blank).
+- **(C) Leave it.** Day 2 stays empty forever; today is Day 3. Honest but ugly.
 
-1. **Where is `mycaptainslog.app` actually registered?** (GoDaddy, Namecheap, Cloudflare, Lovable itself?) — this is where the NS records need to go. If you bought it through Lovable, even better: I can guide you to manage DNS directly inside Lovable with no registrar dance.
-2. **Confirm you want `.app` going forward** and I should scrap `.com` entirely from the project? (Just want to make sure you didn't mean to buy both.)
+My recommendation: **(A)** — delete the orphan AND renumber today's row to Day 2. It tells the true story (Ken has done 2 sessions this week) and the day numbers stay contiguous.
+
+**2. Prevent it from happening again (code fix)**
+
+In `submit_student_response`, set `completed_at = now()` at insert time. The whole "submit then mark complete" two-step is what creates orphan rows. Drop `mark_submission_complete` from the celestial flow (or keep it as a no-op) and let the row be complete the moment the student finishes the 3rd question.
+
+Trade-off: students who close the tab on the celestial screen would still count as "complete" — but they already finished writing all 3 reflections at that point, which is the meaningful threshold.
+
+### Scope
+
+- One SQL migration to fix Ken's data (delete Day 2 orphan, renumber today's Day 3 → Day 2).
+- Update `submit_student_response` to set `completed_at = now()` on insert/update.
+- `CelestialMessage` keeps calling `mark_submission_complete` harmlessly (it's idempotent), no UI changes needed.
 
 ### Out of scope
 
-- Any code changes outside the three constants in `auth-email-hook/index.ts`. Templates, app UI, reset flow — all stay as-is.
+- Changing the week-rollover or day-numbering logic.
+- Any UI changes to the portal.
+- Other students' historical data (only Ken has this issue per the query).
+
+### Question for you
+
+Which orphan-fix do you want — **(A) delete + renumber**, **(B) mark complete as-is**, or **(C) leave it**?
 
