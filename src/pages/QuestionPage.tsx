@@ -229,6 +229,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
                     setSubmitting(false);
                     return;
                   }
+                  if (typeof result.day === "number") setCurrentDay(result.day);
                   markSubmitted(student.id);
                 } catch (err: any) {
                   toast({ title: "Error saving", description: err.message, variant: "destructive" });
