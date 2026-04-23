@@ -23,18 +23,54 @@ const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isRecovery, setIsRecovery] = useState(false);
+  const [verifying, setVerifying] = useState(true);
+  const [linkError, setLinkError] = useState<string | null>(null);
 
   useEffect(() => {
+    const url = new URL(window.location.href);
     const hash = window.location.hash;
+    const hashParams = new URLSearchParams(hash.startsWith("#") ? hash.slice(1) : hash);
+
+    // 1. Error returned in URL (expired, already used, etc.)
+    const errDesc =
+      url.searchParams.get("error_description") ||
+      hashParams.get("error_description") ||
+      url.searchParams.get("error") ||
+      hashParams.get("error");
+    if (errDesc) {
+      setLinkError(decodeURIComponent(errDesc).replace(/\+/g, " "));
+      setVerifying(false);
+      return;
+    }
+
+    // 2. PKCE flow: ?code=...
+    const code = url.searchParams.get("code");
+    if (code) {
+      supabase.auth
+        .exchangeCodeForSession(code)
+        .then(({ error }) => {
+          if (error) {
+            setLinkError(error.message);
+          } else {
+            setIsRecovery(true);
+            // strip code from URL so refresh doesn't retry
+            window.history.replaceState({}, "", "/reset-password");
+          }
+        })
+        .finally(() => setVerifying(false));
+      return;
+    }
+
+    // 3. Legacy hash flow: #type=recovery&access_token=...
     if (hash.includes("type=recovery")) {
       setIsRecovery(true);
     }
+    setVerifying(false);
 
-    supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
-        setIsRecovery(true);
-      }
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") setIsRecovery(true);
     });
+    return () => sub.subscription.unsubscribe();
   }, []);
 
   const handleReset = async (e: React.FormEvent) => {
@@ -66,11 +102,26 @@ const ResetPassword = () => {
   const inputClass =
     "bg-foreground/5 border-secondary/40 text-foreground placeholder:text-foreground/50 focus-visible:ring-secondary";
 
+  if (verifying) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <p className="text-foreground/70 font-cinzel animate-pulse">Verifying reset link…</p>
+      </div>
+    );
+  }
+
   if (!isRecovery) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="text-center">
-          <p className="text-foreground/70 font-cinzel">Invalid or expired reset link.</p>
+        <div className="text-center max-w-sm">
+          <p className="text-foreground/70 font-cinzel">
+            {linkError
+              ? `This reset link is no longer valid: ${linkError}`
+              : "Invalid or expired reset link."}
+          </p>
+          <p className="text-foreground/60 font-cinzel text-sm mt-2">
+            Reset links can only be used once. Please request a new one.
+          </p>
           <button onClick={() => navigate("/")} className="text-secondary font-cinzel mt-4 hover:text-secondary/80">
             Back to Sign In
           </button>
