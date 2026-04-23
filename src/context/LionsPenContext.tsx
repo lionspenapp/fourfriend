@@ -46,6 +46,8 @@ interface LionsPenContextType {
   markSubmitted: (studentId: string) => void;
   resetSession: () => void;
   week: number;
+  currentDay: number | null;
+  setCurrentDay: (d: number | null) => void;
 }
 
 const LionsPenContext = createContext<LionsPenContextType | null>(null);
