@@ -36,7 +36,7 @@ function countSentences(text: string): number {
 const MIN_SENTENCES = 3;
 
 const QuestionPage = ({ type }: QuestionPageProps) => {
-  const { responses, setResponse, setStep, student, week, markSubmitted } = useLionsPen();
+  const { responses, setResponse, setStep, student, week, markSubmitted, setCurrentDay } = useLionsPen();
   const { toast } = useToast();
   const meta = STEP_MAP[type];
   const value = responses[type];
@@ -229,6 +229,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
                     setSubmitting(false);
                     return;
                   }
+                  if (typeof result.day === "number") setCurrentDay(result.day);
                   markSubmitted(student.id);
                 } catch (err: any) {
                   toast({ title: "Error saving", description: err.message, variant: "destructive" });

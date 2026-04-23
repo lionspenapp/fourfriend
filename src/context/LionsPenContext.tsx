@@ -46,6 +46,8 @@ interface LionsPenContextType {
   markSubmitted: (studentId: string) => void;
   resetSession: () => void;
   week: number;
+  currentDay: number | null;
+  setCurrentDay: (d: number | null) => void;
 }
 
 const LionsPenContext = createContext<LionsPenContextType | null>(null);
@@ -60,6 +62,7 @@ export const LionsPenProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     emotion: "",
     character: "",
   });
+  const [currentDay, setCurrentDay] = useState<number | null>(null);
 
   const week = useMemo(() => getCurrentWeek(), []);
 
@@ -82,11 +85,12 @@ export const LionsPenProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setStep("login");
     setStudent(null);
     setResponses({ academic: "", emotion: "", character: "" });
+    setCurrentDay(null);
   }, []);
 
   return (
     <LionsPenContext.Provider
-      value={{ step, setStep, student, setStudent, responses, setResponse, hasSubmittedToday, markSubmitted, resetSession, week }}
+      value={{ step, setStep, student, setStudent, responses, setResponse, hasSubmittedToday, markSubmitted, resetSession, week, currentDay, setCurrentDay }}
     >
       {children}
     </LionsPenContext.Provider>

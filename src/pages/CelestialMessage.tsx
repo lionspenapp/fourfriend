@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useLionsPen } from "@/context/LionsPenContext";
@@ -8,13 +8,33 @@ import { Button } from "@/components/ui/button";
 import { getCelestialMessage } from "@/data/messageDatabase";
 
 const CelestialMessage = () => {
-  const { markSubmitted, student, week, setStep } = useLionsPen();
+  const { markSubmitted, student, week, setStep, currentDay, setCurrentDay } = useLionsPen();
   const navigate = useNavigate();
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [resolvedDay, setResolvedDay] = useState<number | null>(currentDay);
+
+  // Fallback: if we landed here without a known day (e.g. page refresh),
+  // ask the server which day was just completed.
+  useEffect(() => {
+    if (resolvedDay != null || !student?.id) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase.rpc("get_student_week_status", {
+        p_student_id: student.id,
+        p_week: week,
+      });
+      const status = data as { completed_count?: number } | null;
+      const day = status?.completed_count ?? 1;
+      if (!cancelled) {
+        setResolvedDay(day);
+        setCurrentDay(day);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [resolvedDay, student?.id, week, setCurrentDay]);
 
   const grade = student?.grade ?? 5;
-  // Day 1 is a reasonable default for the celestial message lookup; sequence-based.
-  const msg = getCelestialMessage(grade, week, 1);
+  const msg = getCelestialMessage(grade, week, resolvedDay ?? 1);
 
   const author = msg?.author ?? "The Celestial Scriptorium";
   const quote = msg?.quote ?? "Your words today carry the weight of your courage.";
