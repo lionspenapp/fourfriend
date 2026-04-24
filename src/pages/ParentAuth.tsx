@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import lionsPenLogo from "@/assets/lions_pen_v3.png";
+import lionsPenLogo from "@/assets/lions_pen_v4.png";
 import { supabase } from "@/integrations/supabase/client";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -167,11 +167,11 @@ const ParentAuth = () => {
         className="w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <img src={lionsPenLogo} alt="Lion's Pen" className="w-[27rem] h-auto mx-auto mb-4" />
+          <img src={lionsPenLogo} alt="Lion's Pen" className="w-[13.5rem] h-auto mx-auto mb-4" />
           <div className="font-cinzel font-bold uppercase text-center leading-tight tracking-wide mb-6">
-            <p className="text-primary text-2xl md:text-3xl">Daily Reflection</p>
-            <p className="text-primary text-2xl md:text-3xl">That Builds Leaders</p>
-            <p className="text-secondary text-xl md:text-2xl mt-1">Who Direct and Command AI Era!</p>
+            <p className="text-primary text-base md:text-lg">Daily Reflection</p>
+            <p className="text-primary text-base md:text-lg">That Builds Leaders</p>
+            <p className="text-secondary text-sm md:text-base mt-1">Who Direct and Command AI Era!</p>
           </div>
           <h1 className="font-cinzel text-4xl font-bold text-primary tracking-wide">
             Lion's Pen
@@ -326,7 +326,7 @@ const ParentAuth = () => {
               </>
             )}
 
-            <Button type="submit" disabled={loading} className="w-full bg-primary text-primary-foreground font-cinzel tracking-wide hover:bg-primary/90 text-base py-5">
+            <Button type="submit" disabled={loading} className="w-full bg-secondary text-secondary-foreground font-cinzel tracking-wide hover:bg-secondary/90 text-base py-5">
               {loading ? "Please wait..." : isSignUp ? "Create Account" : "Sign In"}
             </Button>
 
