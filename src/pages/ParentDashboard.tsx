@@ -109,19 +109,19 @@ const ParentDashboard = () => {
 
   const fetchSubmissions = async (studentList: Student[]): Promise<void> => {
     if (!user || studentList.length === 0) return;
-    const { start, end } = getCurrentWeekRange();
-    const { data } = await supabase
-      .from("submissions")
-      .select("student_id")
-      .in("student_id", studentList.map((s) => s.id))
-      .gte("submitted_at", start.toISOString())
-      .lte("submitted_at", end.toISOString())
-      .not("completed_at", "is", null);
-
+    const week = getCurrentWeek();
+    const results = await Promise.all(
+      studentList.map(async (s) => {
+        const { data } = await supabase.rpc("get_student_week_status", {
+          p_student_id: s.id,
+          p_week: week,
+        });
+        const status = data as { completed_count?: number } | null;
+        return [s.id, status?.completed_count ?? 0] as const;
+      })
+    );
     const counts: WeekStatus = {};
-    (data || []).forEach((row) => {
-      counts[row.student_id] = (counts[row.student_id] || 0) + 1;
-    });
+    results.forEach(([id, count]) => { counts[id] = count; });
     setWeekStatus(counts);
   };
 
