@@ -326,7 +326,7 @@ const ParentAuth = () => {
               </>
             )}
 
-            <Button type="submit" disabled={loading} className="w-full bg-primary text-primary-foreground font-cinzel tracking-wide hover:bg-primary/90 text-base py-5">
+            <Button type="submit" disabled={loading} className="w-full bg-secondary text-secondary-foreground font-cinzel tracking-wide hover:bg-secondary/90 text-base py-5">
               {loading ? "Please wait..." : isSignUp ? "Create Account" : "Sign In"}
             </Button>
 
