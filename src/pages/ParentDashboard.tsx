@@ -221,7 +221,7 @@ const ParentDashboard = () => {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-secondary/20">
         <div className="flex items-center gap-3">
-          <img src={lionsPenLogo} alt="Lion's Pen" className="w-12 h-auto" />
+          <img src={lionsPenLogo} alt="Lion's Pen" className="w-18 h-auto" />
           <div>
             <h1 className="font-cinzel text-xl font-bold text-primary">Lion's Pen</h1>
             <p className="text-secondary text-xs font-cinzel tracking-widest uppercase">Parent Portal</p>
