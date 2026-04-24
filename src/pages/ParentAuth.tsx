@@ -167,11 +167,11 @@ const ParentAuth = () => {
         className="w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <div className="relative w-[27rem] mx-auto mb-4">
-            <img src={lionsPenLogo} alt="Lion's Pen" className="w-full h-auto" />
-            <p className="hidden sm:block absolute bottom-[6%] left-1/2 -translate-x-1/2 w-[88%] text-center font-cinzel text-secondary text-[0.7rem] md:text-xs tracking-[0.18em] uppercase leading-snug">
-              Daily Reflection That Builds Leaders Who Direct &amp; Command the AI Era
-            </p>
+          <img src={lionsPenLogo} alt="Lion's Pen" className="w-[27rem] h-auto mx-auto mb-4" />
+          <div className="font-cinzel font-bold uppercase text-center leading-tight tracking-wide mb-6">
+            <p className="text-primary text-2xl md:text-3xl">Daily Reflection</p>
+            <p className="text-primary text-2xl md:text-3xl">That Builds Leaders</p>
+            <p className="text-secondary text-xl md:text-2xl mt-1">Who Direct and Command AI Era!</p>
           </div>
           <h1 className="font-cinzel text-4xl font-bold text-primary tracking-wide">
             Lion's Pen
