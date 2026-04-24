@@ -141,7 +141,7 @@ const StudentLogin = () => {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary text-primary-foreground font-cinzel tracking-wide hover:bg-primary/90 text-base py-5"
+              className="w-full bg-secondary text-secondary-foreground font-cinzel tracking-wide hover:bg-secondary/90 text-base py-5"
             >
               {loading ? "Verifying..." : "Enter the Scriptorium"}
             </Button>
