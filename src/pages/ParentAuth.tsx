@@ -125,8 +125,20 @@ const ParentAuth = () => {
     }
     setResetLoading(true);
     try {
+      // Force the recovery email to land on the published Lion's Pen site,
+      // not the Lovable editor sandbox (*.lovableproject.com) or the
+      // id-preview host — those require a Lovable login and would bounce
+      // the parent to lovable.dev/login instead of /reset-password.
+      const PUBLISHED_ORIGIN = "https://pen-guard-vault.lovable.app";
+      const allowedOrigin =
+        /^https?:\/\/(pen-guard-vault\.lovable\.app|([a-z0-9-]+\.)*mycaptainslog\.app)$/i;
+      const origin =
+        typeof window !== "undefined" && allowedOrigin.test(window.location.origin)
+          ? window.location.origin
+          : PUBLISHED_ORIGIN;
+
       const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: `${origin}/reset-password`,
       });
       if (error) throw error;
       toast({ title: "Check your email", description: "We sent you a password reset link." });
