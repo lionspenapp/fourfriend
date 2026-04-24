@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
-import lionsPenLogo from "@/assets/lions_pen_v3.png";
+import lionsPenLogo from "@/assets/lions_pen_v4.png";
 import { ChevronDown, BookOpen, Compass, MessageCircle, LogOut } from "lucide-react";
 
 interface WeekSubmission {
