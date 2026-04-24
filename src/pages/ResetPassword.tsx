@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Eye, EyeOff } from "lucide-react";
 import lionsPenLogo from "@/assets/lions_pen.png";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
