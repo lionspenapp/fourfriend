@@ -1,36 +1,63 @@
-## Goal
-Fix the reflection prompts so they display exactly as written in the database for Academic, Emotion, and Character. No forced all-caps, no sentence-case conversion.
+# Add tagline between lion image and title
 
-## What I found
-- The question records in the backend already use normal mixed-case text.
-- The app is still transforming or styling the prompt at the UI layer.
-- In `src/pages/QuestionPage.tsx`, the prompt is rendered inside an `h2`, while `src/index.css` applies global heading styling with the decorative Cinzel font to all `h1–h6` elements.
-- That means the database is not the problem; the rendering choice is.
+## What you'll see
 
-## Plan
-1. Update `src/pages/QuestionPage.tsx` so the prompt is rendered exactly as `prompt` from the database/local fallback, with no `toSentenceCase()` transformation.
-2. Replace the prompt element with a plain text element instead of an `h2`, so it no longer inherits the global heading font styling.
-3. Explicitly keep normal text casing on the prompt text and preserve the existing scroll layout.
-4. Verify all three reflection screens (Academic, Emotion, Character) show normal sentence casing.
+A short catch phrase will appear in the empty space at the bottom of the logo image — visually sitting between the lion artwork and the "Lion's Pen" title underneath:
 
-## Technical details
-- Remove the `toSentenceCase` helper from `src/pages/QuestionPage.tsx`.
-- Change:
-  ```tsx
-  {loading ? "Loading question…" : toSentenceCase(prompt)}
-  ```
-  to:
-  ```tsx
-  {loading ? "Loading question…" : prompt}
-  ```
-- Replace the `h2` prompt element with a neutral text tag such as `p` or `div` using the existing readable sans-serif styling.
-- Leave the smaller category label unchanged.
+> **Daily Reflection That Builds Leaders Who Direct and Command the AI Era**
 
-## Expected result
-If the database says:
+It will be styled in the existing Cinzel font, in the secondary (ochre) color, small and tracked-out so it reads as a refined sub-header — not competing with the title.
+
+## Where it appears
+
+The same logo block is reused on three auth screens, so the tagline will show on all three for consistency:
+
+- Student Login (`/student`)
+- Parent Login / Sign Up (`/`)
+- Reset Password (`/reset-password`)
+
+(Not added to the dashboards, where the logo is a small header icon.)
+
+## How it's placed
+
+The logo PNG has visual whitespace below the lion artwork. To put text *inside* that whitespace (rather than below the whole image), the logo `<img>` will be wrapped in a `relative` container, and the tagline will be an absolutely-positioned element pinned near the bottom of that container, horizontally centered.
+
 ```text
-If today were a weather report, what would the headline be?
+┌─────────────────────────┐
+│                         │
+│      🦁  (lion art)     │
+│                         │
+│  ‹ tagline overlays ›   │  ← absolute, bottom of image box
+└─────────────────────────┘
+        Lion's Pen           ← existing title, unchanged
+   THE INNER SCRIPTORIUM
 ```
-the screen will show exactly that text, instead of making it appear all uppercase.
 
-Approve this and I’ll apply the fix directly.
+If on small screens the overlay starts to crowd the lion, the tagline will hide on very narrow widths (`hidden sm:block`) and reappear from the `sm` breakpoint up.
+
+## Technical changes
+
+Files to edit:
+- `src/pages/StudentLogin.tsx`
+- `src/pages/ParentAuth.tsx`
+- `src/pages/ResetPassword.tsx`
+
+In each, replace the current logo `<img>` with:
+
+```tsx
+<div className="relative w-[27rem] mx-auto mb-4">
+  <img src={lionsPenLogo} alt="Lion's Pen" className="w-full h-auto" />
+  <p className="hidden sm:block absolute bottom-[6%] left-1/2 -translate-x-1/2 w-[88%] text-center font-cinzel text-secondary text-[0.7rem] md:text-xs tracking-[0.18em] uppercase leading-snug">
+    Daily Reflection That Builds Leaders Who Direct &amp; Command the AI Era
+  </p>
+</div>
+```
+
+Notes:
+- `bottom-[6%]` is tuned to land in the empty band below the lion. After the change I'll verify in the preview and nudge the percentage if needed.
+- No new assets, no DB changes, no routing changes.
+- The existing "Lion's Pen" title and "The Inner Scriptorium" subtitle stay exactly as they are.
+
+## Open question
+
+You wrote "Direct and Command AI Era". I'll render it as **"Direct & Command the AI Era"** for rhythm. If you'd rather keep it verbatim ("Direct and Command AI Era"), tell me and I'll use that exact wording.
