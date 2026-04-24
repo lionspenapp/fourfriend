@@ -1,61 +1,59 @@
+## Fix #2: PKCE "code verifier" failure on parent password reset
 
+### What's actually happening now (with logs)
 
-## Fix the "Invalid or expired reset link" error on parent password reset
+The previous fix (handling `?code=...`) **is live** — confirmed by hitting `/reset-password?code=test123` on `pen-guard-vault.lovable.app`. The page now correctly attempts `supabase.auth.exchangeCodeForSession(code)`.
 
-### What's actually broken
+But for the real reset link the parent clicked, that exchange fails with:
 
-When the parent clicks the password-reset link from the email, they land on `/reset-password` and immediately see **"Invalid or expired reset link, back to sign in."** The email send itself is fine (logs confirm `recovery` enqueued + delivered to `parkeunhee327@gmail.com`).
+> **"invalid request: both auth code and code verifier should be non-empty"**
 
-The bug is in `src/pages/ResetPassword.tsx`. It only treats the link as valid if `window.location.hash` contains `type=recovery`:
+This is a known PKCE pitfall. When `resetPasswordForEmail()` is called, the Supabase JS client stores a **PKCE code verifier** in `localStorage` of the browser that requested the reset. When the user clicks the email link, the auth server returns a `?code=...`, and `exchangeCodeForSession(code)` needs to combine that code with the locally-stored verifier.
 
-```ts
-if (hash.includes("type=recovery")) setIsRecovery(true);
-```
+The verifier is missing whenever:
+- The user opens the email on a **different device / browser** (phone vs laptop).
+- The user opens it inside the **Gmail in-app browser** or another wrapper that has its own isolated storage.
+- The `localStorage` was cleared between requesting and clicking.
 
-But Supabase's current recovery email (PKCE flow, which is what our SDK uses by default) sends the user to:
+Meanwhile, the Supabase auth logs show that `/verify` returned **303 (success)** and a `Login` event was recorded for `parkeunhee327@gmail.com` — meaning the recovery token itself was valid and a session was actually established server-side. We just can't complete the PKCE exchange on the page, so we wrongly tell the parent the link is invalid.
 
-```
-https://pen-guard-vault.lovable.app/reset-password?code=XXXX
-```
+### The fix (single file: `src/pages/ResetPassword.tsx`)
 
-— a **`?code=` query param**, NOT a `#type=recovery` hash. So the page never flips `isRecovery` to true and shows the rejection screen, even though the link is perfectly valid.
+Make the page tolerant of the PKCE-verifier mismatch and rely on what actually matters — **does the user have a session and did they arrive via recovery?**
 
-A second smaller issue: if the link includes `?error=...&error_description=...` (e.g., expired / already used), we currently swallow it and just show the generic message instead of telling the parent what happened.
+New flow on mount:
 
-### The fix (single file)
+1. **Read URL.** Capture `?code=`, `#type=recovery`, `?error=`/`?error_description=` like today.
 
-Update `src/pages/ResetPassword.tsx` so it handles all three valid recovery shapes:
+2. **If `?error=` is present** → show the specific error (unchanged).
 
-1. **`?code=...` (current PKCE flow — the actual cause of this bug)**
-   - On mount, read `code` from `window.location.search`.
-   - Call `supabase.auth.exchangeCodeForSession(code)`.
-   - On success → `setIsRecovery(true)` and let the parent set a new password.
-   - Clean the `?code` out of the URL so a refresh doesn't re-attempt the (now-consumed) exchange.
+3. **If `?code=` is present:**
+   - Try `supabase.auth.exchangeCodeForSession(code)`.
+   - **On success** → enter recovery mode (as today), strip `?code` from URL.
+   - **On failure** (verifier missing or any error):
+     - Wait briefly (200ms) and call `supabase.auth.getSession()`.
+     - If a session exists (the `/verify` redirect already logged them in) → **enter recovery mode anyway**, strip `?code` from URL, and let them set a new password.
+     - If still no session → show a clear, friendlier error: "This reset link must be opened in the same browser where you requested it. Please request a new link from this device."
 
-2. **`#type=recovery&access_token=...` (legacy hash flow)**
-   - Keep the existing hash check as a fallback so older email links still work.
-   - Keep the `onAuthStateChange` `PASSWORD_RECOVERY` listener.
+4. **If `#type=recovery` is present** → enter recovery mode (legacy fallback, unchanged).
 
-3. **`?error=...` (expired / already-clicked link)**
-   - Read `error` / `error_description` from query (or hash) and show that message instead of the generic "Invalid or expired" screen, with a button to request a new link.
+5. **Listen for `PASSWORD_RECOVERY`** on `onAuthStateChange` (unchanged) — covers any edge case where Supabase fires that event after redirect.
 
-While loading/exchanging, show a brief "Verifying reset link…" state instead of the rejection screen, so legitimate users never flash the error.
+6. **Also: if we land with no `code`, no hash, no error, but `getSession()` already returns a session** (because `/verify` redirected and set cookies/storage), enter recovery mode. This catches the "already logged in by the verify hop" case.
 
-No changes to:
-- `ParentAuth.tsx` — the `resetPasswordForEmail(..., { redirectTo: \`${origin}/reset-password\` })` call is already correct.
-- `auth-email-hook` / recovery email template — they're working (logs confirm delivery).
-- DB, RLS, routing in `App.tsx` — `/reset-password` is already a public route above the auth gate.
+### Why this works
 
-### How the parent will experience it after the fix
-
-1. Click "Forgot password?" on parent sign-in → enter `parkeunhee327@gmail.com` → receive Lion's Pen recovery email (already working).
-2. Click the link → land on `/reset-password` → brief "Verifying…" → password form appears.
-3. Enter a new password meeting the rules → "Password updated!" toast → redirected to sign in.
-4. If the link was already used or expired → clear message ("This reset link has expired or already been used — request a new one") with a button back to the forgot-password flow.
+- Same-device clicks: PKCE exchange succeeds → recovery form (works today).
+- Cross-device / Gmail in-app browser clicks: PKCE exchange fails, but Supabase has already established the session via `/verify` → we detect the session and let them set a new password anyway. `updateUser({ password })` requires only an authenticated session, which we have.
+- Truly invalid / expired links: no session, exchange fails → we show a helpful message instead of a generic "Invalid" screen.
 
 ### Out of scope
 
-- Any change to the recovery email content, branding, or sending pipeline.
-- Student password reset flow (students don't use Supabase Auth; their password reset is parent-driven via `update_student_password`).
-- Touching `auth-email-hook` or `process-email-queue`.
+- No DB changes.
+- No changes to `auth-email-hook`, recovery email template, or `process-email-queue`.
+- No change to `ParentAuth.tsx`'s `resetPasswordForEmail` call (`redirectTo` is correct).
+- No change to client config (PKCE stays the default — we just gracefully degrade when the verifier isn't available).
 
+### Note on publishing
+
+Since the parent is testing on the **live** domain (`pen-guard-vault.lovable.app`), after I make this change you'll need to click **Publish → Update** to push it live. I'll remind you in the implementation message.

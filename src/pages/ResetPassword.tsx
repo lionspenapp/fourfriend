@@ -27,50 +27,94 @@ const ResetPassword = () => {
   const [linkError, setLinkError] = useState<string | null>(null);
 
   useEffect(() => {
-    const url = new URL(window.location.href);
-    const hash = window.location.hash;
-    const hashParams = new URLSearchParams(hash.startsWith("#") ? hash.slice(1) : hash);
+    let cancelled = false;
 
-    // 1. Error returned in URL (expired, already used, etc.)
-    const errDesc =
-      url.searchParams.get("error_description") ||
-      hashParams.get("error_description") ||
-      url.searchParams.get("error") ||
-      hashParams.get("error");
-    if (errDesc) {
-      setLinkError(decodeURIComponent(errDesc).replace(/\+/g, " "));
-      setVerifying(false);
-      return;
-    }
+    const stripUrl = () => window.history.replaceState({}, "", "/reset-password");
 
-    // 2. PKCE flow: ?code=...
-    const code = url.searchParams.get("code");
-    if (code) {
-      supabase.auth
-        .exchangeCodeForSession(code)
-        .then(({ error }) => {
-          if (error) {
-            setLinkError(error.message);
-          } else {
-            setIsRecovery(true);
-            // strip code from URL so refresh doesn't retry
-            window.history.replaceState({}, "", "/reset-password");
-          }
-        })
-        .finally(() => setVerifying(false));
-      return;
-    }
-
-    // 3. Legacy hash flow: #type=recovery&access_token=...
-    if (hash.includes("type=recovery")) {
+    const enterRecovery = () => {
+      if (cancelled) return;
       setIsRecovery(true);
-    }
-    setVerifying(false);
+      setVerifying(false);
+      stripUrl();
+    };
+
+    const fail = (msg: string) => {
+      if (cancelled) return;
+      setLinkError(msg);
+      setVerifying(false);
+    };
+
+    const run = async () => {
+      const url = new URL(window.location.href);
+      const hash = window.location.hash;
+      const hashParams = new URLSearchParams(hash.startsWith("#") ? hash.slice(1) : hash);
+
+      // 1. Explicit error in URL (expired, already used, etc.)
+      const errDesc =
+        url.searchParams.get("error_description") ||
+        hashParams.get("error_description") ||
+        url.searchParams.get("error") ||
+        hashParams.get("error");
+      if (errDesc) {
+        fail(decodeURIComponent(errDesc).replace(/\+/g, " "));
+        return;
+      }
+
+      // 2. Legacy hash flow: #type=recovery&access_token=...
+      if (hash.includes("type=recovery")) {
+        enterRecovery();
+        return;
+      }
+
+      // 3. PKCE flow: ?code=...
+      const code = url.searchParams.get("code");
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (cancelled) return;
+        if (!error) {
+          enterRecovery();
+          return;
+        }
+        // Exchange failed (commonly: missing PKCE verifier because the link
+        // was opened in a different browser / Gmail in-app browser).
+        // Supabase's /verify hop may still have established a session — check.
+        await new Promise((r) => setTimeout(r, 200));
+        const { data } = await supabase.auth.getSession();
+        if (cancelled) return;
+        if (data.session) {
+          enterRecovery();
+          return;
+        }
+        fail(
+          "This reset link must be opened in the same browser where you requested it. Please request a new link from this device."
+        );
+        return;
+      }
+
+      // 4. No code/hash/error — but maybe the verify redirect already
+      // signed us in. If so, treat as recovery.
+      const { data } = await supabase.auth.getSession();
+      if (cancelled) return;
+      if (data.session) {
+        enterRecovery();
+        return;
+      }
+
+      setVerifying(false);
+    };
+
+    run();
 
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") setIsRecovery(true);
+      if (event === "PASSWORD_RECOVERY") {
+        setIsRecovery(true);
+        setVerifying(false);
+      }
     });
-    return () => sub.subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
   const handleReset = async (e: React.FormEvent) => {
