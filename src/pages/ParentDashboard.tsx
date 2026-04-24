@@ -58,17 +58,14 @@ interface WeekStatus {
   [studentId: string]: number; // count of submissions this week (0-5)
 }
 
-/** Get the start (Sunday) of the current epoch week */
-function getCurrentWeekRange(): { start: Date; end: Date } {
+/** Current week (1-4) in the rotating cycle anchored to Sunday Apr 12 2026.
+ *  Must match the student context so parent counts always agree. */
+function getCurrentWeek(): number {
   const now = new Date();
-  const epoch = new Date(2026, 3, 12); // April 12 2026 (Sunday)
+  const epoch = new Date(2026, 3, 12);
   const diffDays = Math.floor((now.getTime() - epoch.getTime()) / 86400000);
-  const weekIndex = diffDays >= 0 ? Math.floor(diffDays / 7) : 0;
-  const weekStart = new Date(epoch.getTime() + weekIndex * 7 * 86400000);
-  weekStart.setHours(0, 0, 0, 0);
-  const weekEnd = new Date(weekStart.getTime() + 4 * 86400000); // Thursday
-  weekEnd.setHours(23, 59, 59, 999);
-  return { start: weekStart, end: weekEnd };
+  if (diffDays < 0) return 1;
+  return (Math.floor(diffDays / 7) % 4) + 1;
 }
 
 const ParentDashboard = () => {
