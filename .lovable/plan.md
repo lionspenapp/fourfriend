@@ -1,35 +1,36 @@
 ## Goal
+Fix the reflection prompts so they display exactly as written in the database for Academic, Emotion, and Character. No forced all-caps, no sentence-case conversion.
 
-Make the three reflection questions (Academic, Emotion, Character) easier to read by removing the all-caps styling. Only the first letter of the prompt stays capitalized; the rest renders in normal case.
+## What I found
+- The question records in the backend already use normal mixed-case text.
+- The app is still transforming or styling the prompt at the UI layer.
+- In `src/pages/QuestionPage.tsx`, the prompt is rendered inside an `h2`, while `src/index.css` applies global heading styling with the decorative Cinzel font to all `h1–h6` elements.
+- That means the database is not the problem; the rendering choice is.
 
-## Root cause
+## Plan
+1. Update `src/pages/QuestionPage.tsx` so the prompt is rendered exactly as `prompt` from the database/local fallback, with no `toSentenceCase()` transformation.
+2. Replace the prompt element with a plain text element instead of an `h2`, so it no longer inherits the global heading font styling.
+3. Explicitly keep normal text casing on the prompt text and preserve the existing scroll layout.
+4. Verify all three reflection screens (Academic, Emotion, Character) show normal sentence casing.
 
-In `src/pages/QuestionPage.tsx`, the `<h2>` that displays the prompt inherits uppercase letters because the prompts in the database / `questionDatabase.ts` are stored in ALL CAPS. The CSS itself doesn't force uppercase — the source text is uppercase.
-
-## Change
-
-Single file: `src/pages/QuestionPage.tsx`
-
-- Add a small `toSentenceCase(str)` helper that:
-  - lowercases the whole string
-  - capitalizes the first alphabetic character
-  - leaves punctuation, numbers, and line breaks intact
-- Apply it when rendering the prompt:
+## Technical details
+- Remove the `toSentenceCase` helper from `src/pages/QuestionPage.tsx`.
+- Change:
   ```tsx
   {loading ? "Loading question…" : toSentenceCase(prompt)}
   ```
+  to:
+  ```tsx
+  {loading ? "Loading question…" : prompt}
+  ```
+- Replace the `h2` prompt element with a neutral text tag such as `p` or `div` using the existing readable sans-serif styling.
+- Leave the smaller category label unchanged.
 
-The category label ("Academic Reflection — Question 1 of 3") and the Cinzel headings elsewhere stay unchanged. Only the question body text is normalized.
+## Expected result
+If the database says:
+```text
+If today were a weather report, what would the headline be?
+```
+the screen will show exactly that text, instead of making it appear all uppercase.
 
-## Why this approach (not editing the DB)
-
-- Non-destructive: original prompts in Supabase / mock data remain untouched.
-- Works for every existing and future prompt automatically.
-- If you later want true sentence-by-sentence capitalization, we can extend the helper — but for the current single-sentence prompts, capitalizing only the first letter reads cleanly.
-
-## Verification
-
-Open `/student` → start the day → confirm each of the three questions reads like:
-"What is one thing you learned today that surprised you?"
-instead of:
-"WHAT IS ONE THING YOU LEARNED TODAY THAT SURPRISED YOU?"
+Approve this and I’ll apply the fix directly.
