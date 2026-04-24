@@ -35,6 +35,12 @@ function countSentences(text: string): number {
 
 const MIN_SENTENCES = 3;
 
+function toSentenceCase(str: string): string {
+  if (!str) return str;
+  const lower = str.toLowerCase();
+  return lower.replace(/([a-z])/, (m) => m.toUpperCase());
+}
+
 const QuestionPage = ({ type }: QuestionPageProps) => {
   const { responses, setResponse, setStep, student, week, markSubmitted, setCurrentDay } = useLionsPen();
   const { toast } = useToast();
@@ -147,7 +153,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
               {CATEGORY_LABEL[type]} Reflection — Question {meta.num} of 3
             </p>
             <h2 className="font-cinzel text-sm sm:text-base md:text-lg font-bold text-white drop-shadow-lg leading-relaxed break-words hyphens-auto">
-              {loading ? "Loading question…" : prompt}
+              {loading ? "Loading question…" : toSentenceCase(prompt)}
             </h2>
           </div>
         </div>
