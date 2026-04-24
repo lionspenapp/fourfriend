@@ -58,17 +58,14 @@ interface WeekStatus {
   [studentId: string]: number; // count of submissions this week (0-5)
 }
 
-/** Get the start (Sunday) of the current epoch week */
-function getCurrentWeekRange(): { start: Date; end: Date } {
+/** Current week (1-4) in the rotating cycle anchored to Sunday Apr 12 2026.
+ *  Must match the student context so parent counts always agree. */
+function getCurrentWeek(): number {
   const now = new Date();
-  const epoch = new Date(2026, 3, 12); // April 12 2026 (Sunday)
+  const epoch = new Date(2026, 3, 12);
   const diffDays = Math.floor((now.getTime() - epoch.getTime()) / 86400000);
-  const weekIndex = diffDays >= 0 ? Math.floor(diffDays / 7) : 0;
-  const weekStart = new Date(epoch.getTime() + weekIndex * 7 * 86400000);
-  weekStart.setHours(0, 0, 0, 0);
-  const weekEnd = new Date(weekStart.getTime() + 4 * 86400000); // Thursday
-  weekEnd.setHours(23, 59, 59, 999);
-  return { start: weekStart, end: weekEnd };
+  if (diffDays < 0) return 1;
+  return (Math.floor(diffDays / 7) % 4) + 1;
 }
 
 const ParentDashboard = () => {
@@ -112,19 +109,19 @@ const ParentDashboard = () => {
 
   const fetchSubmissions = async (studentList: Student[]): Promise<void> => {
     if (!user || studentList.length === 0) return;
-    const { start, end } = getCurrentWeekRange();
-    const { data } = await supabase
-      .from("submissions")
-      .select("student_id")
-      .in("student_id", studentList.map((s) => s.id))
-      .gte("submitted_at", start.toISOString())
-      .lte("submitted_at", end.toISOString())
-      .not("completed_at", "is", null);
-
+    const week = getCurrentWeek();
+    const results = await Promise.all(
+      studentList.map(async (s) => {
+        const { data } = await supabase.rpc("get_student_week_status", {
+          p_student_id: s.id,
+          p_week: week,
+        });
+        const status = data as { completed_count?: number } | null;
+        return [s.id, status?.completed_count ?? 0] as const;
+      })
+    );
     const counts: WeekStatus = {};
-    (data || []).forEach((row) => {
-      counts[row.student_id] = (counts[row.student_id] || 0) + 1;
-    });
+    results.forEach(([id, count]) => { counts[id] = count; });
     setWeekStatus(counts);
   };
 
