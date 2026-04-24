@@ -206,16 +206,27 @@ const ResetPassword = () => {
           <div className="bg-foreground/5 backdrop-blur-sm border-2 border-secondary/30 rounded-lg p-6 space-y-4">
             <div>
               <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">New Password</label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                minLength={8}
-                className={inputClass}
-                style={{ color: "hsl(var(--foreground))" }}
-              />
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  minLength={8}
+                  className={`${inputClass} pr-10`}
+                  style={{ color: "hsl(var(--foreground))" }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/60 hover:text-foreground transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
               {password.length > 0 && (
                 <div className="mt-2 space-y-1">
                   {PASSWORD_RULES.map((rule) => (
@@ -227,7 +238,45 @@ const ResetPassword = () => {
               )}
             </div>
 
-            <Button type="submit" disabled={loading} className="w-full bg-primary text-primary-foreground font-cinzel tracking-wide hover:bg-primary/90 text-base py-5">
+            <div>
+              <label className="block text-foreground/90 text-sm font-cinzel mb-1.5 tracking-wide">Confirm New Password</label>
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  minLength={8}
+                  className={`${inputClass} pr-10`}
+                  style={{ color: "hsl(var(--foreground))" }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/60 hover:text-foreground transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {confirmPassword.length > 0 && (
+                <p
+                  className={`text-xs font-cinzel mt-2 ${
+                    password === confirmPassword ? "text-green-600" : "text-foreground/60"
+                  }`}
+                >
+                  {password === confirmPassword ? "✓ Passwords match" : "○ Passwords do not match"}
+                </p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loading || !isPasswordValid(password) || password !== confirmPassword}
+              className="w-full bg-primary text-primary-foreground font-cinzel tracking-wide hover:bg-primary/90 text-base py-5"
+            >
               {loading ? "Updating..." : "Update Password"}
             </Button>
           </div>
