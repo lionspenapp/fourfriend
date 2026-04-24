@@ -132,11 +132,22 @@ const ResetPassword = () => {
       return;
     }
 
+    if (password !== confirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please retype the same password in both fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
 
+      setPassword("");
+      setConfirmPassword("");
       toast({ title: "Password updated!", description: "You can now sign in with your new password." });
       navigate("/");
     } catch (error: any) {
