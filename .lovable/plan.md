@@ -1,17 +1,35 @@
 ## Goal
 
-Swap the BreathingPage background with the uploaded `sunny_river.jpg`.
+Make the three reflection questions (Academic, Emotion, Character) easier to read by removing the all-caps styling. Only the first letter of the prompt stays capitalized; the rest renders in normal case.
 
-## Changes
+## Root cause
 
-- Copy `user-uploads://sunny_river.jpg` → `src/assets/river-bg.jpg` (overwrite).
-- No code edits: `src/pages/BreathingPage.tsx` already imports `riverBg from "@/assets/river-bg.jpg"`, so Vite will rebundle automatically.
-- Keep the existing `bg-black/40` overlay so the breathing circle, timer, and sound buttons stay readable against the bright sky.
+In `src/pages/QuestionPage.tsx`, the `<h2>` that displays the prompt inherits uppercase letters because the prompts in the database / `questionDatabase.ts` are stored in ALL CAPS. The CSS itself doesn't force uppercase — the source text is uppercase.
+
+## Change
+
+Single file: `src/pages/QuestionPage.tsx`
+
+- Add a small `toSentenceCase(str)` helper that:
+  - lowercases the whole string
+  - capitalizes the first alphabetic character
+  - leaves punctuation, numbers, and line breaks intact
+- Apply it when rendering the prompt:
+  ```tsx
+  {loading ? "Loading question…" : toSentenceCase(prompt)}
+  ```
+
+The category label ("Academic Reflection — Question 1 of 3") and the Cinzel headings elsewhere stay unchanged. Only the question body text is normalized.
+
+## Why this approach (not editing the DB)
+
+- Non-destructive: original prompts in Supabase / mock data remain untouched.
+- Works for every existing and future prompt automatically.
+- If you later want true sentence-by-sentence capitalization, we can extend the helper — but for the current single-sentence prompts, capitalizing only the first letter reads cleanly.
 
 ## Verification
 
-After the swap, open the breathing page in the preview to confirm the new background renders correctly.
-
-## Note on themes
-
-The app uses a single Babylonian-themed palette (no light/dark toggle exists in the codebase). The background image will appear identically across the app — the dark overlay ensures readability either way.
+Open `/student` → start the day → confirm each of the three questions reads like:
+"What is one thing you learned today that surprised you?"
+instead of:
+"WHAT IS ONE THING YOU LEARNED TODAY THAT SURPRISED YOU?"
