@@ -152,9 +152,9 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
             <p className="text-white drop-shadow-md text-[11px] sm:text-xs font-cinzel tracking-widest uppercase mb-2">
               {CATEGORY_LABEL[type]} Reflection — Question {meta.num} of 3
             </p>
-            <h2 className="font-sans text-sm sm:text-base md:text-lg font-semibold text-white drop-shadow-lg leading-relaxed break-words hyphens-auto normal-case">
-              {loading ? "Loading question…" : toSentenceCase(prompt)}
-            </h2>
+            <p className="font-sans text-sm sm:text-base md:text-lg font-semibold text-white drop-shadow-lg leading-relaxed break-words hyphens-auto normal-case">
+              {loading ? "Loading question…" : prompt}
+            </p>
           </div>
         </div>
 
