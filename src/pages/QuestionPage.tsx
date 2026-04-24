@@ -35,12 +35,6 @@ function countSentences(text: string): number {
 
 const MIN_SENTENCES = 3;
 
-function toSentenceCase(str: string): string {
-  if (!str) return str;
-  const lower = str.toLowerCase();
-  return lower.replace(/([a-z])/, (m) => m.toUpperCase());
-}
-
 const QuestionPage = ({ type }: QuestionPageProps) => {
   const { responses, setResponse, setStep, student, week, markSubmitted, setCurrentDay } = useLionsPen();
   const { toast } = useToast();
