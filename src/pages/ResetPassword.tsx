@@ -197,11 +197,11 @@ const ResetPassword = () => {
 
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="w-full max-w-md">
         <div className="text-center mb-8">
-          <img src={lionsPenLogo} alt="Lion's Pen" className="w-[27rem] h-auto mx-auto mb-4" />
+          <img src={lionsPenLogo} alt="Lion's Pen" className="w-[13.5rem] h-auto mx-auto mb-4" />
           <div className="font-cinzel font-bold uppercase text-center leading-tight tracking-wide mb-6">
-            <p className="text-primary text-2xl md:text-3xl">Daily Reflection</p>
-            <p className="text-primary text-2xl md:text-3xl">That Builds Leaders</p>
-            <p className="text-secondary text-xl md:text-2xl mt-1">Who Direct and Command AI Era!</p>
+            <p className="text-primary text-base md:text-lg">Daily Reflection</p>
+            <p className="text-primary text-base md:text-lg">That Builds Leaders</p>
+            <p className="text-secondary text-sm md:text-base mt-1">Who Direct and Command AI Era!</p>
           </div>
           <h1 className="font-cinzel text-4xl font-bold text-primary tracking-wide">Lion's Pen</h1>
           <p className="text-foreground/70 mt-2 font-cinzel text-sm tracking-widest uppercase">Set New Password</p>
