@@ -144,7 +144,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
             style={{ paddingLeft: 25, paddingRight: 25, background: "transparent" }}
           >
             <p
-              className="font-garamond font-medium text-[1.2rem] break-words hyphens-auto normal-case text-center w-full"
+              className="font-garamond font-medium text-[1.4rem] break-words hyphens-auto normal-case text-center w-full"
               style={{ color: "rgba(28, 28, 28, 0.9)", lineHeight: 1.6 }}
             >
               {loading ? "Loading question…" : prompt}
@@ -198,7 +198,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
               value={value}
               onChange={(e) => setResponse(type, e.target.value)}
               placeholder="Write your reflection here…"
-              className="min-h-[80px] w-full bg-transparent border-none text-[#2a1810] font-medium placeholder:text-[#2a1810]/50 focus-visible:ring-0 focus-visible:ring-offset-0 text-base leading-relaxed resize-none"
+              className="min-h-[110px] w-full bg-transparent border-none text-[#2a1810] font-medium placeholder:text-[#2a1810]/50 focus-visible:ring-0 focus-visible:ring-offset-0 text-[1.4rem] leading-relaxed resize-none"
             />
           </div>
         </div>
