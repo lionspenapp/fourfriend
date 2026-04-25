@@ -1,52 +1,36 @@
 ## Goal
-Refine the question scroll text on the three Question pages (academic, emotion, character) so the prompt looks like ink on papyrus, stays contained inside the scroll's parchment area, and scrolls cleanly with a thin custom scrollbar.
+Fix the question text overlapping the wooden rollers on the scroll, and improve legibility.
 
-All changes are in **`src/pages/QuestionPage.tsx`** (one file, applies to all three categories) plus a font import in **`src/index.css`**.
+All changes in **`src/pages/QuestionPage.tsx`** on the inner scroll container and prompt `<p>`.
 
 ## Changes
 
-### 1. Font (src/index.css)
-Add `EB Garamond` to the existing Google Fonts import so the prompt can use a true serif ink-style face. Add a `.font-garamond` utility under `@layer utilities`.
+### Inner scroll container (currently `py-[8%] sm:py-[6%]`)
+- Replace responsive percentage vertical padding with a fixed **60px top and bottom** padding so text never sits on the wooden rollers.
+- Keep horizontal padding at **25px** left/right.
+- Keep `overflow-y-auto` and `scroll-ink` for thin scrollbar containment.
+- Change layout to ensure vertical centering: keep `flex flex-col justify-center` (already there), and add `items-center` so short text remains centered both axes within the flat parchment area.
 
-### 2. Scroll text container (QuestionPage.tsx, the inner `<div>` at line 142–149)
-- Keep the parchment background (scroll image) as-is.
-- Inner container: remove the `[&::-webkit-scrollbar]:hidden` and `scrollbarWidth: none` (we want a visible thin scrollbar now).
-- Replace horizontal padding with **25px left/right** (`px-[25px]`) instead of percentage padding, keep vertical padding so text stays vertically centered within the parchment.
-- Background remains transparent (already is).
-- Add a custom thin-scrollbar class (defined in index.css) so:
-  - Width: `5px`
-  - Track: fully transparent
-  - Thumb: `#8B7355` at ~60% opacity, rounded.
+### Prompt text (`<p>`)
+- Increase font size to **1.2rem (~18px)** — replace `text-base sm:text-lg md:text-xl` with a fixed `text-[1.2rem]` (or `text-[18px]`), keeping it readable on all viewports.
+- Add `font-weight: 500` (`font-medium`) so the ink looks thicker against the papyrus.
+- Keep existing color `rgba(28,28,28,0.9)`, `lineHeight: 1.6`, `font-garamond`, `break-words hyphens-auto`, centered text.
 
-### 3. Prompt text styling (the `<p>` at line 146)
-Replace current classes with:
-- Font: `font-garamond` (EB Garamond, serif), fallback serif.
-- Color: `#1C1C1C` at opacity `0.9` (carbon-ink brown/black).
-- Line height: `1.6`.
-- Size: keep responsive `text-base sm:text-lg md:text-xl` for readability on parchment.
-- Remove `text-white drop-shadow-lg` (no longer needed since ink sits on papyrus).
-- Keep `break-words hyphens-auto`.
+## Resulting style snippet
 
-### 4. Thin scrollbar utility (src/index.css)
-Add a reusable class, e.g.:
-
-```css
-.scroll-ink::-webkit-scrollbar { width: 5px; }
-.scroll-ink::-webkit-scrollbar-track { background: transparent; }
-.scroll-ink::-webkit-scrollbar-thumb {
-  background-color: rgba(139, 115, 85, 0.6);
-  border-radius: 9999px;
-}
-.scroll-ink { scrollbar-width: thin; scrollbar-color: rgba(139,115,85,0.6) transparent; }
+```tsx
+<div
+  className="absolute inset-0 flex flex-col justify-center items-center overflow-y-auto scroll-ink"
+  style={{ paddingTop: 60, paddingBottom: 60, paddingLeft: 25, paddingRight: 25, background: "transparent" }}
+>
+  <p
+    className="font-garamond font-medium text-[1.2rem] break-words hyphens-auto normal-case text-center"
+    style={{ color: "rgba(28,28,28,0.9)", lineHeight: 1.6 }}
+  >
+    {loading ? "Loading question…" : prompt}
+  </p>
+</div>
 ```
 
-Apply `scroll-ink` to the inner scrolling div.
-
-### 5. Containment / overflow
-- The outer scroll-image div keeps its responsive aspect ratio (acts as the fixed parchment frame).
-- The inner div keeps `absolute inset-0 overflow-y-auto`, so any overly long question scrolls vertically inside the parchment without ever bleeding past the wooden rollers.
-
 ## Out of scope
-- No changes to the response/papyrus textarea below.
-- No changes to the section caption, divider, or buttons.
-- No DB or logic changes.
+- No changes to scroll background image, response papyrus area, buttons, or DB logic.

@@ -140,11 +140,11 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
           }}
         >
           <div
-            className="absolute inset-0 flex flex-col justify-center overflow-y-auto py-[8%] sm:py-[6%] scroll-ink"
-            style={{ paddingLeft: 25, paddingRight: 25, background: "transparent" }}
+            className="absolute inset-0 flex flex-col justify-center items-center overflow-y-auto scroll-ink"
+            style={{ paddingTop: 60, paddingBottom: 60, paddingLeft: 25, paddingRight: 25, background: "transparent" }}
           >
             <p
-              className="font-garamond text-base sm:text-lg md:text-xl break-words hyphens-auto normal-case"
+              className="font-garamond font-medium text-[1.2rem] break-words hyphens-auto normal-case text-center"
               style={{ color: "rgba(28, 28, 28, 0.9)", lineHeight: 1.6 }}
             >
               {loading ? "Loading question…" : prompt}
