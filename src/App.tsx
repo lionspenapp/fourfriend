@@ -10,6 +10,7 @@ import ParentAuth from "./pages/ParentAuth.tsx";
 import ParentDashboard from "./pages/ParentDashboard.tsx";
 import StudentPortal from "./pages/StudentPortal.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
+import SubscribePage from "./pages/SubscribePage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const AppContent = () => {
           />
 
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/subscribe" element={<SubscribePage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

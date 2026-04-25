@@ -1,26 +1,32 @@
-## Change
+# Add Subscribe Page
 
-Reframe the "How It Works · The Scribe's Journey" intro on the **Parent Login Page** so it speaks directly to parents about *their child*, instead of referring to "the Aspirant Young Scribe" in the abstract.
+## 1. Create the Subscribe page
+- Copy `user-uploads://LionsPenSubscription_1.jsx` into the project as **`src/pages/SubscribePage.tsx`** (renamed; converted to `.tsx` with light typing — `plan: any` props on helper components — content/markup unchanged).
+- Replace the JSX comment header with a real component that includes a **Home link at the top**:
+  - A `react-router-dom` `<Link to="/">` styled as a small back link (e.g. `← Back to Home`), placed above the header block (`Join the Lion's Pen`).
+- Wire each `PlanButton` so clicking it navigates to `/parent?signup=1` (where the actual signup form lives). Trial → `/parent?signup=1`, Monthly/Yearly → same route (subscription billing isn't enabled yet, so the button just routes to signup; we can wire Stripe later if/when requested).
+- Keep all existing Tailwind classes from the uploaded file as-is.
 
-### Location
+## 2. Register the route
+- In **`src/App.tsx`**, import `SubscribePage` and add inside the `<Routes>` block (next to the other public pages):
+  ```tsx
+  <Route path="/subscribe" element={<SubscribePage />} />
+  ```
 
-`src/pages/parentLandingHtml.ts`, lines 762–764 (the `<p class="lp-journey-intro">` directly under the "The Scribe's Journey" heading).
+## 3. Wire the "Begin My Child's Journey" CTAs to /subscribe
+The CTAs live inside two raw HTML strings rendered via `dangerouslySetInnerHTML`:
+- `src/pages/landingHtml.ts` line 575 — `<button class="lp-btn-g">Begin My Child's Journey</button>`
+- `src/pages/parentLandingHtml.ts` line 928 — `<button class="lp-btn-gold">Begin My Child's Journey</button>`
 
-### Current copy
+Approach (no global handlers, no string-to-React rewrite):
+- In **`src/pages/StudentLogin.tsx`** and **`src/pages/ParentAuth.tsx`**, attach a click delegate on the wrapper `<div>` that contains the `dangerouslySetInnerHTML`. The handler checks if the click target is the "Begin My Child's Journey" button (matched by class `lp-btn-g` / `lp-btn-gold` or its text content) and calls `navigate("/subscribe")`.
+- This keeps the HTML strings untouched and avoids any global style or DOM mutation.
 
-> Each day, the **Aspirant Young Scribe** enters their Scriptorium and walks four steps — the same discipline Daniel practiced inside Babylon itself.
+## 4. Files touched
+- **created**: `src/pages/SubscribePage.tsx`
+- **edited**: `src/App.tsx` (add route + import)
+- **edited**: `src/pages/StudentLogin.tsx` (click delegate on landing wrapper)
+- **edited**: `src/pages/ParentAuth.tsx` (click delegate on parent landing wrapper)
 
-### Proposed copy (recommended)
-
-> In this program, **your child becomes a Scribe** — an Aspirant Young Scribe who, each day, enters their Scriptorium and walks four steps. The same discipline Daniel practiced inside Babylon itself.
-
-### Alternative phrasings (pick one)
-
-- A. "In this program, **your child becomes a Scribe** — an Aspirant Young Scribe who, each day, enters their Scriptorium and walks four steps. The same discipline Daniel practiced inside Babylon itself." *(recommended — clear, parent-facing, keeps the lineage language)*
-- B. "Here, **your child is the Scribe.** Each day, they enter their Scriptorium and walk four steps — the same discipline Daniel practiced inside Babylon itself."
-- C. "In Lion's Pen, **every student is a Scribe — and your child stands among them.** Each day they enter their Scriptorium and walk four steps, the same discipline Daniel practiced inside Babylon itself."
-- D. "**Your child is no longer a student. They are a Scribe** — an Aspirant Young Scribe who, each day, enters their Scriptorium and walks four steps Daniel himself practiced inside Babylon."
-
-No other copy, structure, or styling changes. The Student Login page (`landingHtml.ts`) is left untouched since the parent framing only belongs on the parent page.
-
-Tell me which option you'd like (or paste your own wording) and I'll apply it.
+## Notes / open question
+- The Monthly/Yearly buttons currently have no payment backend. They'll route to `/parent?signup=1` like the trial. If you want Stripe checkout wired in, say the word and I'll enable Lovable's payments integration in a follow-up.
