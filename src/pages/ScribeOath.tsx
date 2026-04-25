@@ -41,8 +41,8 @@ const ScribeOath = () => {
         />
 
         <div className="flex items-center justify-center gap-3 mb-6">
-          <p className="text-white drop-shadow-md text-sm font-cinzel tracking-wide whitespace-nowrap">
-            Sign Your Name
+          <p className="text-white drop-shadow-md text-sm font-cinzel tracking-wide leading-tight text-right">
+            Sign<br />Your Name
           </p>
           <Input
             type="text"
@@ -50,7 +50,7 @@ const ScribeOath = () => {
             onChange={(e) => setFullName(e.target.value)}
             placeholder="First, Last Name"
             style={{ fontSize: "1.75rem", lineHeight: "0.85" }}
-            className="bg-foreground/5 border-2 border-secondary text-white placeholder:text-white/50 placeholder:font-sans placeholder:text-base focus-visible:ring-secondary text-center font-signature h-18 py-0 w-56"
+            className="bg-foreground/5 border-2 border-secondary text-white placeholder:text-white/50 placeholder:font-sans placeholder:text-base focus-visible:ring-secondary text-center font-signature h-18 py-0 w-72"
           />
         </div>
 
