@@ -143,14 +143,16 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
             className="absolute inset-0 flex flex-col justify-center overflow-y-auto px-[10%] py-[8%] sm:px-[14%] sm:py-[6%] [&::-webkit-scrollbar]:hidden"
             style={{ scrollbarWidth: "none" }}
           >
-            <p className="text-white drop-shadow-md text-[11px] sm:text-xs font-cinzel tracking-widest uppercase mb-2">
-              {CATEGORY_LABEL[type]} Reflection — Question {meta.num} of 3
-            </p>
             <p className="font-sans text-sm sm:text-base md:text-lg font-semibold text-white drop-shadow-lg leading-relaxed break-words hyphens-auto normal-case">
               {loading ? "Loading question…" : prompt}
             </p>
           </div>
         </div>
+
+        {/* Section caption — moved out of the scroll */}
+        <p className="text-center text-white drop-shadow-md text-[11px] sm:text-xs font-cinzel tracking-widest uppercase mt-2">
+          {CATEGORY_LABEL[type]} Reflection — Question {meta.num} of 3
+        </p>
 
         {/* Decorative divider — horizontal pen */}
         <div className="flex items-center gap-2 my-2 px-4">
