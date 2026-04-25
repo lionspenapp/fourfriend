@@ -6,6 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import celestialBg from "@/assets/celestial-bg.png";
 import { Button } from "@/components/ui/button";
 import { getCelestialMessage } from "@/data/messageDatabase";
+import { useToast } from "@/hooks/use-toast";
+import { Star } from "lucide-react";
 
 const CelestialMessage = () => {
   const { markSubmitted, student, week, setStep, currentDay, setCurrentDay } = useLionsPen();
