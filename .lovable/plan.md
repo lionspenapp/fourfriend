@@ -1,43 +1,23 @@
-Plan to fix the remaining scroll text overlap:
+# Increase Scroll & Reflection Text Size
 
-1. Replace the current full-scroll text overlay with an inner “safe parchment” area
-   - Keep the scroll background image as-is.
-   - Move the question text into a smaller absolute container positioned away from the wooden rollers.
-   - Use percentage-based top/bottom insets instead of only padding, so the text cannot enter the handle zones.
+Make the question text and the reflection textarea larger and easier to read across all three question pages (Academic, Emotion, Character), without disturbing the current scroll/papyrus layout.
 
-2. Make the text area reliably scroll inside the parchment
-   - Apply `overflow-y-auto` only to the inner safe area.
-   - Keep the custom thin scrollbar styling.
-   - Ensure long database questions scroll within the paper area instead of expanding over the wood.
+## Changes
 
-3. Preserve the requested typography
-   - Keep EB Garamond.
-   - Keep carbon-ink brown color.
-   - Keep font size around `1.2rem` and weight `500`.
-   - Keep centered text and 25px side safety spacing.
+### 1. Question text on the scroll — `src/pages/QuestionPage.tsx`
+- Change the `<p>` inside the safe-zone container from `text-[1.2rem]` to `text-[1.4rem]` (22px).
+- Keep all other styling: `font-garamond`, `font-medium`, `leading-[1.6]`, centered, carbon-ink color `rgba(28,28,28,0.9)`.
+- Keep the safe-zone container (`top-[26%] bottom-[26%] left-[14%] right-[14%]`) and `overflow-y-auto scroll-ink` so longer questions still scroll inside the parchment without touching the wooden rollers.
 
-Technical details:
+### 2. Reflection textarea — `src/pages/QuestionPage.tsx`
+- Update the `Textarea` className: replace `text-base` with `text-[1.4rem]` (22px) and keep `leading-relaxed`, transparent background, and existing padding.
+- Bump `min-h-[80px]` to `min-h-[110px]` so the bigger text has comfortable room before scrolling.
+- Placeholder will inherit the new size automatically.
 
-In `src/pages/QuestionPage.tsx`, I will change the question scroll structure from:
+## Not changing
+- Scroll background, wooden roller positions, papyrus background.
+- Safe-zone insets, side padding (25px), or scrollbar styling (`.scroll-ink`).
+- Caption, divider, button, and validation text sizes.
 
-```text
-scroll image
-└── full inset text container with padding
-```
-
-to:
-
-```text
-scroll image
-└── inner safe parchment container
-    └── vertically centered scrolling text
-```
-
-The inner container will use something like:
-
-```tsx
-className="absolute left-[14%] right-[14%] top-[28%] bottom-[24%] flex items-center justify-center overflow-y-auto scroll-ink"
-style={{ paddingLeft: 25, paddingRight: 25, background: "transparent" }}
-```
-
-This directly prevents the letters from occupying the top and bottom roller areas, rather than relying on padding inside the full image box.
+## Files
+- `src/pages/QuestionPage.tsx`
