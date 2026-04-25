@@ -6,13 +6,18 @@ import { supabase } from "@/integrations/supabase/client";
 import celestialBg from "@/assets/celestial-bg.png";
 import { Button } from "@/components/ui/button";
 import { getCelestialMessage } from "@/data/messageDatabase";
+import { useToast } from "@/hooks/use-toast";
+import { Star } from "lucide-react";
 
 const CelestialMessage = () => {
   const { markSubmitted, student, week, setStep, currentDay, setCurrentDay } = useLionsPen();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [resolvedDay, setResolvedDay] = useState<number | null>(currentDay);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   // Load available speech synthesis voices (async in Chrome)
   useEffect(() => {
@@ -103,6 +108,31 @@ const CelestialMessage = () => {
     window.speechSynthesis.speak(utterance);
   }, [isSpeaking, quote, author, message, pickBestVoice]);
 
+  const handleSaveQuotation = useCallback(async () => {
+    if (!student?.id || saving || saved) return;
+    setSaving(true);
+    const { data, error } = await supabase.rpc("save_quotation", {
+      p_student_id: student.id,
+      p_quote: quote,
+      p_author: author,
+      p_week: week,
+      p_day: resolvedDay ?? null,
+    });
+    setSaving(false);
+    const result = data as { success: boolean; error?: string } | null;
+    if (error || !result?.success) {
+      if (result?.error === "already_saved") {
+        setSaved(true);
+        toast({ title: "Already saved", description: "This quotation is already in your collection." });
+      } else {
+        toast({ title: "Could not save", description: error?.message ?? result?.error ?? "Try again.", variant: "destructive" });
+      }
+      return;
+    }
+    setSaved(true);
+    toast({ title: "Quotation saved", description: "Added to your collection (max 24)." });
+  }, [student?.id, saving, saved, quote, author, week, resolvedDay, toast]);
+
   const handleClose = useCallback(async () => {
     window.speechSynthesis.cancel();
     if (student) {
@@ -159,13 +189,22 @@ const CelestialMessage = () => {
           ))}
         </div>
 
-        <div className="flex justify-center gap-3">
+        <div className="flex flex-wrap justify-center gap-3">
           <Button
             onClick={handleReadToMe}
             variant="outline"
             className="border-secondary/40 text-foreground font-cinzel hover:bg-secondary/10"
           >
             {isSpeaking ? "Stop Reading" : "🔊 Read to Me"}
+          </Button>
+          <Button
+            onClick={handleSaveQuotation}
+            disabled={saving || saved}
+            variant="outline"
+            className="border-amber-400/60 text-amber-200 font-cinzel hover:bg-amber-400/10"
+          >
+            <Star className={`mr-2 h-4 w-4 ${saved ? "fill-amber-300" : ""}`} />
+            {saved ? "Saved ✓" : saving ? "Saving…" : "Save Quotation"}
           </Button>
           <Button
             onClick={handleClose}

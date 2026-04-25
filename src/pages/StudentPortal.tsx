@@ -5,10 +5,9 @@ import { useLionsPen } from "@/context/LionsPenContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
 import lionsPenLogo from "@/assets/lions_pen_v4.png";
-import { ChevronDown, BookOpen, Compass, MessageCircle, LogOut } from "lucide-react";
+import { BookOpen, Compass, MessageCircle, LogOut, Trash2, Star } from "lucide-react";
 
 interface WeekSubmission {
   id: string;
@@ -21,13 +20,30 @@ interface WeekSubmission {
   completed_at: string;
 }
 
+interface SavedQuotation {
+  id: string;
+  quote: string;
+  author: string;
+  created_at: string;
+}
+
 const StudentPortal = () => {
   const { student, week, setStep, resetSession } = useLionsPen();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [submissions, setSubmissions] = useState<WeekSubmission[]>([]);
+  const [quotations, setQuotations] = useState<SavedQuotation[]>([]);
   const [loading, setLoading] = useState(true);
   const [todayDone, setTodayDone] = useState(false);
+
+  const loadQuotations = useCallback(async (studentId: string) => {
+    const { data, error } = await supabase
+      .from("saved_quotations")
+      .select("id, quote, author, created_at")
+      .eq("student_id", studentId)
+      .order("created_at", { ascending: false });
+    if (!error && data) setQuotations(data as SavedQuotation[]);
+  }, []);
 
   useEffect(() => {
     if (!student) {
@@ -46,9 +62,10 @@ const StudentPortal = () => {
       }
       const status = statusRes.data as { today_done: boolean } | null;
       setTodayDone(!!status?.today_done);
+      await loadQuotations(student.id);
       setLoading(false);
     })();
-  }, [student, week, navigate, toast]);
+  }, [student, week, navigate, toast, loadQuotations]);
 
   const completedDays = new Set(submissions.map((s) => s.day));
   const weekFull = submissions.length >= 5;
@@ -71,6 +88,18 @@ const StudentPortal = () => {
     resetSession();
     navigate("/student");
   }, [resetSession, navigate]);
+
+  const handleDeleteQuote = useCallback(
+    async (id: string) => {
+      const { error } = await supabase.from("saved_quotations").delete().eq("id", id);
+      if (error) {
+        toast({ title: "Could not delete", description: error.message, variant: "destructive" });
+        return;
+      }
+      setQuotations((prev) => prev.filter((q) => q.id !== id));
+    },
+    [toast]
+  );
 
   if (!student) return null;
 
@@ -134,45 +163,84 @@ const StudentPortal = () => {
               </div>
             </div>
 
-            {/* Entries list */}
+            {/* Day completion list — text entries are intentionally hidden */}
             {loading ? (
-              <p className="text-foreground/60 text-sm">Loading entries…</p>
+              <p className="text-foreground/60 text-sm">Loading…</p>
             ) : submissions.length === 0 ? (
               <p className="text-foreground/60 text-sm italic">No entries yet this week.</p>
             ) : (
               <div className="space-y-2">
                 {submissions.map((s) => (
-                  <Collapsible key={s.id}>
-                    <CollapsibleTrigger className="w-full flex items-center justify-between p-3 rounded-md bg-foreground/5 hover:bg-foreground/10 transition-colors group">
-                      <div className="flex items-center gap-3">
-                        <span className="font-cinzel text-secondary">Day {s.day}</span>
-                        <span className="text-foreground/60 text-sm">
-                          {new Date(s.entry_date + "T00:00:00").toLocaleDateString(undefined, {
-                            weekday: "short",
-                            month: "short",
-                            day: "numeric",
-                          })}
-                        </span>
-                      </div>
-                      <ChevronDown className="h-4 w-4 text-secondary transition-transform group-data-[state=open]:rotate-180" />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="px-3 py-3 space-y-3 text-sm">
-                      <div>
-                        <p className="font-cinzel text-secondary text-xs uppercase tracking-wider mb-1">Academic</p>
-                        <p className="text-foreground/90 whitespace-pre-wrap">{s.academic_response || "—"}</p>
-                      </div>
-                      <div>
-                        <p className="font-cinzel text-secondary text-xs uppercase tracking-wider mb-1">Emotion</p>
-                        <p className="text-foreground/90 whitespace-pre-wrap">{s.emotion_response || "—"}</p>
-                      </div>
-                      <div>
-                        <p className="font-cinzel text-secondary text-xs uppercase tracking-wider mb-1">Character</p>
-                        <p className="text-foreground/90 whitespace-pre-wrap">{s.character_response || "—"}</p>
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
+                  <div
+                    key={s.id}
+                    className="w-full flex items-center justify-between p-3 rounded-md bg-foreground/5"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="font-cinzel text-secondary">Day {s.day}</span>
+                      <span className="text-foreground/60 text-sm">
+                        {new Date(s.entry_date + "T00:00:00").toLocaleDateString(undefined, {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </span>
+                    </div>
+                    <span className="text-xs font-cinzel uppercase tracking-wider text-secondary/80 bg-secondary/10 border border-secondary/30 rounded-full px-3 py-1">
+                      Completed
+                    </span>
+                  </div>
                 ))}
               </div>
+            )}
+          </Card>
+
+          {/* Saved Quotations */}
+          <Card className="p-6 border-secondary/30">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-cinzel text-lg text-primary tracking-wide flex items-center gap-2">
+                <Star className="h-5 w-5 text-amber-400" />
+                My Saved Quotations
+              </h2>
+              <span className="text-xs font-cinzel text-secondary">{quotations.length} / 24</span>
+            </div>
+            {loading ? (
+              <p className="text-foreground/60 text-sm">Loading…</p>
+            ) : quotations.length === 0 ? (
+              <p className="text-foreground/60 text-sm italic">
+                No quotations saved yet. Tap “Save Quotation” after a reflection to keep your favorites here.
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {quotations.map((q) => (
+                  <li
+                    key={q.id}
+                    className="p-4 rounded-md bg-foreground/5 border border-secondary/20 flex items-start gap-3"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-foreground italic leading-relaxed">“{q.quote}”</p>
+                      <p className="text-secondary font-cinzel text-xs mt-2">
+                        — {q.author}
+                        <span className="text-foreground/40 ml-3">
+                          {new Date(q.created_at).toLocaleDateString(undefined, {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </span>
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteQuote(q.id)}
+                      className="text-foreground/50 hover:text-destructive hover:bg-destructive/10 shrink-0"
+                      aria-label="Delete quotation"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </li>
+                ))}
+              </ul>
             )}
           </Card>
 
