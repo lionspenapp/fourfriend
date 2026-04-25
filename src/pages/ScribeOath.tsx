@@ -30,17 +30,17 @@ const ScribeOath = () => {
         transition={{ duration: 0.6 }}
         className="max-w-xl w-full text-center relative z-10"
       >
-        <h1 className="font-cinzel text-3xl font-bold text-white drop-shadow-lg mb-8">
+        <h1 className="font-cinzel text-3xl font-bold text-white drop-shadow-lg mb-4">
           The Scribe's Oath
         </h1>
 
         <img
           src={oathTablet}
           alt="The Scribe's Oath on a clay tablet"
-          className="max-w-md w-full mx-auto rounded-lg shadow-2xl mb-8"
+          className="max-w-md w-full mx-auto rounded-lg shadow-2xl mb-4"
         />
 
-        <div className="flex items-center justify-center gap-3 mb-6">
+        <div className="flex items-center justify-center gap-3 mb-4">
           <p className="text-secondary drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-base font-cinzel font-bold tracking-wide leading-tight text-right">
             Sign<br />Your Name
           </p>
