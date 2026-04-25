@@ -149,7 +149,7 @@ const StudentLogin = () => {
         </form>
 
          <p className="text-center mt-6 text-secondary/80 text-sm">
-           <button onClick={() => navigate("/")} className="cursor-pointer hover:text-secondary transition-colors font-cinzel">
+           <button onClick={() => navigate("/parent")} className="cursor-pointer hover:text-secondary transition-colors font-cinzel">
             Parent Login →
           </button>
         </p>
