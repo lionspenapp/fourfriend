@@ -510,7 +510,7 @@ export const LANDING_HTML = String.raw`<style>
       <span class="lp-eco-r" style="color: var(--lp-gold);">III</span>
       <p class="lp-eco-t">Lion's Pen App</p>
       <span class="lp-eco-s" style="color: var(--lp-rust);">Daily Reflection · 15 Min</span>
-      <p class="lp-eco-b">The daily engine. Each morning: The Anchor (stillness), The Oath (truth), The Triad (Lore · Tides · Forge), The Illumination (ancient wisdom). In their own words. Never outsourced.</p>
+      <p class="lp-eco-b">The daily engine. Each evening: The Anchor (stillness), The Oath (truth), The Triad (Lore · Tides · Forge), The Illumination (ancient wisdom). In their own words. Never outsourced.</p>
       <p class="lp-eco-heart">The Heart of Lion's Pen</p>
     </div>
     <div class="lp-eco">

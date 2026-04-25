@@ -1,41 +1,23 @@
-## Goal
+## Change
 
-Append the full content of `lionspen-below-login.html` (952 lines) directly below the existing login form on the **Parent Login Page** (`src/pages/ParentAuth.tsx`, route `/`). Leave `StudentLogin.tsx` and the main landing untouched.
+Update the "Daily Reflection · 15 Min" section copy to reframe it as a nightly (evening) reflection instead of a morning one.
 
-## Why this is safe
+### Files
 
-- All CSS classes are prefixed `lp-` and all CSS variables are prefixed `--lp-`.
-- The file contains no global selectors (`*`, `body`, `html`).
-- Google Fonts (Playfair Display, EB Garamond, Cormorant Garamond) are already loaded in `index.html` — no change needed there.
+**1. `src/pages/landingHtml.ts` (line 513)**
 
-## Changes
+Before:
+> The daily engine. Each morning: The Anchor (stillness), The Oath (truth), The Triad (Lore · Tides · Forge), The Illumination (ancient wisdom). In their own words. Never outsourced.
 
-### 1. New file: `src/pages/parentLandingHtml.ts`
+After:
+> The daily engine. Each evening: The Anchor (stillness), The Oath (truth), The Triad (Lore · Tides · Forge), The Illumination (ancient wisdom). In their own words. Never outsourced.
 
-Export the entire raw HTML (the inline `<style>` block plus all sections through the closing `</footer>`) as a single string constant `PARENT_LANDING_HTML`. The leading `<link>` to Google Fonts is omitted (already in `index.html`).
+**2. `src/pages/parentLandingHtml.ts` (line 741)** — same section, longer variant, also currently says "morning"
 
-```ts
-export const PARENT_LANDING_HTML = `<style>...</style>...<footer class="lp-footer">...</footer>`;
-```
+Before:
+> The daily engine of the entire system. Each morning the Aspirant opens the Scriptorium: The Anchor (stillness)…
 
-### 2. Edit `src/pages/ParentAuth.tsx`
+After:
+> The daily engine of the entire system. Each evening the Aspirant opens the Scriptorium: The Anchor (stillness)…
 
-- Import the constant.
-- Restructure the outer wrapper from `min-h-screen … flex items-center justify-center` to a vertical column so the landing flows below the login:
-  - Outer: `min-h-screen bg-background flex flex-col`.
-  - Wrap the existing login UI (decorative ochre border bars + the centered `motion.div`) in a `<section className="relative flex-1 flex items-center justify-center p-4 overflow-hidden min-h-screen">` so the four border bars stay scoped to the login viewport only.
-  - After that section, render:
-    ```tsx
-    <div className="w-full" dangerouslySetInnerHTML={{ __html: PARENT_LANDING_HTML }} />
-    ```
-- Keep all auth logic, form, and forgot-password modal exactly as-is.
-
-### 3. `index.html`
-
-No change — the three Google Fonts are already linked.
-
-## Out of scope
-
-- No edits to `StudentLogin.tsx` or the existing short landing on the student route.
-- No Tailwind conversion of the injected markup.
-- No wiring of the landing's CTA buttons to app routes (they remain plain `<button>` elements as authored).
+No other copy, styles, or markup change. Headings ("Daily Reflection · 15 Min", "The Anchor", etc.) stay as-is since the user only asked to change "morning" → "evening."
