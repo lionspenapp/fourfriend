@@ -1,36 +1,43 @@
-## Goal
-Fix the question text overlapping the wooden rollers on the scroll, and improve legibility.
+Plan to fix the remaining scroll text overlap:
 
-All changes in **`src/pages/QuestionPage.tsx`** on the inner scroll container and prompt `<p>`.
+1. Replace the current full-scroll text overlay with an inner “safe parchment” area
+   - Keep the scroll background image as-is.
+   - Move the question text into a smaller absolute container positioned away from the wooden rollers.
+   - Use percentage-based top/bottom insets instead of only padding, so the text cannot enter the handle zones.
 
-## Changes
+2. Make the text area reliably scroll inside the parchment
+   - Apply `overflow-y-auto` only to the inner safe area.
+   - Keep the custom thin scrollbar styling.
+   - Ensure long database questions scroll within the paper area instead of expanding over the wood.
 
-### Inner scroll container (currently `py-[8%] sm:py-[6%]`)
-- Replace responsive percentage vertical padding with a fixed **60px top and bottom** padding so text never sits on the wooden rollers.
-- Keep horizontal padding at **25px** left/right.
-- Keep `overflow-y-auto` and `scroll-ink` for thin scrollbar containment.
-- Change layout to ensure vertical centering: keep `flex flex-col justify-center` (already there), and add `items-center` so short text remains centered both axes within the flat parchment area.
+3. Preserve the requested typography
+   - Keep EB Garamond.
+   - Keep carbon-ink brown color.
+   - Keep font size around `1.2rem` and weight `500`.
+   - Keep centered text and 25px side safety spacing.
 
-### Prompt text (`<p>`)
-- Increase font size to **1.2rem (~18px)** — replace `text-base sm:text-lg md:text-xl` with a fixed `text-[1.2rem]` (or `text-[18px]`), keeping it readable on all viewports.
-- Add `font-weight: 500` (`font-medium`) so the ink looks thicker against the papyrus.
-- Keep existing color `rgba(28,28,28,0.9)`, `lineHeight: 1.6`, `font-garamond`, `break-words hyphens-auto`, centered text.
+Technical details:
 
-## Resulting style snippet
+In `src/pages/QuestionPage.tsx`, I will change the question scroll structure from:
 
-```tsx
-<div
-  className="absolute inset-0 flex flex-col justify-center items-center overflow-y-auto scroll-ink"
-  style={{ paddingTop: 60, paddingBottom: 60, paddingLeft: 25, paddingRight: 25, background: "transparent" }}
->
-  <p
-    className="font-garamond font-medium text-[1.2rem] break-words hyphens-auto normal-case text-center"
-    style={{ color: "rgba(28,28,28,0.9)", lineHeight: 1.6 }}
-  >
-    {loading ? "Loading question…" : prompt}
-  </p>
-</div>
+```text
+scroll image
+└── full inset text container with padding
 ```
 
-## Out of scope
-- No changes to scroll background image, response papyrus area, buttons, or DB logic.
+to:
+
+```text
+scroll image
+└── inner safe parchment container
+    └── vertically centered scrolling text
+```
+
+The inner container will use something like:
+
+```tsx
+className="absolute left-[14%] right-[14%] top-[28%] bottom-[24%] flex items-center justify-center overflow-y-auto scroll-ink"
+style={{ paddingLeft: 25, paddingRight: 25, background: "transparent" }}
+```
+
+This directly prevents the letters from occupying the top and bottom roller areas, rather than relying on padding inside the full image box.
