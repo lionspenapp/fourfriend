@@ -1,35 +1,18 @@
-## Make Student Login the Landing Page
+## Add "Sign Up" Link for New Parents on Landing Page
 
-Swap the default route so opening the app shows the Student Login (the Scriber's entry) instead of the Parent Auth screen. Parents will get a dedicated `/parent` route, and the existing "Parent Login →" link on the student page will point there.
+Add a secondary call-to-action under the existing "Parent Login →" link on the Student Login (landing) page, so first-time parents can jump straight into account creation.
 
-### Routing changes (`src/App.tsx`)
+### Changes
 
-Current behavior:
-- `/` → `ParentAuth` (or `ParentDashboard` if logged in)
-- `/student` → `Index` (which renders `StudentLogin` based on flow step)
+**`src/pages/StudentLogin.tsx`** — Replace the single "Parent Login →" line with a small two-line block:
 
-New behavior:
-- `/` → `Index` (Student Login flow) — main entry for everyone
-- `/student` → `Index` (kept as alias so existing links keep working)
-- `/student/portal` → `StudentPortal` (unchanged)
-- `/parent` → `ParentAuth` (new dedicated parent entry)
-- `/parent/dashboard` → `ParentDashboard` when authenticated, otherwise redirect to `/parent`
-- `/reset-password` → `ResetPassword` (unchanged)
-- `*` → `NotFound`
+```
+Parent Login →
+New parent? Create an account
+```
 
-Authenticated parents who land on `/parent` will be redirected to `/parent/dashboard` so they don't have to re-login.
+Both are buttons styled with the existing gold (`text-secondary`) Cinzel typography. "Create an account" navigates to `/parent?signup=1`.
 
-### Link updates
+**`src/pages/ParentAuth.tsx`** — Initialize the existing `isSignUp` state from the URL so `/parent?signup=1` opens directly in Sign Up mode (showing the parent + child registration form). Default behavior (`/parent`) remains Sign In. The existing in-page "Sign In / Sign Up" toggle keeps working as before.
 
-- `src/pages/StudentLogin.tsx`: change the "Parent Login →" button from `navigate("/")` to `navigate("/parent")`.
-- `src/pages/ParentAuth.tsx`: any post-login navigation that goes to `/` will be updated to `/parent/dashboard`. Any "back to student" link will point to `/`.
-- `src/pages/ParentDashboard.tsx`: post sign-out navigation will go to `/parent` (or `/`) as appropriate.
-- `src/pages/ResetPassword.tsx`: post-reset redirect updated to `/parent`.
-
-I'll grep for any other `navigate("/")` / `<Link to="/">` usages and adjust them to the correct new destination during implementation.
-
-### What stays the same
-
-- All visuals (logo, gold buttons, catchphrase) untouched.
-- Student auth flow, Supabase RPCs, and the multi-step ritual (`lock` → `breathing` → `oath` → ...) unchanged.
-- Parent signup/login logic unchanged — only the URL it lives at changes.
+No design tokens, RPCs, or auth logic change — just one new link and a URL-driven default for the signup tab.
