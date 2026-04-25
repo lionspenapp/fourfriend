@@ -201,9 +201,9 @@ const CelestialMessage = () => {
             onClick={handleSaveQuotation}
             disabled={saving || saved}
             variant="outline"
-            className="border-amber-400/60 text-amber-200 font-cinzel hover:bg-amber-400/10"
+            className="border-2 border-primary bg-white text-primary font-cinzel font-semibold hover:bg-primary hover:text-primary-foreground"
           >
-            <Star className={`mr-2 h-4 w-4 ${saved ? "fill-amber-300" : ""}`} />
+            <Star className={`mr-2 h-4 w-4 ${saved ? "fill-primary" : ""}`} />
             {saved ? "Saved ✓" : saving ? "Saving…" : "Save Quotation"}
           </Button>
           <Button
