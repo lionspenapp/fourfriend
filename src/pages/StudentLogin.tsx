@@ -164,6 +164,8 @@ const StudentLogin = () => {
            </p>
          </div>
       </motion.div>
+      </section>
+      <div className="w-full" dangerouslySetInnerHTML={{ __html: LANDING_HTML }} />
     </div>
   );
 };
