@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import lionsPenLogo from "@/assets/lions_pen_v4.png";
-import { BookOpen, Compass, MessageCircle, LogOut, Trash2, Star } from "lucide-react";
+import { BookOpen, Compass, MessageCircle, LogOut, Trash2, Star, Check } from "lucide-react";
 
 interface WeekSubmission {
   id: string;
