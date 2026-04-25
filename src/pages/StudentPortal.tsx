@@ -89,9 +89,18 @@ const StudentPortal = () => {
 
   const handleDeleteQuote = useCallback(
     async (id: string) => {
-      const { error } = await supabase.from("saved_quotations").delete().eq("id", id);
-      if (error) {
-        toast({ title: "Could not delete", description: error.message, variant: "destructive" });
+      if (!student?.id) return;
+      const { data, error } = await supabase.rpc("delete_saved_quotation", {
+        p_student_id: student.id,
+        p_id: id,
+      });
+      const result = data as { success: boolean; error?: string } | null;
+      if (error || !result?.success) {
+        toast({
+          title: "Could not delete",
+          description: error?.message ?? result?.error ?? "Try again.",
+          variant: "destructive",
+        });
         return;
       }
       setQuotations((prev) => prev.filter((q) => q.id !== id));
