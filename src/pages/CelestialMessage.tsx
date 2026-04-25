@@ -94,7 +94,7 @@ const CelestialMessage = () => {
       utterance.voice = voice;
       utterance.lang = voice.lang;
     }
-    utterance.rate = 0.88;
+    utterance.rate = 0.8;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
     utterance.onend = () => setIsSpeaking(false);
