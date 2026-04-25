@@ -41,7 +41,7 @@ const ScribeOath = () => {
         />
 
         <div className="flex items-center justify-center gap-3 mb-6">
-          <p className="text-white drop-shadow-md text-sm font-cinzel tracking-wide leading-tight text-right">
+          <p className="text-secondary drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-base font-cinzel font-bold tracking-wide leading-tight text-right">
             Sign<br />Your Name
           </p>
           <Input
