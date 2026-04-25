@@ -44,14 +44,14 @@ const ScribeOath = () => {
           Sign Your Name to Take the Oath
         </p>
 
-        <div className="max-w-[10rem] mx-auto mb-6">
+        <div className="max-w-sm mx-auto mb-6">
           <Input
             type="text"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="First, Last Name"
-            style={{ fontSize: "3.5rem", lineHeight: "0.85" }}
-            className="bg-foreground/5 border-secondary/30 text-white placeholder:text-white/50 placeholder:font-sans placeholder:text-base focus-visible:ring-secondary text-center font-signature h-36 py-0"
+            style={{ fontSize: "1.75rem", lineHeight: "0.85" }}
+            className="bg-foreground/5 border-secondary/30 text-white placeholder:text-white/50 placeholder:font-sans placeholder:text-base focus-visible:ring-secondary text-center font-signature h-18 py-0"
           />
         </div>
 
