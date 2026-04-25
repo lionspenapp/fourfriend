@@ -148,57 +148,68 @@ const StudentPortal = () => {
         >
           {/* Weekly Activity */}
           <Card className="p-6 border-secondary/30">
-            <h2 className="font-cinzel text-lg text-primary mb-4 tracking-wide">Weekly Activity</h2>
-
-            {/* 5-dot tracker */}
-            <div className="flex items-center gap-3 mb-6">
-              {[1, 2, 3, 4, 5].map((d) => {
-                const done = completedDays.has(d);
-                return (
-                  <div key={d} className="flex flex-col items-center gap-1">
-                    <div
-                      className={`w-6 h-6 rounded-full border-2 transition-colors ${
-                        done ? "bg-secondary border-secondary" : "bg-transparent border-secondary/40"
-                      }`}
-                    />
-                    <span className="text-xs font-cinzel text-secondary/80">Day {d}</span>
-                  </div>
-                );
-              })}
-              <div className="ml-auto text-sm font-cinzel text-secondary">
-                {submissions.length} / 5
-              </div>
+            <div className="flex items-baseline justify-between mb-6">
+              <h2 className="font-cinzel text-lg text-primary tracking-wide">Weekly Activity</h2>
+              <span className="font-cinzel text-xs text-secondary">{submissions.length} / 5</span>
             </div>
 
-            {/* Day completion list — text entries are intentionally hidden */}
-            {loading ? (
-              <p className="text-foreground/60 text-sm">Loading…</p>
-            ) : submissions.length === 0 ? (
-              <p className="text-foreground/60 text-sm italic">No entries yet this week.</p>
-            ) : (
-              <div className="space-y-2">
-                {submissions.map((s) => (
-                  <div
-                    key={s.id}
-                    className="w-full flex items-center justify-between p-3 rounded-md bg-foreground/5"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="font-cinzel text-secondary">Day {s.day}</span>
-                      <span className="text-foreground/60 text-sm">
-                        {new Date(s.entry_date + "T00:00:00").toLocaleDateString(undefined, {
-                          weekday: "short",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </span>
-                    </div>
-                    <span className="text-xs font-cinzel uppercase tracking-wider text-secondary/80 bg-secondary/10 border border-secondary/30 rounded-full px-3 py-1">
-                      Completed
-                    </span>
+            {/* Stacked horizontal timeline */}
+            {(() => {
+              const today = new Date();
+              const dow = today.getDay(); // 0=Sun..6=Sat
+              const offsetToMonday = (dow + 6) % 7;
+              const weekStart = new Date(today);
+              weekStart.setHours(0, 0, 0, 0);
+              weekStart.setDate(today.getDate() - offsetToMonday);
+
+              const todayKey = today.toDateString();
+              const subByDay = new Map(submissions.map((s) => [s.day, s]));
+
+              const dateFmt = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" });
+              const dayFmt = new Intl.DateTimeFormat(undefined, { weekday: "short" });
+
+              return (
+                <div className="relative max-w-2xl mx-auto px-2">
+                  <div className="pointer-events-none absolute left-[10%] right-[10%] top-1/2 h-px bg-lapis/30" />
+                  <div className="relative flex items-center justify-between">
+                    {[1, 2, 3, 4, 5].map((d) => {
+                      const sub = subByDay.get(d);
+                      const date = sub
+                        ? new Date(sub.entry_date + "T00:00:00")
+                        : new Date(weekStart.getTime() + (d - 1) * 86400000);
+                      const completed = !!sub;
+                      const isToday = date.toDateString() === todayKey;
+                      return (
+                        <div key={d} className="flex flex-col items-center gap-1.5 min-w-0">
+                          <span className="font-cinzel text-[11px] sm:text-xs text-lapis tracking-wide">
+                            {dateFmt.format(date)}
+                          </span>
+                          <div
+                            className={`relative z-10 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center transition-all ${
+                              completed
+                                ? "bg-ochre border-2 border-ochre text-white shadow-[0_0_10px_hsl(var(--ochre)/0.45)]"
+                                : `bg-background border-2 border-lapis ${
+                                    isToday
+                                      ? "ring-2 ring-lapis/30 ring-offset-2 ring-offset-background animate-pulse"
+                                      : ""
+                                  }`
+                            }`}
+                          >
+                            {completed && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+                          </div>
+                          <span className="font-cinzel text-[10px] sm:text-[11px] text-lapis/80 uppercase tracking-widest">
+                            {dayFmt.format(date)}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
-                ))}
-              </div>
-            )}
+                  {loading && (
+                    <p className="text-foreground/60 text-xs text-center mt-4">Loading…</p>
+                  )}
+                </div>
+              );
+            })()}
           </Card>
 
           {/* Saved Quotations */}
