@@ -12,6 +12,44 @@ const CelestialMessage = () => {
   const navigate = useNavigate();
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [resolvedDay, setResolvedDay] = useState<number | null>(currentDay);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+
+  // Load available speech synthesis voices (async in Chrome)
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    const load = () => setVoices(window.speechSynthesis.getVoices());
+    load();
+    window.speechSynthesis.addEventListener("voiceschanged", load);
+    return () => window.speechSynthesis.removeEventListener("voiceschanged", load);
+  }, []);
+
+  const pickBestVoice = useCallback((): SpeechSynthesisVoice | null => {
+    if (!voices.length) return null;
+    const preferredNames = [
+      "Google UK English Female",
+      "Google US English",
+      "Microsoft Aria Online (Natural) - English (United States)",
+      "Microsoft Jenny Online (Natural) - English (United States)",
+      "Microsoft Aria Online (Natural)",
+      "Microsoft Jenny Online (Natural)",
+      "Samantha",
+      "Karen",
+      "Daniel",
+    ];
+    for (const name of preferredNames) {
+      const v = voices.find((vc) => vc.name === name);
+      if (v) return v;
+    }
+    const natural = voices.find(
+      (v) => /natural|online|neural/i.test(v.name) && v.lang.startsWith("en")
+    );
+    if (natural) return natural;
+    const enGB = voices.find((v) => v.lang === "en-GB");
+    if (enGB) return enGB;
+    const enAny = voices.find((v) => v.lang.startsWith("en"));
+    if (enAny) return enAny;
+    return voices[0] ?? null;
+  }, [voices]);
 
   // Fallback: if we landed here without a known day (e.g. page refresh),
   // ask the server which day was just completed.
@@ -41,19 +79,29 @@ const CelestialMessage = () => {
   const message = msg?.message ?? "Young Scribe, today you have shown courage by sharing your thoughts honestly. Keep writing. Keep reflecting. The Celestial Scriptorium honors your courage.";
 
   const handleReadToMe = useCallback(() => {
+    if (!window.speechSynthesis) return;
     if (isSpeaking) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
       return;
     }
-    const utterance = new SpeechSynthesisUtterance(
-      `${quote}. By ${author}. ${message}`
-    );
-    utterance.rate = 0.9;
+    const clean = (s: string) =>
+      s.replace(/[*_`#>~]/g, "").replace(/\s+/g, " ").trim();
+    const spoken = `${clean(quote)} … by ${clean(author)}. … ${clean(message)}`;
+    const utterance = new SpeechSynthesisUtterance(spoken);
+    const voice = pickBestVoice();
+    if (voice) {
+      utterance.voice = voice;
+      utterance.lang = voice.lang;
+    }
+    utterance.rate = 0.88;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
     utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
     setIsSpeaking(true);
     window.speechSynthesis.speak(utterance);
-  }, [isSpeaking, quote, author, message]);
+  }, [isSpeaking, quote, author, message, pickBestVoice]);
 
   const handleClose = useCallback(async () => {
     window.speechSynthesis.cancel();
