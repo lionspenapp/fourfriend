@@ -50,7 +50,7 @@ const ScribeOath = () => {
             onChange={(e) => setFullName(e.target.value)}
             placeholder="First, Last Name"
             style={{ fontSize: "1.75rem", lineHeight: "0.85" }}
-            className="bg-foreground/5 border-2 border-secondary text-white placeholder:text-white/50 placeholder:font-sans placeholder:text-base focus-visible:ring-secondary text-center font-signature h-18 py-0 w-72"
+            className="bg-white border-2 border-secondary text-foreground placeholder:text-foreground/40 placeholder:font-sans placeholder:text-base focus-visible:ring-secondary text-center font-signature h-18 py-0 w-72"
           />
         </div>
 
