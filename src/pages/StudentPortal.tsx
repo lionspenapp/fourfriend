@@ -105,7 +105,7 @@ const StudentPortal = () => {
       }
       setQuotations((prev) => prev.filter((q) => q.id !== id));
     },
-    [toast]
+    [student?.id, toast]
   );
 
   if (!student) return null;
