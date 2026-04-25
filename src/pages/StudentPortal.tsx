@@ -181,8 +181,8 @@ const StudentPortal = () => {
                       const isToday = date.toDateString() === todayKey;
                       return (
                         <div key={d} className="flex flex-col items-center gap-1.5 min-w-0">
-                          <span className="font-cinzel text-[11px] sm:text-xs text-lapis tracking-wide">
-                            {dateFmt.format(date)}
+                          <span className="font-cinzel text-[11px] sm:text-xs text-lapis tracking-wide min-h-[1rem]">
+                            {completed ? dateFmt.format(date) : ""}
                           </span>
                           <div
                             className={`relative z-10 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center transition-all ${
