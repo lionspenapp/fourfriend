@@ -307,7 +307,7 @@ const ParentDashboard = () => {
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="block text-foreground/90 text-sm font-cinzel mb-1.5">Username</label>
-                          <Input value={childUsername} onChange={(e) => setChildUsername(e.target.value)} placeholder="scriber_name" required className={inputClass} />
+                          <Input value={childUsername} onChange={(e) => setChildUsername(e.target.value)} placeholder="scribe_name" required className={inputClass} />
                         </div>
                         <div>
                           <label className="block text-foreground/90 text-sm font-cinzel mb-1.5">Secret Code</label>
@@ -436,7 +436,7 @@ const ParentDashboard = () => {
                   <ol className="text-foreground/80 leading-relaxed space-y-2 list-decimal list-inside">
                     <li><strong>Login</strong> — Your child enters their username and secret code.</li>
                     <li><strong>Breathing Exercise</strong> — A 60-second calming exercise to center the mind.</li>
-                    <li><strong>Scriber's Oath</strong> — A pledge to write honestly and thoughtfully.</li>
+                    <li><strong>Scribe's Oath</strong> — A pledge to write honestly and thoughtfully.</li>
                     <li><strong>Three Reflections</strong> — Your child answers one academic, one emotional, and one character question.</li>
                     <li><strong>Celestial Message</strong> — An inspiring closing message to end the session.</li>
                   </ol>

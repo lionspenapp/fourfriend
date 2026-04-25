@@ -30,7 +30,7 @@ export const SignupEmail = ({ siteUrl, recipient, confirmationUrl }: SignupEmail
         <Heading style={brand}>LION'S PEN</Heading>
         <Text style={tagline}>The Inner Scriptorium</Text>
         <div style={divider} />
-        <Heading style={h1}>Welcome, Scriber</Heading>
+        <Heading style={h1}>Welcome, Scribe</Heading>
         <Text style={text}>
           You stand at the threshold of <Link href={siteUrl} style={link}>Lion's Pen</Link> —
           a place where you become who you were meant to be.

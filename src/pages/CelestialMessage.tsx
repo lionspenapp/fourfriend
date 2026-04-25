@@ -38,7 +38,7 @@ const CelestialMessage = () => {
 
   const author = msg?.author ?? "The Celestial Scriptorium";
   const quote = msg?.quote ?? "Your words today carry the weight of your courage.";
-  const message = msg?.message ?? "Young Scriber, today you have shown courage by sharing your thoughts honestly. Keep writing. Keep reflecting. The Celestial Scriptorium honors your courage.";
+  const message = msg?.message ?? "Young Scribe, today you have shown courage by sharing your thoughts honestly. Keep writing. Keep reflecting. The Celestial Scriptorium honors your courage.";
 
   const handleReadToMe = useCallback(() => {
     if (isSpeaking) {

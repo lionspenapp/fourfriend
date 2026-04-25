@@ -2,7 +2,7 @@ import { useLionsPen } from "@/context/LionsPenContext";
 import StudentLogin from "./StudentLogin";
 import LockScreen from "./LockScreen";
 import BreathingPage from "./BreathingPage";
-import ScriberOath from "./ScriberOath";
+import ScribeOath from "./ScribeOath";
 import QuestionPage from "./QuestionPage";
 import CelestialMessage from "./CelestialMessage";
 
@@ -17,7 +17,7 @@ const Index = () => {
     case "breathing":
       return <BreathingPage />;
     case "oath":
-      return <ScriberOath />;
+      return <ScribeOath />;
     case "academic":
       return <QuestionPage type="academic" />;
     case "emotion":

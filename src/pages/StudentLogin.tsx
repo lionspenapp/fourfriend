@@ -61,7 +61,7 @@ const StudentLogin = () => {
         toast({ title: "You've finished all 5 weekly sessions", description: "Visit your portal to review your week." });
         navigate("/student/portal");
       } else if (status.today_done) {
-        toast({ title: "You've already reflected today", description: "Come back tomorrow, Scriber." });
+        toast({ title: "You've already reflected today", description: "Come back tomorrow, Scribe." });
         navigate("/student/portal");
       } else {
         setStep("breathing");
@@ -108,7 +108,7 @@ const StudentLogin = () => {
           <div className="bg-foreground/5 backdrop-blur-sm border-2 border-secondary/30 rounded-lg p-6 space-y-4">
             <div>
                <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
-                 Scriber Name
+                 Scribe Name
               </label>
               <Input
                 value={username}
