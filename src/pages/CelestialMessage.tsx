@@ -189,13 +189,22 @@ const CelestialMessage = () => {
           ))}
         </div>
 
-        <div className="flex justify-center gap-3">
+        <div className="flex flex-wrap justify-center gap-3">
           <Button
             onClick={handleReadToMe}
             variant="outline"
             className="border-secondary/40 text-foreground font-cinzel hover:bg-secondary/10"
           >
             {isSpeaking ? "Stop Reading" : "🔊 Read to Me"}
+          </Button>
+          <Button
+            onClick={handleSaveQuotation}
+            disabled={saving || saved}
+            variant="outline"
+            className="border-amber-400/60 text-amber-200 font-cinzel hover:bg-amber-400/10"
+          >
+            <Star className={`mr-2 h-4 w-4 ${saved ? "fill-amber-300" : ""}`} />
+            {saved ? "Saved ✓" : saving ? "Saving…" : "Save Quotation"}
           </Button>
           <Button
             onClick={handleClose}
