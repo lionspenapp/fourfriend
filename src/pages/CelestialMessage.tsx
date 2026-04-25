@@ -79,19 +79,29 @@ const CelestialMessage = () => {
   const message = msg?.message ?? "Young Scribe, today you have shown courage by sharing your thoughts honestly. Keep writing. Keep reflecting. The Celestial Scriptorium honors your courage.";
 
   const handleReadToMe = useCallback(() => {
+    if (!window.speechSynthesis) return;
     if (isSpeaking) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
       return;
     }
-    const utterance = new SpeechSynthesisUtterance(
-      `${quote}. By ${author}. ${message}`
-    );
-    utterance.rate = 0.9;
+    const clean = (s: string) =>
+      s.replace(/[*_`#>~]/g, "").replace(/\s+/g, " ").trim();
+    const spoken = `${clean(quote)} … by ${clean(author)}. … ${clean(message)}`;
+    const utterance = new SpeechSynthesisUtterance(spoken);
+    const voice = pickBestVoice();
+    if (voice) {
+      utterance.voice = voice;
+      utterance.lang = voice.lang;
+    }
+    utterance.rate = 0.88;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
     utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
     setIsSpeaking(true);
     window.speechSynthesis.speak(utterance);
-  }, [isSpeaking, quote, author, message]);
+  }, [isSpeaking, quote, author, message, pickBestVoice]);
 
   const handleClose = useCallback(async () => {
     window.speechSynthesis.cancel();
