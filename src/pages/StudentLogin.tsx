@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
+import { LANDING_HTML } from "./landingHtml";
 
 const StudentLogin = () => {
   const { setStudent, setStep, week } = useLionsPen();
