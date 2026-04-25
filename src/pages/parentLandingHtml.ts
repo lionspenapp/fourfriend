@@ -738,7 +738,7 @@ export const PARENT_LANDING_HTML = `<style>
       <span class="lp-eco-roman" style="color: var(--lp-gold);">III</span>
       <p class="lp-eco-title">Lion's Pen App</p>
       <span class="lp-eco-tag" style="color: var(--lp-rust);">Daily Guided Reflection · 15 Minutes</span>
-      <p class="lp-eco-body">The daily engine of the entire system. Each morning the Aspirant opens the Scriptorium: The Anchor (stillness), The Oath (truth), The Triad (Lore · Tides · Forge), The Illumination (ancient wisdom). Structured, guided, in their own words — never outsourced to a machine.</p>
+      <p class="lp-eco-body">The daily engine of the entire system. Each evening the Aspirant opens the Scriptorium: The Anchor (stillness), The Oath (truth), The Triad (Lore · Tides · Forge), The Illumination (ancient wisdom). Structured, guided, in their own words — never outsourced to a machine.</p>
       <p class="lp-eco-heart">The Heart of Lion's Pen</p>
     </div>
     <div class="lp-eco">
