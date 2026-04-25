@@ -760,7 +760,7 @@ export const PARENT_LANDING_HTML = `<style>
   <p class="lp-italic" style="color: var(--lp-gold-light);">Four steps · Fifteen minutes · One life-changing habit</p>
   <div class="lp-rule"></div>
   <p class="lp-journey-intro">
-    Each day, the <strong>Aspirant Young Scribe</strong> enters their Scriptorium and walks four steps — the same discipline Daniel practiced inside Babylon itself.
+    In this program, <strong>your child becomes a Scribe</strong> — an Aspirant Young Scribe who, each day, enters their Scriptorium and walks four steps. The same discipline Daniel practiced inside Babylon itself.
   </p>
   <div class="lp-steps">
     <div class="lp-step" data-n="I">
