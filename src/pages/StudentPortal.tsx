@@ -198,7 +198,7 @@ const StudentPortal = () => {
                             {completed && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
                           </div>
                           <span className="font-cinzel text-[10px] sm:text-[11px] text-lapis/80 uppercase tracking-widest">
-                            {dayFmt.format(date)}
+                            {completed ? dayFmt.format(date) : `Day ${d}`}
                           </span>
                         </div>
                       );
