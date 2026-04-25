@@ -57,7 +57,7 @@ const ScribeOath = () => {
         <Button
           onClick={() => setStep("academic")}
           disabled={!canProceed}
-          className="bg-secondary text-secondary-foreground font-cinzel tracking-wide hover:bg-secondary/90 px-10 py-5 text-base disabled:opacity-30"
+          className="bg-primary text-primary-foreground font-cinzel tracking-wide hover:bg-primary/90 px-10 py-5 text-base border-2 border-secondary shadow-lg disabled:opacity-40"
         >
           Enter the Scriptorium
         </Button>
