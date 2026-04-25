@@ -12,9 +12,12 @@ import { Star } from "lucide-react";
 const CelestialMessage = () => {
   const { markSubmitted, student, week, setStep, currentDay, setCurrentDay } = useLionsPen();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [resolvedDay, setResolvedDay] = useState<number | null>(currentDay);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   // Load available speech synthesis voices (async in Chrome)
   useEffect(() => {
