@@ -108,6 +108,31 @@ const CelestialMessage = () => {
     window.speechSynthesis.speak(utterance);
   }, [isSpeaking, quote, author, message, pickBestVoice]);
 
+  const handleSaveQuotation = useCallback(async () => {
+    if (!student?.id || saving || saved) return;
+    setSaving(true);
+    const { data, error } = await supabase.rpc("save_quotation", {
+      p_student_id: student.id,
+      p_quote: quote,
+      p_author: author,
+      p_week: week,
+      p_day: resolvedDay ?? null,
+    });
+    setSaving(false);
+    const result = data as { success: boolean; error?: string } | null;
+    if (error || !result?.success) {
+      if (result?.error === "already_saved") {
+        setSaved(true);
+        toast({ title: "Already saved", description: "This quotation is already in your collection." });
+      } else {
+        toast({ title: "Could not save", description: error?.message ?? result?.error ?? "Try again.", variant: "destructive" });
+      }
+      return;
+    }
+    setSaved(true);
+    toast({ title: "Quotation saved", description: "Added to your collection (max 24)." });
+  }, [student?.id, saving, saved, quote, author, week, resolvedDay, toast]);
+
   const handleClose = useCallback(async () => {
     window.speechSynthesis.cancel();
     if (student) {
