@@ -164,7 +164,7 @@ const CelestialMessage = () => {
         transition={{ duration: 0.8 }}
         className="max-w-2xl w-full text-center relative z-10"
       >
-        <p className="text-secondary text-xs font-cinzel tracking-widest uppercase mb-4">
+        <p className="text-secondary text-lg sm:text-xl md:text-2xl font-cinzel tracking-widest uppercase mb-6">
           A Message from the Celestial Scriptorium
         </p>
 
