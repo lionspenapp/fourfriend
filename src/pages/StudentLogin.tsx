@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
+import { LANDING_HTML } from "./landingHtml";
 
 const StudentLogin = () => {
   const { setStudent, setStep, week } = useLionsPen();
@@ -74,11 +75,12 @@ const StudentLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-2 bg-secondary" />
-      <div className="absolute bottom-0 left-0 right-0 h-2 bg-secondary" />
-      <div className="absolute left-0 top-0 bottom-0 w-2 bg-secondary" />
-      <div className="absolute right-0 top-0 bottom-0 w-2 bg-secondary" />
+    <div className="min-h-screen bg-background flex flex-col">
+      <section className="relative flex-1 flex items-center justify-center p-4 overflow-hidden min-h-screen">
+        <div className="absolute top-0 left-0 right-0 h-2 bg-secondary" />
+        <div className="absolute bottom-0 left-0 right-0 h-2 bg-secondary" />
+        <div className="absolute left-0 top-0 bottom-0 w-2 bg-secondary" />
+        <div className="absolute right-0 top-0 bottom-0 w-2 bg-secondary" />
 
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -162,6 +164,8 @@ const StudentLogin = () => {
            </p>
          </div>
       </motion.div>
+      </section>
+      <div className="w-full" dangerouslySetInnerHTML={{ __html: LANDING_HTML }} />
     </div>
   );
 };
