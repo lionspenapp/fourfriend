@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import lionsPenLogo from "@/assets/lions_pen_v4.png";
 import { supabase } from "@/integrations/supabase/client";
 import { Eye, EyeOff } from "lucide-react";
+import { PARENT_LANDING_HTML } from "./parentLandingHtml";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
