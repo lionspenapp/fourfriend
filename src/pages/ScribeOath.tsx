@@ -44,7 +44,7 @@ const ScribeOath = () => {
           Sign Your Name to Take the Oath
         </p>
 
-        <div className="max-w-sm mx-auto mb-6">
+        <div className="max-w-[10rem] mx-auto mb-6">
           <Input
             type="text"
             value={fullName}
