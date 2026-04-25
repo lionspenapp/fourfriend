@@ -388,7 +388,17 @@ const ParentAuth = () => {
         )}
       </motion.div>
       </section>
-      <div className="w-full" dangerouslySetInnerHTML={{ __html: PARENT_LANDING_HTML }} />
+      <div
+        className="w-full"
+        onClick={(e) => {
+          const t = e.target as HTMLElement;
+          const btn = t.closest("button");
+          if (btn && (btn.classList.contains("lp-btn-gold") || btn.textContent?.trim().toLowerCase().startsWith("begin my child"))) {
+            navigate("/subscribe");
+          }
+        }}
+        dangerouslySetInnerHTML={{ __html: PARENT_LANDING_HTML }}
+      />
     </div>
   );
 };
