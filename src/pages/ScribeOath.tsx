@@ -30,12 +30,9 @@ const ScribeOath = () => {
         transition={{ duration: 0.6 }}
         className="max-w-xl w-full text-center relative z-10"
       >
-        <h1 className="font-cinzel text-3xl font-bold text-white drop-shadow-lg mb-2">
+        <h1 className="font-cinzel text-3xl font-bold text-white drop-shadow-lg mb-8">
           The Scribe's Oath
         </h1>
-        <p className="text-white/80 drop-shadow-md text-sm mb-8 font-cinzel tracking-wider">
-          Grades {grade <= 4 ? "3–4" : grade <= 6 ? "5–6" : "7–8"}
-        </p>
 
         <img
           src={oathTablet}
