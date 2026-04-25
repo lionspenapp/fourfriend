@@ -4,7 +4,7 @@ import { useLionsPen } from "@/context/LionsPenContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import palaceSchoolBg from "@/assets/palace-school-bg.jpg";
-import oathTablet from "@/assets/oath-tablet.png";
+import oathTablet from "@/assets/oath-tablet-young-scribe.png";
 
 const ScribeOath = () => {
   const { student, setStep } = useLionsPen();
