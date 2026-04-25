@@ -1,18 +1,26 @@
-## Add "Sign Up" Link for New Parents on Landing Page
+## Replace the Scribe's Oath tablet image
 
-Add a secondary call-to-action under the existing "Parent Login →" link on the Student Login (landing) page, so first-time parents can jump straight into account creation.
+Swap the existing oath tablet artwork on the Scribe's Oath page (`/oath`) with the newly uploaded Babylonian-style stone tablet that contains the "Young Scribe's Oath" text.
 
 ### Changes
 
-**`src/pages/StudentLogin.tsx`** — Replace the single "Parent Login →" line with a small two-line block:
+1. **Add the new asset**
+   - Copy the uploaded image into the project at `src/assets/oath-tablet-young-scribe.png`.
 
-```
-Parent Login →
-New parent? Create an account
-```
+2. **Update `src/pages/ScribeOath.tsx`**
+   - Replace the import:
+     ```ts
+     import oathTablet from "@/assets/oath-tablet.png";
+     ```
+     with:
+     ```ts
+     import oathTablet from "@/assets/oath-tablet-young-scribe.png";
+     ```
+   - Keep the existing `<img>` tag, sizing (`max-w-md`), rounded corners, and shadow — only the source changes.
+   - Since the uploaded tablet already contains the full oath text rendered in stone, no other UI text on this page needs to change. The page heading ("The Scribe's Oath"), grade label, signature input, and "Enter the Scriptorium" button all remain.
 
-Both are buttons styled with the existing gold (`text-secondary`) Cinzel typography. "Create an account" navigates to `/parent?signup=1`.
+3. **Leave the old asset** (`src/assets/oath-tablet.png`) in place untouched — no other file references it, but removing it isn't necessary and avoids any risk if it's used elsewhere later.
 
-**`src/pages/ParentAuth.tsx`** — Initialize the existing `isSignUp` state from the URL so `/parent?signup=1` opens directly in Sign Up mode (showing the parent + child registration form). Default behavior (`/parent`) remains Sign In. The existing in-page "Sign In / Sign Up" toggle keeps working as before.
-
-No design tokens, RPCs, or auth logic change — just one new link and a URL-driven default for the signup tab.
+### Out of scope
+- No changes to oath copy in `src/data/mockContent.ts` (that data isn't shown on this page).
+- No layout, color, or typography changes — only the image source.
