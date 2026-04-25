@@ -37,11 +37,9 @@ const StudentPortal = () => {
   const [todayDone, setTodayDone] = useState(false);
 
   const loadQuotations = useCallback(async (studentId: string) => {
-    const { data, error } = await supabase
-      .from("saved_quotations")
-      .select("id, quote, author, created_at")
-      .eq("student_id", studentId)
-      .order("created_at", { ascending: false });
+    const { data, error } = await supabase.rpc("get_saved_quotations", {
+      p_student_id: studentId,
+    });
     if (!error && data) setQuotations(data as SavedQuotation[]);
   }, []);
 
@@ -91,14 +89,23 @@ const StudentPortal = () => {
 
   const handleDeleteQuote = useCallback(
     async (id: string) => {
-      const { error } = await supabase.from("saved_quotations").delete().eq("id", id);
-      if (error) {
-        toast({ title: "Could not delete", description: error.message, variant: "destructive" });
+      if (!student?.id) return;
+      const { data, error } = await supabase.rpc("delete_saved_quotation", {
+        p_student_id: student.id,
+        p_id: id,
+      });
+      const result = data as { success: boolean; error?: string } | null;
+      if (error || !result?.success) {
+        toast({
+          title: "Could not delete",
+          description: error?.message ?? result?.error ?? "Try again.",
+          variant: "destructive",
+        });
         return;
       }
       setQuotations((prev) => prev.filter((q) => q.id !== id));
     },
-    [toast]
+    [student?.id, toast]
   );
 
   if (!student) return null;

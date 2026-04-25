@@ -397,9 +397,24 @@ export type Database = {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
       }
+      delete_saved_quotation: {
+        Args: { p_id: string; p_student_id: string }
+        Returns: Json
+      }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      get_saved_quotations: {
+        Args: { p_student_id: string }
+        Returns: {
+          author: string
+          created_at: string
+          day: number
+          id: string
+          quote: string
+          week: number
+        }[]
       }
       get_student_week_status: {
         Args: { p_student_id: string; p_week: number }
