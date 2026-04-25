@@ -149,7 +149,7 @@ const ResetPassword = () => {
       setPassword("");
       setConfirmPassword("");
       toast({ title: "Password updated!", description: "You can now sign in with your new password." });
-      navigate("/");
+      navigate("/parent");
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
@@ -180,7 +180,7 @@ const ResetPassword = () => {
           <p className="text-foreground/60 font-cinzel text-sm mt-2">
             Reset links can only be used once. Please request a new one.
           </p>
-          <button onClick={() => navigate("/")} className="text-secondary font-cinzel mt-4 hover:text-secondary/80">
+          <button onClick={() => navigate("/parent")} className="text-secondary font-cinzel mt-4 hover:text-secondary/80">
             Back to Sign In
           </button>
         </div>

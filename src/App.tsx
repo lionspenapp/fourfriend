@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,7 +8,6 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index.tsx";
 import ParentAuth from "./pages/ParentAuth.tsx";
 import ParentDashboard from "./pages/ParentDashboard.tsx";
-import StudentLogin from "./pages/StudentLogin.tsx";
 import StudentPortal from "./pages/StudentPortal.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -32,14 +31,22 @@ const AppContent = () => {
     <LionsPenProvider>
       <BrowserRouter>
         <Routes>
+          {/* Student is the main entry point */}
+          <Route path="/" element={<Index />} />
           <Route path="/student" element={<Index />} />
           <Route path="/student/portal" element={<StudentPortal />} />
+
+          {/* Parent routes */}
+          <Route
+            path="/parent"
+            element={user ? <Navigate to="/parent/dashboard" replace /> : <ParentAuth />}
+          />
+          <Route
+            path="/parent/dashboard"
+            element={user ? <ParentDashboard /> : <Navigate to="/parent" replace />}
+          />
+
           <Route path="/reset-password" element={<ResetPassword />} />
-          {user ? (
-              <Route path="/" element={<ParentDashboard />} />
-          ) : (
-            <Route path="*" element={<ParentAuth />} />
-          )}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
