@@ -56,7 +56,7 @@ const StudentPortal = () => {
 
   const handleEnter = useCallback(() => {
     if (weekFull) {
-      toast({ title: "You've finished all 5 weekly sessions", description: "Come back next week, Scriber." });
+      toast({ title: "You've finished all 5 weekly sessions", description: "Come back next week, Scribe." });
       return;
     }
     if (todayDone) {
@@ -91,7 +91,7 @@ const StudentPortal = () => {
                 Welcome, {student.firstName}
               </h1>
               <p className="text-secondary font-cinzel text-xs tracking-widest uppercase">
-                Scriber's Portal · Week {week}
+                Scribe's Portal · Week {week}
               </p>
             </div>
           </div>

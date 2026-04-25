@@ -304,7 +304,7 @@ const ParentAuth = () => {
                     <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
                       Username
                     </label>
-                    <Input value={childUsername} onChange={(e) => setChildUsername(e.target.value)} placeholder="scriber_name" required className={inputClass} />
+                    <Input value={childUsername} onChange={(e) => setChildUsername(e.target.value)} placeholder="scribe_name" required className={inputClass} />
                   </div>
                   <div>
                     <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">

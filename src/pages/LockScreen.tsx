@@ -19,7 +19,7 @@ const LockScreen = () => {
           The Scriptorium Doors Are Closed for Today
         </h1>
         <p className="text-foreground/70 text-lg leading-relaxed">
-          You have already completed your sacred writing for today, young Scriber.
+          You have already completed your sacred writing for today, young Scribe.
           Return tomorrow when the doors open once more.
         </p>
         <div className="mt-10 w-24 h-0.5 bg-secondary/40 mx-auto" />

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import palaceSchoolBg from "@/assets/palace-school-bg.jpg";
 import oathTablet from "@/assets/oath-tablet.png";
 
-const ScriberOath = () => {
+const ScribeOath = () => {
   const { student, setStep } = useLionsPen();
   const [fullName, setFullName] = useState("");
 
@@ -31,7 +31,7 @@ const ScriberOath = () => {
         className="max-w-xl w-full text-center relative z-10"
       >
         <h1 className="font-cinzel text-3xl font-bold text-white drop-shadow-lg mb-2">
-          The Scriber's Oath
+          The Scribe's Oath
         </h1>
         <p className="text-white/80 drop-shadow-md text-sm mb-8 font-cinzel tracking-wider">
           Grades {grade <= 4 ? "3–4" : grade <= 6 ? "5–6" : "7–8"}
@@ -39,7 +39,7 @@ const ScriberOath = () => {
 
         <img
           src={oathTablet}
-          alt="The Scriber's Oath on a clay tablet"
+          alt="The Scribe's Oath on a clay tablet"
           className="max-w-md w-full mx-auto rounded-lg shadow-2xl mb-8"
         />
 
@@ -70,4 +70,4 @@ const ScriberOath = () => {
   );
 };
 
-export default ScriberOath;
+export default ScribeOath;

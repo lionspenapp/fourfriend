@@ -28,7 +28,7 @@ export const RecoveryEmail = ({ confirmationUrl }: RecoveryEmailProps) => (
         <Text style={tagline}>The Inner Scriptorium</Text>
         <div style={divider} />
         <Heading style={h1}>Reset Your Password</Heading>
-        <Text style={text}>Dear Scriber,</Text>
+        <Text style={text}>Dear Scribe,</Text>
         <Text style={text}>
           A request has been received to renew the key to your Inner Scriptorium.
           Click the button below to set a new password and step back into your practice.
