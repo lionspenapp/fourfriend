@@ -387,6 +387,8 @@ const ParentAuth = () => {
           </div>
         )}
       </motion.div>
+      </section>
+      <div className="w-full" dangerouslySetInnerHTML={{ __html: PARENT_LANDING_HTML }} />
     </div>
   );
 };
