@@ -159,11 +159,13 @@ const ParentAuth = () => {
     "bg-foreground/5 border-secondary/40 text-foreground placeholder:text-foreground/50 focus-visible:ring-secondary";
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col">
+      <section className="relative flex-1 flex items-center justify-center p-4 overflow-hidden min-h-screen">
       <div className="absolute top-0 left-0 right-0 h-2 bg-secondary" />
       <div className="absolute bottom-0 left-0 right-0 h-2 bg-secondary" />
       <div className="absolute left-0 top-0 bottom-0 w-2 bg-secondary" />
       <div className="absolute right-0 top-0 bottom-0 w-2 bg-secondary" />
+
 
       <motion.div
         initial={{ opacity: 0, y: 30 }}
