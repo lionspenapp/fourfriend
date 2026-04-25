@@ -40,18 +40,17 @@ const ScribeOath = () => {
           className="max-w-md w-full mx-auto rounded-lg shadow-2xl mb-8"
         />
 
-        <p className="text-white drop-shadow-md text-sm mb-4 font-cinzel tracking-wide">
-          Sign Your Name to Take the Oath
-        </p>
-
-        <div className="max-w-sm mx-auto mb-6">
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <p className="text-white drop-shadow-md text-sm font-cinzel tracking-wide whitespace-nowrap">
+            Sign Your Name
+          </p>
           <Input
             type="text"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="First, Last Name"
             style={{ fontSize: "1.75rem", lineHeight: "0.85" }}
-            className="bg-foreground/5 border-2 border-secondary text-white placeholder:text-white/50 placeholder:font-sans placeholder:text-base focus-visible:ring-secondary text-center font-signature h-18 py-0"
+            className="bg-foreground/5 border-2 border-secondary text-white placeholder:text-white/50 placeholder:font-sans placeholder:text-base focus-visible:ring-secondary text-center font-signature h-18 py-0 w-56"
           />
         </div>
 
