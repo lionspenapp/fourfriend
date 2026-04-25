@@ -12,6 +12,44 @@ const CelestialMessage = () => {
   const navigate = useNavigate();
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [resolvedDay, setResolvedDay] = useState<number | null>(currentDay);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+
+  // Load available speech synthesis voices (async in Chrome)
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    const load = () => setVoices(window.speechSynthesis.getVoices());
+    load();
+    window.speechSynthesis.addEventListener("voiceschanged", load);
+    return () => window.speechSynthesis.removeEventListener("voiceschanged", load);
+  }, []);
+
+  const pickBestVoice = useCallback((): SpeechSynthesisVoice | null => {
+    if (!voices.length) return null;
+    const preferredNames = [
+      "Google UK English Female",
+      "Google US English",
+      "Microsoft Aria Online (Natural) - English (United States)",
+      "Microsoft Jenny Online (Natural) - English (United States)",
+      "Microsoft Aria Online (Natural)",
+      "Microsoft Jenny Online (Natural)",
+      "Samantha",
+      "Karen",
+      "Daniel",
+    ];
+    for (const name of preferredNames) {
+      const v = voices.find((vc) => vc.name === name);
+      if (v) return v;
+    }
+    const natural = voices.find(
+      (v) => /natural|online|neural/i.test(v.name) && v.lang.startsWith("en")
+    );
+    if (natural) return natural;
+    const enGB = voices.find((v) => v.lang === "en-GB");
+    if (enGB) return enGB;
+    const enAny = voices.find((v) => v.lang.startsWith("en"));
+    if (enAny) return enAny;
+    return voices[0] ?? null;
+  }, [voices]);
 
   // Fallback: if we landed here without a known day (e.g. page refresh),
   // ask the server which day was just completed.
