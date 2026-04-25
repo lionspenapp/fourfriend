@@ -148,11 +148,19 @@ const StudentLogin = () => {
           </div>
         </form>
 
-         <p className="text-center mt-6 text-secondary/80 text-sm">
-           <button onClick={() => navigate("/parent")} className="cursor-pointer hover:text-secondary transition-colors font-cinzel">
-            Parent Login →
-          </button>
-        </p>
+         <div className="text-center mt-6 text-secondary/80 text-sm font-cinzel space-y-1">
+           <p>
+             <button onClick={() => navigate("/parent")} className="cursor-pointer hover:text-secondary transition-colors">
+               Parent Login →
+             </button>
+           </p>
+           <p className="text-secondary/70 text-xs">
+             New parent?{" "}
+             <button onClick={() => navigate("/parent?signup=1")} className="cursor-pointer underline hover:text-secondary transition-colors">
+               Create an account
+             </button>
+           </p>
+         </div>
       </motion.div>
     </div>
   );

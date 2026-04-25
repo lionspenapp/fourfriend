@@ -30,7 +30,11 @@ const isPasswordValid = (p: string) => PASSWORD_RULES.every((r) => r.test(p));
 
 const ParentAuth = () => {
   const navigate = useNavigate();
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const p = new URLSearchParams(window.location.search);
+    return p.get("signup") === "1";
+  });
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetLoading, setResetLoading] = useState(false);
