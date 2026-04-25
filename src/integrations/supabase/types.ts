@@ -185,6 +185,51 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_quotations: {
+        Row: {
+          author: string
+          created_at: string
+          day: number | null
+          id: string
+          quote: string
+          student_id: string
+          week: number | null
+        }
+        Insert: {
+          author: string
+          created_at?: string
+          day?: number | null
+          id?: string
+          quote: string
+          student_id: string
+          week?: number | null
+        }
+        Update: {
+          author?: string
+          created_at?: string
+          day?: number | null
+          id?: string
+          quote?: string
+          student_id?: string
+          week?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_quotations_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_quotations_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       students: {
         Row: {
           created_at: string
@@ -404,6 +449,16 @@ export type Database = {
           p_parent_id: string
           p_password: string
           p_username: string
+        }
+        Returns: Json
+      }
+      save_quotation: {
+        Args: {
+          p_author: string
+          p_day: number
+          p_quote: string
+          p_student_id: string
+          p_week: number
         }
         Returns: Json
       }
