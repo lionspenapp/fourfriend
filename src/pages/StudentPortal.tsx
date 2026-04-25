@@ -37,11 +37,9 @@ const StudentPortal = () => {
   const [todayDone, setTodayDone] = useState(false);
 
   const loadQuotations = useCallback(async (studentId: string) => {
-    const { data, error } = await supabase
-      .from("saved_quotations")
-      .select("id, quote, author, created_at")
-      .eq("student_id", studentId)
-      .order("created_at", { ascending: false });
+    const { data, error } = await supabase.rpc("get_saved_quotations", {
+      p_student_id: studentId,
+    });
     if (!error && data) setQuotations(data as SavedQuotation[]);
   }, []);
 
