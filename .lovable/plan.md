@@ -1,32 +1,105 @@
-# Add Subscribe Page
 
-## 1. Create the Subscribe page
-- Copy `user-uploads://LionsPenSubscription_1.jsx` into the project as **`src/pages/SubscribePage.tsx`** (renamed; converted to `.tsx` with light typing — `plan: any` props on helper components — content/markup unchanged).
-- Replace the JSX comment header with a real component that includes a **Home link at the top**:
-  - A `react-router-dom` `<Link to="/">` styled as a small back link (e.g. `← Back to Home`), placed above the header block (`Join the Lion's Pen`).
-- Wire each `PlanButton` so clicking it navigates to `/parent?signup=1` (where the actual signup form lives). Trial → `/parent?signup=1`, Monthly/Yearly → same route (subscription billing isn't enabled yet, so the button just routes to signup; we can wire Stripe later if/when requested).
-- Keep all existing Tailwind classes from the uploaded file as-is.
+# Plan: Connect FourFriends to Your Own Supabase Project
 
-## 2. Register the route
-- In **`src/App.tsx`**, import `SubscribePage` and add inside the `<Routes>` block (next to the other public pages):
-  ```tsx
-  <Route path="/subscribe" element={<SubscribePage />} />
-  ```
+## Goal
+Move this Lion's Pen app off Lovable Cloud and onto **your own existing Supabase project**, keeping your existing `academic_questions`, `emotion_questions`, `character_questions`, and `celestial_messages` data intact. Start fresh on parents/students/submissions.
 
-## 3. Wire the "Begin My Child's Journey" CTAs to /subscribe
-The CTAs live inside two raw HTML strings rendered via `dangerouslySetInnerHTML`:
-- `src/pages/landingHtml.ts` line 575 — `<button class="lp-btn-g">Begin My Child's Journey</button>`
-- `src/pages/parentLandingHtml.ts` line 928 — `<button class="lp-btn-gold">Begin My Child's Journey</button>`
+---
 
-Approach (no global handlers, no string-to-React rewrite):
-- In **`src/pages/StudentLogin.tsx`** and **`src/pages/ParentAuth.tsx`**, attach a click delegate on the wrapper `<div>` that contains the `dangerouslySetInnerHTML`. The handler checks if the click target is the "Begin My Child's Journey" button (matched by class `lp-btn-g` / `lp-btn-gold` or its text content) and calls `navigate("/subscribe")`.
-- This keeps the HTML strings untouched and avoids any global style or DOM mutation.
+## Phase 1 — You connect Supabase (manual, ~2 min)
 
-## 4. Files touched
-- **created**: `src/pages/SubscribePage.tsx`
-- **edited**: `src/App.tsx` (add route + import)
-- **edited**: `src/pages/StudentLogin.tsx` (click delegate on landing wrapper)
-- **edited**: `src/pages/ParentAuth.tsx` (click delegate on parent landing wrapper)
+1. **Sidebar → Connectors → Supabase → Connect** (Desktop)
+   *Mobile:* `…` (bottom-right) → Connectors → Supabase → Connect.
+2. Authorize Lovable, pick your organization, pick the Supabase project that already has your question tables.
+3. Lovable will auto-regenerate `.env`, `src/integrations/supabase/client.ts`, and `src/integrations/supabase/types.ts`. Do not edit these by hand.
 
-## Notes / open question
-- The Monthly/Yearly buttons currently have no payment backend. They'll route to `/parent?signup=1` like the trial. If you want Stripe checkout wired in, say the word and I'll enable Lovable's payments integration in a follow-up.
+**After you confirm "connected", tell me and I'll continue with Phase 2.**
+
+---
+
+## Phase 2 — You share your schema (so I can map columns exactly)
+
+Run in your Supabase SQL Editor and paste the result back to me:
+
+```sql
+SELECT table_name, column_name, data_type, is_nullable, column_default
+FROM information_schema.columns
+WHERE table_schema = 'public'
+  AND table_name IN ('academic_questions','emotion_questions','character_questions','celestial_messages')
+ORDER BY table_name, ordinal_position;
+
+SELECT * FROM academic_questions  LIMIT 2;
+SELECT * FROM emotion_questions   LIMIT 2;
+SELECT * FROM character_questions LIMIT 2;
+SELECT * FROM celestial_messages  LIMIT 2;
+```
+
+I need this because the app currently expects very specific columns (`grade_band`, `week`, `day`, `prompt`, etc.) and your tables almost certainly use different names.
+
+---
+
+## Phase 3 — I generate one SQL migration script for you to run
+
+A single script you paste into your Supabase SQL Editor. It will **only add what's missing** and will **not touch** your existing question/message tables.
+
+Adds:
+- **Tables:** `profiles`, `students`, `submissions`, `saved_quotations`
+- **RLS policies:** parents see only their own students/submissions; students authenticate via RPC
+- **Trigger:** `handle_new_user` to auto-create a profile on signup
+- **Trigger:** `hash_student_password` for bcrypt hashing of student passwords
+- **RPC functions:** `register_student`, `verify_student_login`, `update_student_password`, `submit_student_response`, `mark_submission_complete`, `get_student_week_status`, `get_student_week_submissions`, `save_quotation`, `delete_saved_quotation`, `get_saved_quotations`
+- **Extensions:** `pgcrypto` (for bcrypt password hashing)
+
+You'll see the script before running it.
+
+---
+
+## Phase 4 — I adapt the app code to your schema
+
+Selection rule confirmed: **by grade + week + day**. Once I see your column names, I'll update:
+
+| File | Change |
+|---|---|
+| `src/data/questionDatabase.ts` | Replace single `questions` table query with three parallel reads from `academic_questions`, `emotion_questions`, `character_questions`, filtered by grade + week + day |
+| `src/data/messageDatabase.ts` | Map to your `celestial_messages` columns (quote/author/body/week/day) |
+| `src/pages/QuestionPage.tsx` | Use the new helper signatures |
+| `src/pages/CelestialMessage.tsx` | Use the updated message fetcher |
+| `src/integrations/supabase/types.ts` | Auto-regenerated by Lovable from your schema (no manual edit) |
+
+If your tables don't have a grade column, I'll add a small read-only RLS-protected view that normalizes the shape — without changing your raw tables.
+
+---
+
+## Phase 5 — Auth setup in your Supabase project (you click, I guide)
+
+In your Supabase dashboard → **Authentication**:
+1. **Providers** → enable **Email** (with confirmation) and **Google** (paste OAuth client ID/secret from Google Cloud Console).
+2. **URL Configuration** → add your Lovable preview URL and any custom domain to **Site URL** + **Redirect URLs**.
+
+---
+
+## Phase 6 — Verification checklist
+
+After everything is wired:
+1. Sign up a parent → check a row appears in `profiles`.
+2. Add a student in Parent Dashboard → check `students`.
+3. Sign in as that student → submit a daily reflection → check `submissions`.
+4. Confirm the academic/emotion/character prompts show real data from your three tables.
+5. Confirm celestial message displays from your `celestial_messages`.
+6. Save a quotation → check `saved_quotations`.
+
+---
+
+## Out of Scope (we can do later if needed)
+
+- Migrating the `auth-email-hook` and `process-email-queue` edge functions to your Supabase project (only needed if you want branded transactional emails).
+- Migrating any test data from the current Lovable Cloud DB (you confirmed: start fresh).
+
+---
+
+## What I need from you to start
+
+1. ✅ Connect Supabase via the Connectors panel (Phase 1).
+2. ✅ Paste the SQL schema output (Phase 2).
+
+Once both are done, I'll generate the migration script and the code changes in one go.
