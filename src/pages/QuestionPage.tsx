@@ -4,7 +4,7 @@ import { useLionsPen, type FlowStep } from "@/context/LionsPenContext";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { getQuestion } from "@/data/questionDatabase";
+import { fetchQuestion } from "@/data/questionDatabase";
 import { useToast } from "@/hooks/use-toast";
 import scrollBg from "@/assets/scroll-bg.png";
 import babylonBg from "@/assets/babylon-bg.jpg";
@@ -73,22 +73,9 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
     let cancelled = false;
     async function fetchQuestion() {
       setLoading(true);
-      const { data } = await supabase
-        .from("questions")
-        .select("prompt")
-        .eq("category", type)
-        .eq("grade_band", gradeBand)
-        .eq("week", week)
-        .eq("day", resolvedDay)
-        .maybeSingle();
-
+      const result = await fetchQuestion(type, grade, week, resolvedDay);
       if (!cancelled) {
-        if (data?.prompt) {
-          setPrompt(data.prompt);
-        } else {
-          const local = getQuestion(type, grade, week, resolvedDay);
-          setPrompt(local?.prompt ?? "Reflect on your day and share your thoughts.");
-        }
+        setPrompt(result?.prompt ?? "Reflect on your day and share your thoughts.");
         setLoading(false);
       }
     }
