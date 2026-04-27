@@ -1,105 +1,68 @@
+# Plan: Wire FourFriends to Your Existing Supabase Tables
 
-# Plan: Connect FourFriends to Your Own Supabase Project
+## Confirmed schema & mapping
 
-## Goal
-Move this Lion's Pen app off Lovable Cloud and onto **your own existing Supabase project**, keeping your existing `academic_questions`, `emotion_questions`, `character_questions`, and `celestial_messages` data intact. Start fresh on parents/students/submissions.
+Tables: `academic_database`, `emotion_database`, `character_database`, `message_database`.
+Shared columns: `id` (text), `week` (int), `day` (int), `grade_level` (text — values `"3-4"`, `"5-6"`, `"7-8"`).
+Per-table content: prompt tables have `prompt`; `message_database` has `author`, `quotation`, `explanation`.
+
+| App field | Source column |
+|---|---|
+| grade band (`"3-4"`, `"5-6"`, `"7-8"`) | `grade_level` (matches as-is) |
+| week | `week` |
+| day | `day` |
+| question prompt | `prompt` |
+| celestial quote | `quotation` |
+| celestial author | `author` |
+| celestial body | `explanation` |
 
 ---
 
 ## Phase 1 — You connect Supabase (manual, ~2 min)
 
-1. **Sidebar → Connectors → Supabase → Connect** (Desktop)
-   *Mobile:* `…` (bottom-right) → Connectors → Supabase → Connect.
-2. Authorize Lovable, pick your organization, pick the Supabase project that already has your question tables.
-3. Lovable will auto-regenerate `.env`, `src/integrations/supabase/client.ts`, and `src/integrations/supabase/types.ts`. Do not edit these by hand.
+Sidebar → **Connectors** → **Supabase** → **Connect** → pick the project that holds the four `*_database` tables. Lovable auto-regenerates `.env`, `src/integrations/supabase/client.ts`, and `src/integrations/supabase/types.ts`.
 
-**After you confirm "connected", tell me and I'll continue with Phase 2.**
+Tell me when it shows "connected" and I'll move to Phase 2.
 
----
+## Phase 2 — One SQL migration script (I generate, you run)
 
-## Phase 2 — You share your schema (so I can map columns exactly)
+A single script you paste into your Supabase SQL Editor. Adds only what's missing — never touches your four data tables.
 
-Run in your Supabase SQL Editor and paste the result back to me:
-
-```sql
-SELECT table_name, column_name, data_type, is_nullable, column_default
-FROM information_schema.columns
-WHERE table_schema = 'public'
-  AND table_name IN ('academic_questions','emotion_questions','character_questions','celestial_messages')
-ORDER BY table_name, ordinal_position;
-
-SELECT * FROM academic_questions  LIMIT 2;
-SELECT * FROM emotion_questions   LIMIT 2;
-SELECT * FROM character_questions LIMIT 2;
-SELECT * FROM celestial_messages  LIMIT 2;
-```
-
-I need this because the app currently expects very specific columns (`grade_band`, `week`, `day`, `prompt`, etc.) and your tables almost certainly use different names.
-
----
-
-## Phase 3 — I generate one SQL migration script for you to run
-
-A single script you paste into your Supabase SQL Editor. It will **only add what's missing** and will **not touch** your existing question/message tables.
-
-Adds:
 - **Tables:** `profiles`, `students`, `submissions`, `saved_quotations`
-- **RLS policies:** parents see only their own students/submissions; students authenticate via RPC
-- **Trigger:** `handle_new_user` to auto-create a profile on signup
-- **Trigger:** `hash_student_password` for bcrypt hashing of student passwords
-- **RPC functions:** `register_student`, `verify_student_login`, `update_student_password`, `submit_student_response`, `mark_submission_complete`, `get_student_week_status`, `get_student_week_submissions`, `save_quotation`, `delete_saved_quotation`, `get_saved_quotations`
-- **Extensions:** `pgcrypto` (for bcrypt password hashing)
+- **Extension:** `pgcrypto` (bcrypt password hashing for students)
+- **RLS:** parents see only their own students/submissions; students authenticate via RPC
+- **Triggers:** `handle_new_user` (auto-create profile on signup), `hash_student_password`
+- **RPCs:** `register_student`, `verify_student_login`, `update_student_password`, `submit_student_response`, `mark_submission_complete`, `get_student_week_status`, `get_student_week_submissions`, `save_quotation`, `delete_saved_quotation`, `get_saved_quotations`
 
-You'll see the script before running it.
+You'll see the full script first.
 
----
-
-## Phase 4 — I adapt the app code to your schema
-
-Selection rule confirmed: **by grade + week + day**. Once I see your column names, I'll update:
+## Phase 3 — I update the app code
 
 | File | Change |
 |---|---|
-| `src/data/questionDatabase.ts` | Replace single `questions` table query with three parallel reads from `academic_questions`, `emotion_questions`, `character_questions`, filtered by grade + week + day |
-| `src/data/messageDatabase.ts` | Map to your `celestial_messages` columns (quote/author/body/week/day) |
-| `src/pages/QuestionPage.tsx` | Use the new helper signatures |
-| `src/pages/CelestialMessage.tsx` | Use the updated message fetcher |
-| `src/integrations/supabase/types.ts` | Auto-regenerated by Lovable from your schema (no manual edit) |
+| `src/data/questionDatabase.ts` | New async `fetchQuestion(category, gradeBand, week, day)` reading from the matching `*_database` table |
+| `src/data/messageDatabase.ts` | New async `fetchCelestialMessage(gradeBand, week, day)` reading from `message_database`, returning `{ quote: quotation, author, body: explanation }` |
+| `src/pages/QuestionPage.tsx` | Replace `.from("questions")` with the new helper; pass `gradeBand` directly |
+| `src/pages/CelestialMessage.tsx` | Switch from sync `getCelestialMessage` to the new async fetcher with loading state |
+| `src/integrations/supabase/types.ts` | Auto-regenerated by Lovable |
 
-If your tables don't have a grade column, I'll add a small read-only RLS-protected view that normalizes the shape — without changing your raw tables.
+Grade → band logic stays exactly as it is today: `grade <= 4 → "3-4"`, `<= 6 → "5-6"`, else `"7-8"`.
 
----
+## Phase 4 — Auth setup in your Supabase dashboard
 
-## Phase 5 — Auth setup in your Supabase project (you click, I guide)
+Authentication → **Providers**: enable **Email** (with confirmation) and **Google** (paste OAuth client ID/secret).
+Authentication → **URL Configuration**: add the Lovable preview URL + any custom domain to **Site URL** and **Redirect URLs**.
 
-In your Supabase dashboard → **Authentication**:
-1. **Providers** → enable **Email** (with confirmation) and **Google** (paste OAuth client ID/secret from Google Cloud Console).
-2. **URL Configuration** → add your Lovable preview URL and any custom domain to **Site URL** + **Redirect URLs**.
+## Phase 5 — Verification
 
----
-
-## Phase 6 — Verification checklist
-
-After everything is wired:
-1. Sign up a parent → check a row appears in `profiles`.
-2. Add a student in Parent Dashboard → check `students`.
-3. Sign in as that student → submit a daily reflection → check `submissions`.
-4. Confirm the academic/emotion/character prompts show real data from your three tables.
-5. Confirm celestial message displays from your `celestial_messages`.
-6. Save a quotation → check `saved_quotations`.
-
----
-
-## Out of Scope (we can do later if needed)
-
-- Migrating the `auth-email-hook` and `process-email-queue` edge functions to your Supabase project (only needed if you want branded transactional emails).
-- Migrating any test data from the current Lovable Cloud DB (you confirmed: start fresh).
+1. Parent signup → row in `profiles`.
+2. Add a student → row in `students`.
+3. Student submits a daily reflection → row in `submissions`; the three prompts come from your `*_database` tables.
+4. Celestial message page → quote/author/body from `message_database`.
+5. Save quotation → row in `saved_quotations`.
 
 ---
 
 ## What I need from you to start
 
-1. ✅ Connect Supabase via the Connectors panel (Phase 1).
-2. ✅ Paste the SQL schema output (Phase 2).
-
-Once both are done, I'll generate the migration script and the code changes in one go.
+**Just one thing now:** connect Supabase via the Connectors panel (Phase 1). Once that's done I'll generate the migration SQL and ship the code changes in one pass.

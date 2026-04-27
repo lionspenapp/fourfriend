@@ -5,7 +5,7 @@ import { useLionsPen } from "@/context/LionsPenContext";
 import { supabase } from "@/integrations/supabase/client";
 import celestialBg from "@/assets/celestial-bg.png";
 import { Button } from "@/components/ui/button";
-import { getCelestialMessage } from "@/data/messageDatabase";
+import { fetchCelestialMessage } from "@/data/messageDatabase";
 import { useToast } from "@/hooks/use-toast";
 import { Star } from "lucide-react";
 
@@ -18,6 +18,7 @@ const CelestialMessage = () => {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [msg, setMsg] = useState<{ quote: string; author: string; message: string } | null>(null);
 
   // Load available speech synthesis voices (async in Chrome)
   useEffect(() => {
@@ -77,7 +78,15 @@ const CelestialMessage = () => {
   }, [resolvedDay, student?.id, week, setCurrentDay]);
 
   const grade = student?.grade ?? 5;
-  const msg = getCelestialMessage(grade, week, resolvedDay ?? 1);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const result = await fetchCelestialMessage(grade, week, resolvedDay ?? 1);
+      if (!cancelled) setMsg(result);
+    })();
+    return () => { cancelled = true; };
+  }, [grade, week, resolvedDay]);
 
   const author = msg?.author ?? "The Celestial Scriptorium";
   const quote = msg?.quote ?? "Your words today carry the weight of your courage.";
