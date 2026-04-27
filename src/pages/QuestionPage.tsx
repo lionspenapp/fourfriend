@@ -71,7 +71,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
 
   useEffect(() => {
     let cancelled = false;
-    async function fetchQuestion() {
+    async function load() {
       setLoading(true);
       const result = await fetchQuestion(type, grade, week, resolvedDay);
       if (!cancelled) {
@@ -79,7 +79,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
         setLoading(false);
       }
     }
-    fetchQuestion();
+    load();
     return () => { cancelled = true; };
   }, [type, gradeBand, week, resolvedDay, grade]);
 
