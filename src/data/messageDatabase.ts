@@ -103,3 +103,43 @@ export function getMessagesForGrade(grade: number): CelestialMessageEntry[] {
   const gradeRange = grade <= 4 ? "3-4" : grade <= 6 ? "5-6" : "7-8";
   return CELESTIAL_MESSAGES.filter((m) => m.gradeRange === gradeRange);
 }
+
+// ────────────────────────────────────────────
+// Remote fetcher — pulls live celestial message
+// from `message_database` in your Supabase.
+// Falls back to the local mock if no row found.
+// Maps: quotation → quote, explanation → message.
+// ────────────────────────────────────────────
+import { supabase } from "@/integrations/supabase/client";
+
+function gradeToBand(grade: number): "3-4" | "5-6" | "7-8" {
+  return grade <= 4 ? "3-4" : grade <= 6 ? "5-6" : "7-8";
+}
+
+export async function fetchCelestialMessage(
+  grade: number,
+  week: number,
+  day: number,
+): Promise<{ quote: string; author: string; message: string } | null> {
+  const gradeBand = gradeToBand(grade);
+  const { data, error } = await (supabase as any)
+    .from("message_database")
+    .select("author, quotation, explanation")
+    .eq("grade_level", gradeBand)
+    .eq("week", week)
+    .eq("day", day)
+    .maybeSingle();
+
+  if (!error && data) {
+    return {
+      quote: (data.quotation as string) ?? "",
+      author: (data.author as string) ?? "",
+      message: (data.explanation as string) ?? "",
+    };
+  }
+
+  const local = getCelestialMessage(grade, week, day);
+  return local
+    ? { quote: local.quote, author: local.author, message: local.message }
+    : null;
+}

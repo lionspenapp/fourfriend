@@ -261,3 +261,43 @@ export function getQuestionsForGrade(
   const gradeRange = grade <= 4 ? "3-4" : grade <= 6 ? "5-6" : "7-8";
   return ALL_QUESTIONS[category].filter((q) => q.gradeRange === gradeRange);
 }
+
+// ────────────────────────────────────────────
+// Remote fetcher — pulls live prompt from the
+// matching `*_database` table in your Supabase.
+// Falls back to the local mock if no row found.
+// ────────────────────────────────────────────
+import { supabase } from "@/integrations/supabase/client";
+
+const TABLE_BY_CATEGORY: Record<QuestionCategory, "academic_database" | "emotion_database" | "character_database"> = {
+  academic: "academic_database",
+  emotion: "emotion_database",
+  character: "character_database",
+};
+
+export function gradeToBand(grade: number): "3-4" | "5-6" | "7-8" {
+  return grade <= 4 ? "3-4" : grade <= 6 ? "5-6" : "7-8";
+}
+
+export async function fetchQuestion(
+  category: QuestionCategory,
+  grade: number,
+  week: number,
+  day: number,
+): Promise<{ prompt: string } | null> {
+  const gradeBand = gradeToBand(grade);
+  const table = TABLE_BY_CATEGORY[category];
+  const { data, error } = await (supabase as any)
+    .from(table)
+    .select("prompt")
+    .eq("grade_level", gradeBand)
+    .eq("week", week)
+    .eq("day", day)
+    .maybeSingle();
+
+  if (!error && data?.prompt) return { prompt: data.prompt as string };
+
+  // Fallback to local mock
+  const local = getQuestion(category, grade, week, day);
+  return local ? { prompt: local.prompt } : null;
+}
