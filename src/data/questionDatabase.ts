@@ -269,10 +269,13 @@ export function getQuestionsForGrade(
 // ────────────────────────────────────────────
 import { supabase } from "@/integrations/supabase/client";
 
-const TABLE_BY_CATEGORY: Record<QuestionCategory, "academic_database" | "emotion_database" | "character_database"> = {
+const TABLE_BY_CATEGORY: Record<
+  QuestionCategory,
+  "academic_database" | "emotion_database" | "charater_database"
+> = {
   academic: "academic_database",
   emotion: "emotion_database",
-  character: "character_database",
+  character: "charater_database",
 };
 
 export function gradeToBand(grade: number): "3-4" | "5-6" | "7-8" {
@@ -287,7 +290,7 @@ export async function fetchQuestion(
 ): Promise<{ prompt: string } | null> {
   const gradeBand = gradeToBand(grade);
   const table = TABLE_BY_CATEGORY[category];
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from(table)
     .select("prompt")
     .eq("grade_level", gradeBand)
@@ -295,7 +298,7 @@ export async function fetchQuestion(
     .eq("day", day)
     .maybeSingle();
 
-  if (!error && data?.prompt) return { prompt: data.prompt as string };
+  if (!error && data?.prompt) return { prompt: data.prompt };
 
   // Fallback to local mock
   const local = getQuestion(category, grade, week, day);
