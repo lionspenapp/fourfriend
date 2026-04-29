@@ -417,7 +417,7 @@ export type Database = {
         }[]
       }
       get_student_week_status: {
-        Args: { p_student_id: string; p_week: number }
+        Args: { p_local_date?: string; p_student_id: string; p_week: number }
         Returns: Json
       }
       get_student_week_submissions: {
@@ -434,7 +434,7 @@ export type Database = {
         }[]
       }
       mark_submission_complete: {
-        Args: { p_student_id: string; p_week: number }
+        Args: { p_local_date?: string; p_student_id: string; p_week: number }
         Returns: Json
       }
       move_to_dlq: {
@@ -482,6 +482,7 @@ export type Database = {
           p_academic: string
           p_character: string
           p_emotion: string
+          p_local_date?: string
           p_student_id: string
           p_week: number
         }

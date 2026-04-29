@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
+import { getLocalDateString } from "@/lib/utils";
 
 export type FlowStep =
   | "login"
@@ -73,12 +74,11 @@ export const LionsPenProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const hasSubmittedToday = useCallback((studentId: string) => {
     const last = localStorage.getItem(`${STORAGE_KEY}_${studentId}`);
     if (!last) return false;
-    const today = new Date().toDateString();
-    return last === today;
+    return last === getLocalDateString();
   }, []);
 
   const markSubmitted = useCallback((studentId: string) => {
-    localStorage.setItem(`${STORAGE_KEY}_${studentId}`, new Date().toDateString());
+    localStorage.setItem(`${STORAGE_KEY}_${studentId}`, getLocalDateString());
   }, []);
 
   const resetSession = useCallback(() => {
