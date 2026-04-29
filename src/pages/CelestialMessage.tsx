@@ -19,6 +19,8 @@ const CelestialMessage = () => {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [msg, setMsg] = useState<{ quote: string; author: string; message: string } | null>(null);
+  const [loadingMessage, setLoadingMessage] = useState(true);
+  const [messageLoadError, setMessageLoadError] = useState<string | null>(null);
 
   // Load available speech synthesis voices (async in Chrome)
   useEffect(() => {
@@ -82,15 +84,33 @@ const CelestialMessage = () => {
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      setLoadingMessage(true);
+      setMessageLoadError(null);
       const result = await fetchCelestialMessage(grade, week, resolvedDay ?? 1);
-      if (!cancelled) setMsg(result);
+      if (cancelled) return;
+      if (result.status === "ok") {
+        setMsg({ quote: result.quote, author: result.author, message: result.message });
+      } else if (result.status === "error") {
+        setMsg(null);
+        setMessageLoadError(result.message);
+        toast({ title: "Could not load message", description: result.message, variant: "destructive" });
+      } else {
+        setMsg(null);
+        setMessageLoadError("No celestial message is configured for this week and day in the database.");
+        toast({
+          title: "No message found",
+          description: "Add a row to message_database for this week and day.",
+          variant: "destructive",
+        });
+      }
+      setLoadingMessage(false);
     })();
     return () => { cancelled = true; };
-  }, [grade, week, resolvedDay]);
+  }, [grade, week, resolvedDay, toast]);
 
-  const author = msg?.author ?? "The Celestial Scriptorium";
-  const quote = msg?.quote ?? "Your words today carry the weight of your courage.";
-  const message = msg?.message ?? "Young Scribe, today you have shown courage by sharing your thoughts honestly. Keep writing. Keep reflecting. The Celestial Scriptorium honors your courage.";
+  const author = msg?.author ?? "";
+  const quote = msg?.quote ?? "";
+  const message = msg?.message ?? "";
 
   const handleReadToMe = useCallback(() => {
     if (!window.speechSynthesis) return;
@@ -118,7 +138,7 @@ const CelestialMessage = () => {
   }, [isSpeaking, quote, author, message, pickBestVoice]);
 
   const handleSaveQuotation = useCallback(async () => {
-    if (!student?.id || saving || saved) return;
+    if (!student?.id || saving || saved || !msg) return;
     setSaving(true);
     const { data, error } = await supabase.rpc("save_quotation", {
       p_student_id: student.id,
@@ -140,7 +160,7 @@ const CelestialMessage = () => {
     }
     setSaved(true);
     toast({ title: "Quotation saved", description: "Added to your collection (max 24)." });
-  }, [student?.id, saving, saved, quote, author, week, resolvedDay, toast]);
+  }, [student?.id, saving, saved, msg, quote, author, week, resolvedDay, toast]);
 
   const handleClose = useCallback(async () => {
     window.speechSynthesis.cancel();
@@ -179,36 +199,47 @@ const CelestialMessage = () => {
 
         <div className="text-5xl mb-6">✨</div>
 
-        {/* Quote */}
-        <blockquote className="border-l-4 border-amber-400/60 pl-6 mb-6 text-left">
-          <p className="text-white text-xl font-cinzel italic leading-relaxed">
-            &ldquo;{quote}&rdquo;
+        {loadingMessage ? (
+          <p className="text-white/90 mb-6 font-cinzel">Loading message…</p>
+        ) : messageLoadError ? (
+          <p className="text-destructive-foreground bg-destructive/90 rounded-lg p-4 mb-6 text-left text-sm">
+            {messageLoadError}
           </p>
-          <p className="text-secondary font-cinzel mt-2 text-sm">
-            — {author}
-          </p>
-        </blockquote>
+        ) : (
+          <>
+            {/* Quote */}
+            <blockquote className="border-l-4 border-amber-400/60 pl-6 mb-6 text-left">
+              <p className="text-white text-xl font-cinzel italic leading-relaxed">
+                &ldquo;{quote}&rdquo;
+              </p>
+              <p className="text-secondary font-cinzel mt-2 text-sm">
+                — {author}
+              </p>
+            </blockquote>
 
-        {/* Message body */}
-        <div className="bg-black/40 backdrop-blur-sm border border-amber-400/20 rounded-lg p-6 mb-8 text-left">
-          {message.split("\n\n").map((para, i) => (
-            <p key={i} className="text-white/90 leading-relaxed mb-3 last:mb-0">
-              {para}
-            </p>
-          ))}
-        </div>
+            {/* Message body */}
+            <div className="bg-black/40 backdrop-blur-sm border border-amber-400/20 rounded-lg p-6 mb-8 text-left">
+              {message.split("\n\n").map((para, i) => (
+                <p key={i} className="text-white/90 leading-relaxed mb-3 last:mb-0">
+                  {para}
+                </p>
+              ))}
+            </div>
+          </>
+        )}
 
         <div className="flex flex-wrap justify-center gap-3">
           <Button
             onClick={handleReadToMe}
             variant="outline"
             className="border-secondary/40 text-foreground font-cinzel hover:bg-secondary/10"
+            disabled={loadingMessage || Boolean(messageLoadError) || !msg}
           >
             {isSpeaking ? "Stop Reading" : "🔊 Read to Me"}
           </Button>
           <Button
             onClick={handleSaveQuotation}
-            disabled={saving || saved}
+            disabled={saving || saved || loadingMessage || Boolean(messageLoadError) || !msg}
             variant="outline"
             className="border-2 border-primary bg-white text-primary font-cinzel font-semibold hover:bg-primary hover:text-primary-foreground"
           >

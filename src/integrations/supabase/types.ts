@@ -155,32 +155,101 @@ export type Database = {
         }
         Relationships: []
       }
-      questions: {
+      academic_database: {
         Row: {
-          category: string
-          created_at: string
           day: number
-          grade_band: string
+          grade_level: string
           id: string
           prompt: string
           week: number
         }
         Insert: {
-          category: string
-          created_at?: string
           day: number
-          grade_band: string
+          grade_level: string
           id?: string
           prompt: string
           week: number
         }
         Update: {
-          category?: string
-          created_at?: string
           day?: number
-          grade_band?: string
+          grade_level?: string
           id?: string
           prompt?: string
+          week?: number
+        }
+        Relationships: []
+      }
+      emotion_database: {
+        Row: {
+          day: number
+          grade_level: string
+          id: string
+          prompt: string
+          week: number
+        }
+        Insert: {
+          day: number
+          grade_level: string
+          id?: string
+          prompt: string
+          week: number
+        }
+        Update: {
+          day?: number
+          grade_level?: string
+          id?: string
+          prompt?: string
+          week?: number
+        }
+        Relationships: []
+      }
+      character_database: {
+        Row: {
+          day: number
+          grade_level: string
+          id: string
+          prompt: string
+          week: number
+        }
+        Insert: {
+          day: number
+          grade_level: string
+          id?: string
+          prompt: string
+          week: number
+        }
+        Update: {
+          day?: number
+          grade_level?: string
+          id?: string
+          prompt?: string
+          week?: number
+        }
+        Relationships: []
+      }
+      message_database: {
+        Row: {
+          author: string
+          day: number
+          explanation: string
+          id: string
+          quotation: string
+          week: number
+        }
+        Insert: {
+          author: string
+          day: number
+          explanation: string
+          id?: string
+          quotation: string
+          week: number
+        }
+        Update: {
+          author?: string
+          day?: number
+          explanation?: string
+          id?: string
+          quotation?: string
           week?: number
         }
         Relationships: []

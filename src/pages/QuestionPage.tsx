@@ -47,9 +47,9 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
   const grade = student?.grade ?? 5;
   const gradeBand = grade <= 4 ? "3-4" : grade <= 6 ? "5-6" : "7-8";
 
-  // Fetch question from database, fall back to local mock
-  const [prompt, setPrompt] = useState("Reflect on your day and share your thoughts.");
-  const [loading, setLoading] = useState(true);
+  // Fetch question from Supabase `academic_database` | `emotion_database` | `character_database` only.
+  const [prompt, setPrompt] = useState("");
+  const [contentError, setContentError] = useState<string | null>(null);
 
   // Resolve which "day" prompt to show based on completed submissions this week.
   const [resolvedDay, setResolvedDay] = useState<number>(1);
@@ -73,15 +73,34 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
     let cancelled = false;
     async function load() {
       setLoading(true);
+      setContentError(null);
       const result = await fetchQuestion(type, grade, week, resolvedDay);
       if (!cancelled) {
-        setPrompt(result?.prompt ?? "Reflect on your day and share your thoughts.");
+        if (result.status === "ok") {
+          setPrompt(result.prompt);
+        } else if (result.status === "error") {
+          setPrompt("");
+          setContentError(result.message);
+          toast({
+            title: "Could not load question",
+            description: result.message,
+            variant: "destructive",
+          });
+        } else {
+          setPrompt("");
+          setContentError("No question is configured for this week and day.");
+          toast({
+            title: "No question found",
+            description: "Check that this grade band and week/day exist in the database.",
+            variant: "destructive",
+          });
+        }
         setLoading(false);
       }
     }
     load();
     return () => { cancelled = true; };
-  }, [type, gradeBand, week, resolvedDay, grade]);
+  }, [type, gradeBand, week, resolvedDay, grade, toast]);
 
   return (
     <div
@@ -134,7 +153,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
               className="font-garamond font-medium text-[1.4rem] break-words hyphens-auto normal-case text-center w-full"
               style={{ color: "rgba(28, 28, 28, 0.9)", lineHeight: 1.6 }}
             >
-              {loading ? "Loading question…" : prompt}
+              {loading ? "Loading question…" : contentError ?? prompt}
             </p>
           </div>
         </div>
@@ -202,7 +221,12 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
           </div>
 
           <Button
-            disabled={submitting}
+            disabled={
+              submitting ||
+              loading ||
+              Boolean(contentError) ||
+              (!loading && !prompt.trim())
+            }
             onClick={async () => {
               if (type === "character" && student?.id) {
                 setSubmitting(true);

@@ -1,7 +1,5 @@
 // Re-exports and backward-compatible helpers
-export { ACADEMIC_QUESTIONS, EMOTION_QUESTIONS, CHARACTER_QUESTIONS, getQuestion, getQuestionsForGrade } from "./questionDatabase";
 export type { QuestionEntry, QuestionCategory } from "./questionDatabase";
-export { CELESTIAL_MESSAGES, getCelestialMessage, getMessagesForGrade } from "./messageDatabase";
 export type { CelestialMessageEntry } from "./messageDatabase";
 
 export const BREATHING_SOUNDS = [
