@@ -75,42 +75,77 @@ const ParentAuth = () => {
       return;
     }
 
+    if (isSignUp) {
+      const gradeNum = Number.parseInt(childGrade, 10);
+      if (!Number.isFinite(gradeNum) || gradeNum < 3 || gradeNum > 8) {
+        toast({
+          title: "Select a grade",
+          description: "Please choose a grade for your student (3–8).",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
       if (isSignUp) {
+        const gradeNum = Number.parseInt(childGrade, 10);
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             data: { full_name: fullName },
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: `${window.location.origin}/parent`,
           },
         });
         if (error) throw error;
 
-        if (data.user) {
-          const { data: result, error: rpcError } = await supabase.rpc("register_student", {
-            p_parent_id: data.user.id,
-            p_first_name: childFirstName,
-            p_last_name: childLastName,
-            p_grade: parseInt(childGrade),
-            p_gender: childGender,
-            p_email: childEmail || null,
-            p_username: childUsername,
-            p_password: childPassword,
+        if (!data.user) {
+          toast({
+            title: "Could not create account",
+            description:
+              "No user was returned. Check that Email sign-ups are enabled in Supabase and try again.",
+            variant: "destructive",
           });
-          if (rpcError) throw rpcError;
-          if (result && !(result as any).success) throw new Error((result as any).error);
+          return;
         }
 
-        toast({
-          title: "Check your email",
-          description: "We sent you a confirmation link to verify your account.",
+        const { data: result, error: rpcError } = await supabase.rpc("register_student", {
+          p_parent_id: data.user.id,
+          p_first_name: childFirstName.trim(),
+          p_last_name: childLastName.trim(),
+          p_grade: gradeNum,
+          p_gender: childGender,
+          p_email: childEmail.trim() || null,
+          p_username: childUsername.trim(),
+          p_password: childPassword,
         });
+        if (rpcError) throw rpcError;
+
+        const reg = result as { success?: boolean; error?: string } | null;
+        if (reg && reg.success === false) {
+          throw new Error(reg.error ?? "Could not save student profile.");
+        }
+
+        if (data.session) {
+          toast({
+            title: "Welcome",
+            description: "Your account and student profile are ready.",
+          });
+          navigate("/parent/dashboard");
+        } else {
+          toast({
+            title: "Check your email",
+            description:
+              "We sent a confirmation link. After you verify, sign in here — your student is already linked to your account.",
+          });
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        navigate("/parent/dashboard");
       }
     } catch (error: any) {
       toast({
