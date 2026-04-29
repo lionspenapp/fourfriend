@@ -27,7 +27,14 @@ const PASSWORD_RULES = [
   { test: (p: string) => /[^A-Za-z0-9]/.test(p), label: "1 special character" },
 ];
 
+type RegisterStudentResult = {
+  success?: boolean;
+  error?: string;
+};
+
 const isPasswordValid = (p: string) => PASSWORD_RULES.every((r) => r.test(p));
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Something went wrong";
 
 const ParentAuth = () => {
   const navigate = useNavigate();
@@ -89,9 +96,10 @@ const ParentAuth = () => {
         });
         if (error) throw error;
 
-        if (data.user) {
+        const signedInParentId = data.session?.user.id;
+        if (signedInParentId) {
           const { data: result, error: rpcError } = await supabase.rpc("register_student", {
-            p_parent_id: data.user.id,
+            p_parent_id: signedInParentId,
             p_first_name: childFirstName,
             p_last_name: childLastName,
             p_grade: parseInt(childGrade),
@@ -101,21 +109,24 @@ const ParentAuth = () => {
             p_password: childPassword,
           });
           if (rpcError) throw rpcError;
-          if (result && !(result as any).success) throw new Error((result as any).error);
+          const studentResult = result as RegisterStudentResult | null;
+          if (studentResult && !studentResult.success) throw new Error(studentResult.error);
         }
 
         toast({
           title: "Check your email",
-          description: "We sent you a confirmation link to verify your account.",
+          description: signedInParentId
+            ? "We sent you a confirmation link to verify your account."
+            : "Confirm your email, then sign in to add your child from the parent dashboard.",
         });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     } finally {
@@ -148,8 +159,8 @@ const ParentAuth = () => {
       if (error) throw error;
       toast({ title: "Check your email", description: "We sent you a password reset link." });
       setShowForgotPassword(false);
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } catch (error: unknown) {
+      toast({ title: "Error", description: getErrorMessage(error), variant: "destructive" });
     } finally {
       setResetLoading(false);
     }
