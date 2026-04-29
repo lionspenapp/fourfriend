@@ -7,6 +7,7 @@ import celestialBg from "@/assets/celestial-bg.png";
 import { Button } from "@/components/ui/button";
 import { fetchCelestialMessage } from "@/data/messageDatabase";
 import { useToast } from "@/hooks/use-toast";
+import { getLocalDateString } from "@/lib/utils";
 import { Star } from "lucide-react";
 
 const CelestialMessage = () => {
@@ -66,6 +67,7 @@ const CelestialMessage = () => {
       const { data } = await supabase.rpc("get_student_week_status", {
         p_student_id: student.id,
         p_week: week,
+        p_local_date: getLocalDateString(),
       });
       const status = data as { completed_count?: number } | null;
       const day = status?.completed_count ?? 1;
@@ -148,6 +150,7 @@ const CelestialMessage = () => {
       await supabase.rpc("mark_submission_complete", {
         p_student_id: student.id,
         p_week: week,
+        p_local_date: getLocalDateString(),
       });
       markSubmitted(student.id);
     }

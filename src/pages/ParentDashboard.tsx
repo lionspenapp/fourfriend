@@ -4,6 +4,7 @@ import lionsPenLogo from "@/assets/lions_pen_v4.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { getLocalDateString } from "@/lib/utils";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -115,6 +116,7 @@ const ParentDashboard = () => {
         const { data } = await supabase.rpc("get_student_week_status", {
           p_student_id: s.id,
           p_week: week,
+          p_local_date: getLocalDateString(),
         });
         const status = data as { completed_count?: number } | null;
         return [s.id, status?.completed_count ?? 0] as const;

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
 import { LANDING_HTML } from "./landingHtml";
+import { getLocalDateString } from "@/lib/utils";
 
 const StudentLogin = () => {
   const { setStudent, setStep, week } = useLionsPen();
@@ -55,6 +56,7 @@ const StudentLogin = () => {
       const { data: statusData } = await supabase.rpc("get_student_week_status", {
         p_student_id: s.id,
         p_week: week,
+        p_local_date: getLocalDateString(),
       });
       const status = (statusData as { today_done: boolean; week_full: boolean }) ?? { today_done: false, week_full: false };
 

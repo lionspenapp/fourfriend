@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchQuestion } from "@/data/questionDatabase";
 import { useToast } from "@/hooks/use-toast";
+import { getLocalDateString } from "@/lib/utils";
 import scrollBg from "@/assets/scroll-bg.png";
 import babylonBg from "@/assets/babylon-bg.jpg";
 import hangingGardenBg from "@/assets/hanging-garden-bg.jpg";
@@ -61,6 +62,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
       const { data } = await supabase.rpc("get_student_week_status", {
         p_student_id: student.id,
         p_week: week,
+        p_local_date: getLocalDateString(),
       });
       const status = data as { next_day: number } | null;
       if (!cancelled && status?.next_day) setResolvedDay(status.next_day);
@@ -213,6 +215,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
                     p_emotion: responses.emotion,
                     p_character: responses.character,
                     p_week: week,
+                    p_local_date: getLocalDateString(),
                   });
                   if (error) throw error;
                   const result = data as any;

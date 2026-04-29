@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import lionsPenLogo from "@/assets/lions_pen_v4.png";
 import { BookOpen, Compass, MessageCircle, LogOut, Trash2, Star, Check } from "lucide-react";
+import { getLocalDateString } from "@/lib/utils";
 
 interface WeekSubmission {
   id: string;
@@ -51,7 +52,11 @@ const StudentPortal = () => {
     (async () => {
       const [subsRes, statusRes] = await Promise.all([
         supabase.rpc("get_student_week_submissions", { p_student_id: student.id, p_week: week }),
-        supabase.rpc("get_student_week_status", { p_student_id: student.id, p_week: week }),
+        supabase.rpc("get_student_week_status", {
+          p_student_id: student.id,
+          p_week: week,
+          p_local_date: getLocalDateString(),
+        }),
       ]);
       if (subsRes.error) {
         toast({ title: "Could not load entries", description: subsRes.error.message, variant: "destructive" });
