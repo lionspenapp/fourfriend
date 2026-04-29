@@ -80,7 +80,7 @@ const ParentAuth = () => {
       if (!Number.isFinite(gradeNum) || gradeNum < 3 || gradeNum > 8) {
         toast({
           title: "Select a grade",
-          description: "Please choose a grade for your student (3–8).",
+          description: "Please choose your student's grade (3-8). Student email can stay blank.",
           variant: "destructive",
         });
         return;
@@ -298,11 +298,12 @@ const ParentAuth = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
-                      Grade
+                      Grade <span className="text-destructive">*</span>{" "}
+                      <span className="text-foreground/50 font-normal normal-case tracking-normal">(required)</span>
                     </label>
-                    <Select value={childGrade} onValueChange={setChildGrade} required>
-                      <SelectTrigger className={inputClass}>
-                        <SelectValue placeholder="Grade" />
+                    <Select value={childGrade} onValueChange={setChildGrade}>
+                      <SelectTrigger className={inputClass} aria-required>
+                        <SelectValue placeholder="Select grade (3–8)" />
                       </SelectTrigger>
                       <SelectContent>
                         {[3, 4, 5, 6, 7, 8].map((g) => (
@@ -331,10 +332,17 @@ const ParentAuth = () => {
                 </div>
 
                 <div>
-                    <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
+                  <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
                     Student Email <span className="text-foreground/60">(optional)</span>
                   </label>
-                  <Input type="email" value={childEmail} onChange={(e) => setChildEmail(e.target.value)} placeholder="child@example.com" className={inputClass} />
+                  <Input
+                    type="email"
+                    value={childEmail}
+                    onChange={(e) => setChildEmail(e.target.value)}
+                    placeholder="Leave blank if your student has no email"
+                    className={inputClass}
+                  />
+                  <p className="text-foreground/50 text-xs font-cinzel mt-1">You do not need to add a student email to create an account.</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">

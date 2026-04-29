@@ -142,21 +142,32 @@ const ParentDashboard = () => {
       return;
     }
 
+    const gradeNum = Number.parseInt(childGrade, 10);
+    if (!Number.isFinite(gradeNum) || gradeNum < 3 || gradeNum > 8) {
+      toast({
+        title: "Select a grade",
+        description: "Please choose your student's grade (3-8). Student email can stay blank.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setAddingChild(true);
 
     try {
       const { data: result, error } = await supabase.rpc("register_student", {
         p_parent_id: user.id,
-        p_first_name: childFirstName,
-        p_last_name: childLastName,
-        p_grade: parseInt(childGrade),
+        p_first_name: childFirstName.trim(),
+        p_last_name: childLastName.trim(),
+        p_grade: gradeNum,
         p_gender: childGender,
-        p_email: childEmail || null,
-        p_username: childUsername,
+        p_email: childEmail.trim() || null,
+        p_username: childUsername.trim(),
         p_password: childPassword,
       });
       if (error) throw error;
-      if (result && !(result as any).success) throw new Error((result as any).error);
+      const reg = result as { success?: boolean; error?: string } | null;
+      if (reg && reg.success === false) throw new Error(reg.error ?? "Could not register student.");
 
       toast({ title: "Student added!", description: `${childFirstName} has been registered.` });
       setChildFirstName("");
@@ -274,9 +285,14 @@ const ParentDashboard = () => {
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-foreground/90 text-sm font-cinzel mb-1.5">Grade</label>
-                          <Select value={childGrade} onValueChange={setChildGrade} required>
-                            <SelectTrigger className={inputClass}><SelectValue placeholder="Grade" /></SelectTrigger>
+                          <label className="block text-foreground/90 text-sm font-cinzel mb-1.5">
+                            Grade <span className="text-destructive">*</span>
+                            <span className="text-foreground/50 text-xs font-normal"> (required)</span>
+                          </label>
+                          <Select value={childGrade} onValueChange={setChildGrade}>
+                            <SelectTrigger className={inputClass} aria-required>
+                              <SelectValue placeholder="Select grade (3–8)" />
+                            </SelectTrigger>
                             <SelectContent>
                               {[3, 4, 5, 6, 7, 8].map((g) => (
                                 <SelectItem key={g} value={String(g)}>Grade {g}</SelectItem>
@@ -302,7 +318,14 @@ const ParentDashboard = () => {
                         <label className="block text-foreground/90 text-sm font-cinzel mb-1.5">
                           Student Email <span className="text-foreground/60">(optional)</span>
                         </label>
-                        <Input type="email" value={childEmail} onChange={(e) => setChildEmail(e.target.value)} placeholder="child@example.com" className={inputClass} />
+                        <Input
+                          type="email"
+                          value={childEmail}
+                          onChange={(e) => setChildEmail(e.target.value)}
+                          placeholder="Leave blank if your student has no email"
+                          className={inputClass}
+                        />
+                        <p className="text-foreground/50 text-xs font-cinzel mt-1">Student email is not required.</p>
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
