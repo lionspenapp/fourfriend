@@ -19,6 +19,15 @@ export type FetchQuestionResult =
   | { status: "error"; message: string }
   | { status: "empty" };
 
+const TABLE_BY_CATEGORY: Record<
+  QuestionCategory,
+  "academic_database" | "emotion_database" | "character_database"
+> = {
+  academic: "academic_database",
+  emotion: "emotion_database",
+  character: "character_database",
+};
+
 export async function fetchQuestion(
   category: QuestionCategory,
   grade: number,
@@ -26,11 +35,11 @@ export async function fetchQuestion(
   day: number,
 ): Promise<FetchQuestionResult> {
   const gradeBand = gradeToBand(grade);
+  const table = TABLE_BY_CATEGORY[category];
   const { data, error } = await supabase
-    .from("questions")
+    .from(table)
     .select("prompt")
-    .eq("category", category)
-    .eq("grade_band", gradeBand)
+    .eq("grade_level", gradeBand)
     .eq("week", week)
     .eq("day", day)
     .maybeSingle();

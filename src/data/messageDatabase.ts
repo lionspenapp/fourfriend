@@ -15,15 +15,15 @@ export type FetchCelestialResult =
   | { status: "error"; message: string }
   | { status: "empty" };
 
-/** Grade reserved if `celestial_messages` gains a grade band column; schema is week/day per migration. */
+/** Celestial copy from `message_database` (quotation + explanation). Grade band column may be added later. */
 export async function fetchCelestialMessage(
   _grade: number,
   week: number,
   day: number,
 ): Promise<FetchCelestialResult> {
   const { data, error } = await supabase
-    .from("celestial_messages")
-    .select("author, quote, body")
+    .from("message_database")
+    .select("author, quotation, explanation")
     .eq("week", week)
     .eq("day", day)
     .maybeSingle();
@@ -36,9 +36,9 @@ export async function fetchCelestialMessage(
   if (data) {
     return {
       status: "ok",
-      quote: data.quote ?? "",
+      quote: data.quotation ?? "",
       author: data.author ?? "",
-      message: data.body ?? "",
+      message: data.explanation ?? "",
     };
   }
 

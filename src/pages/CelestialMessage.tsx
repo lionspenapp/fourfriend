@@ -99,7 +99,7 @@ const CelestialMessage = () => {
         setMessageLoadError("No celestial message is configured for this week and day in the database.");
         toast({
           title: "No message found",
-          description: "Add a row to celestial_messages for this week and day.",
+          description: "Add a row to message_database for this week and day.",
           variant: "destructive",
         });
       }

@@ -47,7 +47,7 @@ const QuestionPage = ({ type }: QuestionPageProps) => {
   const grade = student?.grade ?? 5;
   const gradeBand = grade <= 4 ? "3-4" : grade <= 6 ? "5-6" : "7-8";
 
-  // Fetch question from Supabase `questions` table only (no bundled fallback).
+  // Fetch question from Supabase `academic_database` | `emotion_database` | `character_database` only.
   const [prompt, setPrompt] = useState("");
   const [contentError, setContentError] = useState<string | null>(null);
 
