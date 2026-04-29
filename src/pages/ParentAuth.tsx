@@ -27,7 +27,14 @@ const PASSWORD_RULES = [
   { test: (p: string) => /[^A-Za-z0-9]/.test(p), label: "1 special character" },
 ];
 
+type RegisterStudentResult = {
+  success?: boolean;
+  error?: string;
+};
+
 const isPasswordValid = (p: string) => PASSWORD_RULES.every((r) => r.test(p));
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Something went wrong";
 
 const ParentAuth = () => {
   const navigate = useNavigate();
@@ -83,39 +90,37 @@ const ParentAuth = () => {
           email,
           password,
           options: {
-            data: { full_name: fullName },
+            data: {
+              full_name: fullName,
+              initial_student: {
+                first_name: childFirstName,
+                last_name: childLastName,
+                grade: parseInt(childGrade),
+                gender: childGender,
+                email: childEmail || null,
+                username: childUsername,
+                password: childPassword,
+              },
+            },
             emailRedirectTo: window.location.origin,
           },
         });
         if (error) throw error;
 
-        if (data.user) {
-          const { data: result, error: rpcError } = await supabase.rpc("register_student", {
-            p_parent_id: data.user.id,
-            p_first_name: childFirstName,
-            p_last_name: childLastName,
-            p_grade: parseInt(childGrade),
-            p_gender: childGender,
-            p_email: childEmail || null,
-            p_username: childUsername,
-            p_password: childPassword,
-          });
-          if (rpcError) throw rpcError;
-          if (result && !(result as any).success) throw new Error((result as any).error);
-        }
-
         toast({
-          title: "Check your email",
-          description: "We sent you a confirmation link to verify your account.",
+          title: data.session ? "Account created" : "Check your email",
+          description: data.session
+            ? "Your parent account and child login are ready."
+            : "We created your parent account and child login. Confirm your email, then sign in.",
         });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     } finally {
@@ -148,8 +153,8 @@ const ParentAuth = () => {
       if (error) throw error;
       toast({ title: "Check your email", description: "We sent you a password reset link." });
       setShowForgotPassword(false);
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } catch (error: unknown) {
+      toast({ title: "Error", description: getErrorMessage(error), variant: "destructive" });
     } finally {
       setResetLoading(false);
     }
@@ -206,7 +211,7 @@ const ParentAuth = () => {
 
             <div>
               <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
-                Email
+                Parent Email (Username)
               </label>
               <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="parent@example.com" required className={inputClass} />
             </div>
