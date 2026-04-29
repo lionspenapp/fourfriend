@@ -90,34 +90,28 @@ const ParentAuth = () => {
           email,
           password,
           options: {
-            data: { full_name: fullName },
+            data: {
+              full_name: fullName,
+              initial_student: {
+                first_name: childFirstName,
+                last_name: childLastName,
+                grade: parseInt(childGrade),
+                gender: childGender,
+                email: childEmail || null,
+                username: childUsername,
+                password: childPassword,
+              },
+            },
             emailRedirectTo: window.location.origin,
           },
         });
         if (error) throw error;
 
-        const signedInParentId = data.session?.user.id;
-        if (signedInParentId) {
-          const { data: result, error: rpcError } = await supabase.rpc("register_student", {
-            p_parent_id: signedInParentId,
-            p_first_name: childFirstName,
-            p_last_name: childLastName,
-            p_grade: parseInt(childGrade),
-            p_gender: childGender,
-            p_email: childEmail || null,
-            p_username: childUsername,
-            p_password: childPassword,
-          });
-          if (rpcError) throw rpcError;
-          const studentResult = result as RegisterStudentResult | null;
-          if (studentResult && !studentResult.success) throw new Error(studentResult.error);
-        }
-
         toast({
-          title: "Check your email",
-          description: signedInParentId
-            ? "We sent you a confirmation link to verify your account."
-            : "Confirm your email, then sign in to add your child from the parent dashboard.",
+          title: data.session ? "Account created" : "Check your email",
+          description: data.session
+            ? "Your parent account and child login are ready."
+            : "We created your parent account and child login. Confirm your email, then sign in.",
         });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -217,7 +211,7 @@ const ParentAuth = () => {
 
             <div>
               <label className="block text-secondary text-sm font-cinzel mb-1.5 tracking-wide">
-                Email
+                Parent Email (Username)
               </label>
               <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="parent@example.com" required className={inputClass} />
             </div>
