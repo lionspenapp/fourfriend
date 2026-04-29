@@ -401,6 +401,10 @@ export type Database = {
         Args: { p_id: string; p_student_id: string }
         Returns: Json
       }
+      eastern_calendar_today: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number

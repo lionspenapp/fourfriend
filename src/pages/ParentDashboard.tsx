@@ -32,6 +32,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { getCurriculumWeekNumber } from "@/lib/utils";
 
 const PASSWORD_RULES = [
   { test: (p: string) => p.length >= 8, label: "At least 8 characters" },
@@ -56,16 +57,6 @@ interface Student {
 
 interface WeekStatus {
   [studentId: string]: number; // count of submissions this week (0-5)
-}
-
-/** Current week (1-4) in the rotating cycle anchored to Sunday Apr 12 2026.
- *  Must match the student context so parent counts always agree. */
-function getCurrentWeek(): number {
-  const now = new Date();
-  const epoch = new Date(2026, 3, 12);
-  const diffDays = Math.floor((now.getTime() - epoch.getTime()) / 86400000);
-  if (diffDays < 0) return 1;
-  return (Math.floor(diffDays / 7) % 4) + 1;
 }
 
 const ParentDashboard = () => {
@@ -109,7 +100,7 @@ const ParentDashboard = () => {
 
   const fetchSubmissions = async (studentList: Student[]): Promise<void> => {
     if (!user || studentList.length === 0) return;
-    const week = getCurrentWeek();
+    const week = getCurriculumWeekNumber();
     const results = await Promise.all(
       studentList.map(async (s) => {
         const { data } = await supabase.rpc("get_student_week_status", {
