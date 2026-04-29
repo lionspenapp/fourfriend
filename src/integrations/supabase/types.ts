@@ -71,7 +71,7 @@ export type Database = {
         }
         Relationships: []
       }
-      character_database: {
+      charater_database: {
         Row: {
           created_at: string
           day: number

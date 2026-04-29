@@ -271,11 +271,11 @@ import { supabase } from "@/integrations/supabase/client";
 
 const TABLE_BY_CATEGORY: Record<
   QuestionCategory,
-  "academic_database" | "emotion_database" | "character_database"
+  "academic_database" | "emotion_database" | "charater_database"
 > = {
   academic: "academic_database",
   emotion: "emotion_database",
-  character: "character_database",
+  character: "charater_database",
 };
 
 export function gradeToBand(grade: number): "3-4" | "5-6" | "7-8" {
