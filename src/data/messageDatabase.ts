@@ -122,7 +122,7 @@ export async function fetchCelestialMessage(
   day: number,
 ): Promise<{ quote: string; author: string; message: string } | null> {
   const gradeBand = gradeToBand(grade);
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from("message_database")
     .select("author, quotation, explanation")
     .eq("grade_level", gradeBand)
@@ -132,9 +132,9 @@ export async function fetchCelestialMessage(
 
   if (!error && data) {
     return {
-      quote: (data.quotation as string) ?? "",
-      author: (data.author as string) ?? "",
-      message: (data.explanation as string) ?? "",
+      quote: data.quotation ?? "",
+      author: data.author ?? "",
+      message: data.explanation ?? "",
     };
   }
 

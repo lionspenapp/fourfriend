@@ -44,6 +44,120 @@ export type Database = {
         }
         Relationships: []
       }
+      academic_database: {
+        Row: {
+          created_at: string
+          day: number
+          grade_level: string
+          id: string
+          prompt: string
+          week: number
+        }
+        Insert: {
+          created_at?: string
+          day: number
+          grade_level: string
+          id: string
+          prompt: string
+          week: number
+        }
+        Update: {
+          created_at?: string
+          day?: number
+          grade_level?: string
+          id?: string
+          prompt?: string
+          week?: number
+        }
+        Relationships: []
+      }
+      character_database: {
+        Row: {
+          created_at: string
+          day: number
+          grade_level: string
+          id: string
+          prompt: string
+          week: number
+        }
+        Insert: {
+          created_at?: string
+          day: number
+          grade_level: string
+          id: string
+          prompt: string
+          week: number
+        }
+        Update: {
+          created_at?: string
+          day?: number
+          grade_level?: string
+          id?: string
+          prompt?: string
+          week?: number
+        }
+        Relationships: []
+      }
+      emotion_database: {
+        Row: {
+          created_at: string
+          day: number
+          grade_level: string
+          id: string
+          prompt: string
+          week: number
+        }
+        Insert: {
+          created_at?: string
+          day: number
+          grade_level: string
+          id: string
+          prompt: string
+          week: number
+        }
+        Update: {
+          created_at?: string
+          day?: number
+          grade_level?: string
+          id?: string
+          prompt?: string
+          week?: number
+        }
+        Relationships: []
+      }
+      message_database: {
+        Row: {
+          author: string
+          created_at: string
+          day: number
+          explanation: string
+          grade_level: string
+          id: string
+          quotation: string
+          week: number
+        }
+        Insert: {
+          author: string
+          created_at?: string
+          day: number
+          explanation: string
+          grade_level: string
+          id: string
+          quotation: string
+          week: number
+        }
+        Update: {
+          author?: string
+          created_at?: string
+          day?: number
+          explanation?: string
+          grade_level?: string
+          id?: string
+          quotation?: string
+          week?: number
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
