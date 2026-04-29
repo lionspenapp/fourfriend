@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
+import { getCalendarDateKeyInTimeZone, getCurriculumWeekNumber } from "@/lib/utils";
 
 export type FlowStep =
   | "login"
@@ -22,17 +23,6 @@ export interface SessionResponses {
   academic: string;
   emotion: string;
   character: string;
-}
-
-/** Derive the current week (1-4) from a 4-week cycle anchored to Sunday April 12 2026.
- *  Day numbering is now sequence-based (1st entry of week = Day 1, etc.) and assigned by the server. */
-function getCurrentWeek(): number {
-  const now = new Date();
-  const epoch = new Date(2026, 3, 12); // April 12 2026 (Sunday)
-  const diffDays = Math.floor((now.getTime() - epoch.getTime()) / 86400000);
-  if (diffDays < 0) return 1;
-  const weekIndex = Math.floor(diffDays / 7);
-  return (weekIndex % 4) + 1;
 }
 
 interface LionsPenContextType {
@@ -64,7 +54,7 @@ export const LionsPenProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   });
   const [currentDay, setCurrentDay] = useState<number | null>(null);
 
-  const week = useMemo(() => getCurrentWeek(), []);
+  const week = useMemo(() => getCurriculumWeekNumber(), []);
 
   const setResponse = useCallback((key: keyof SessionResponses, value: string) => {
     setResponses((prev) => ({ ...prev, [key]: value }));
@@ -73,12 +63,12 @@ export const LionsPenProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const hasSubmittedToday = useCallback((studentId: string) => {
     const last = localStorage.getItem(`${STORAGE_KEY}_${studentId}`);
     if (!last) return false;
-    const today = new Date().toDateString();
+    const today = getCalendarDateKeyInTimeZone(new Date());
     return last === today;
   }, []);
 
   const markSubmitted = useCallback((studentId: string) => {
-    localStorage.setItem(`${STORAGE_KEY}_${studentId}`, new Date().toDateString());
+    localStorage.setItem(`${STORAGE_KEY}_${studentId}`, getCalendarDateKeyInTimeZone(new Date()));
   }, []);
 
   const resetSession = useCallback(() => {

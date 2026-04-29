@@ -8,6 +8,12 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import lionsPenLogo from "@/assets/lions_pen_v4.png";
 import { BookOpen, Compass, MessageCircle, LogOut, Trash2, Star, Check } from "lucide-react";
+import {
+  APP_CALENDAR_TIME_ZONE,
+  dateFromCalendarKey,
+  getCalendarDateKeyInTimeZone,
+  getEasternWeekdayStripKeys,
+} from "@/lib/utils";
 
 interface WeekSubmission {
   id: string;
@@ -155,18 +161,20 @@ const StudentPortal = () => {
 
             {/* Stacked horizontal timeline */}
             {(() => {
-              const today = new Date();
-              const dow = today.getDay(); // 0=Sun..6=Sat
-              const offsetToMonday = (dow + 6) % 7;
-              const weekStart = new Date(today);
-              weekStart.setHours(0, 0, 0, 0);
-              weekStart.setDate(today.getDate() - offsetToMonday);
+              const stripKeys = getEasternWeekdayStripKeys();
+              const todayKey = getCalendarDateKeyInTimeZone(new Date());
 
-              const todayKey = today.toDateString();
               const subByDay = new Map(submissions.map((s) => [s.day, s]));
 
-              const dateFmt = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" });
-              const dayFmt = new Intl.DateTimeFormat(undefined, { weekday: "short" });
+              const dateFmt = new Intl.DateTimeFormat("en-US", {
+                timeZone: APP_CALENDAR_TIME_ZONE,
+                month: "short",
+                day: "numeric",
+              });
+              const dayFmt = new Intl.DateTimeFormat("en-US", {
+                timeZone: APP_CALENDAR_TIME_ZONE,
+                weekday: "short",
+              });
 
               return (
                 <div className="relative max-w-2xl mx-auto px-2">
@@ -174,11 +182,10 @@ const StudentPortal = () => {
                   <div className="relative flex items-center justify-between">
                     {[1, 2, 3, 4, 5].map((d) => {
                       const sub = subByDay.get(d);
-                      const date = sub
-                        ? new Date(sub.entry_date + "T00:00:00")
-                        : new Date(weekStart.getTime() + (d - 1) * 86400000);
+                      const stripKey = stripKeys[d - 1];
+                      const date = sub ? new Date(sub.entry_date + "T12:00:00") : dateFromCalendarKey(stripKey);
                       const completed = !!sub;
-                      const isToday = date.toDateString() === todayKey;
+                      const isToday = stripKey === todayKey;
                       return (
                         <div key={d} className="flex flex-col items-center gap-1.5 min-w-0">
                           <span className="font-cinzel text-[11px] sm:text-xs text-lapis tracking-wide min-h-[1rem]">
@@ -239,7 +246,8 @@ const StudentPortal = () => {
                       <p className="text-secondary font-cinzel text-xs mt-2">
                         — {q.author}
                         <span className="text-foreground/40 ml-3">
-                          {new Date(q.created_at).toLocaleDateString(undefined, {
+                          {new Date(q.created_at).toLocaleDateString("en-US", {
+                            timeZone: APP_CALENDAR_TIME_ZONE,
                             month: "short",
                             day: "numeric",
                             year: "numeric",
