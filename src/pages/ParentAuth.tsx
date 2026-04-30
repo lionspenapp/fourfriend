@@ -29,6 +29,24 @@ const PASSWORD_RULES = [
 
 const isPasswordValid = (p: string) => PASSWORD_RULES.every((r) => r.test(p));
 
+/** Supabase GoTrue returns generic messages; make email quota errors actionable */
+function friendlyAuthMessage(err: unknown): string {
+  const raw =
+    err && typeof err === "object" && "message" in err && typeof (err as { message: unknown }).message === "string"
+      ? (err as { message: string }).message
+      : String(err);
+  const lower = raw.toLowerCase();
+  if (
+    lower.includes("rate") ||
+    lower.includes("too many") ||
+    lower.includes("email rate") ||
+    raw.includes("429")
+  ) {
+    return "Email sending is temporarily limited (too many messages in a short time). Wait an hour, try a different address, or in Supabase → Authentication turn off “Confirm email” for testing.";
+  }
+  return raw;
+}
+
 const ParentAuth = () => {
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(() => {
@@ -92,6 +110,10 @@ const ParentAuth = () => {
     try {
       if (isSignUp) {
         const gradeNum = Number.parseInt(childGrade, 10);
+        // Session on first sign-up: if Supabase Authentication → Providers → Email has
+        // "Confirm email" enabled, signUp returns no session until the user clicks the
+        // link (and uses more confirmation emails). Turn Confirm email off for an initial
+        // launch window if you want immediate dashboard access and fewer rate limits.
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -147,10 +169,10 @@ const ParentAuth = () => {
         if (error) throw error;
         navigate("/parent/dashboard");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Error",
-        description: error.message,
+        description: friendlyAuthMessage(error),
         variant: "destructive",
       });
     } finally {
@@ -183,8 +205,8 @@ const ParentAuth = () => {
       if (error) throw error;
       toast({ title: "Check your email", description: "We sent you a password reset link." });
       setShowForgotPassword(false);
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } catch (error: unknown) {
+      toast({ title: "Error", description: friendlyAuthMessage(error), variant: "destructive" });
     } finally {
       setResetLoading(false);
     }
