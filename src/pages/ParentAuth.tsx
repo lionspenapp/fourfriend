@@ -5,6 +5,7 @@ import lionsPenLogo from "@/assets/lions_pen_v4.png";
 import { supabase } from "@/integrations/supabase/client";
 import { Eye, EyeOff } from "lucide-react";
 import { PARENT_LANDING_HTML } from "./parentLandingHtml";
+import { getAppOriginForAuthEmail, getPasswordResetOrigin } from "@/utils/appOrigin";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -114,12 +115,13 @@ const ParentAuth = () => {
         // "Confirm email" enabled, signUp returns no session until the user clicks the
         // link (and uses more confirmation emails). Turn Confirm email off for an initial
         // launch window if you want immediate dashboard access and fewer rate limits.
+        const authBase = getAppOriginForAuthEmail();
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             data: { full_name: fullName },
-            emailRedirectTo: `${window.location.origin}/parent`,
+            emailRedirectTo: `${authBase}/parent`,
           },
         });
         if (error) throw error;
@@ -158,10 +160,15 @@ const ParentAuth = () => {
           });
           navigate("/parent/dashboard");
         } else {
+          const originForEmail = getAppOriginForAuthEmail();
+          const onLocalhost =
+            /^https?:\/\/localhost(?::\d+)?$/i.test(originForEmail) ||
+            /^https?:\/\/127\.0\.0\.1(?::\d+)?$/i.test(originForEmail);
           toast({
             title: "Check your email",
-            description:
-              "We sent a confirmation link. After you verify, sign in here — your student is already linked to your account.",
+            description: onLocalhost
+              ? "The confirmation link may point at localhost (only works on this computer). Add VITE_APP_ORIGIN=https://your-live-site.com in Vercel env, redeploy, and sign up again — or confirm email while testing only on this machine."
+              : "We sent a confirmation link. After you verify, sign in — your student is already linked to your account.",
           });
         }
       } else {
@@ -187,17 +194,7 @@ const ParentAuth = () => {
     }
     setResetLoading(true);
     try {
-      // Force the recovery email to land on the published Lion's Pen site,
-      // not the Lovable editor sandbox (*.lovableproject.com) or the
-      // id-preview host — those require a Lovable login and would bounce
-      // the parent to lovable.dev/login instead of /reset-password.
-      const PUBLISHED_ORIGIN = "https://pen-guard-vault.lovable.app";
-      const allowedOrigin =
-        /^https?:\/\/(pen-guard-vault\.lovable\.app|([a-z0-9-]+\.)*mycaptainslog\.app)$/i;
-      const origin =
-        typeof window !== "undefined" && allowedOrigin.test(window.location.origin)
-          ? window.location.origin
-          : PUBLISHED_ORIGIN;
+      const origin = getPasswordResetOrigin();
 
       const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
         redirectTo: `${origin}/reset-password`,
